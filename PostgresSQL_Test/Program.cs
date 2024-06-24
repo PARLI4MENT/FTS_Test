@@ -32,37 +32,68 @@ namespace MainNS
                 Console.WriteLine("State => wasn`t Open");
 
 
-            PgCheckDb(sqlConnection);
+            //PgCheckDb(sqlConnection);
 
-            //RetriveData(sqlConnection);
-            //InsertData(sqlConnection);
+            PgRetriveData(sqlConnection);
+            //PgInsertData(sqlConnection);
         }
 
 
-        private async static void PgCheckDb(NpgsqlConnection sqlConnection)
+        private async static void PgCheckDb(NpgsqlConnection sqlConnection, string tableName = "Student")
         {
-            const string tableInfo = "SELECT * FROM information_schema.tables";
+            // Get all tables in current Database
+            const string listTables = "SELECT table_name FROM information_schema.tables WHERE table_schema='public'";
 
             try
             {
-                await using (var sqlComm = new NpgsqlCommand(tableInfo, sqlConnection))
+                #region Get tables
+                //                await using (var sqlComm = new NpgsqlCommand(listTables, sqlConnection))
+                //                {
+                //                    await using (var reader = sqlComm.ExecuteReader())
+                //                    {
+                //                        if (!reader.HasRows)
+                //                        {
+                //#if DEBUG
+                //                            Console.WriteLine("No tables!");
+                //#endif
+                //                            return;
+                //                        }
+                //                        int i = 0;
+                //                        while (await reader.ReadAsync())
+                //                        {
+                //                            //Console.WriteLine(reader.FieldCount.ToString());
+                //                            Console.WriteLine($"[{i++}]\t{reader.GetString(0)}");
+                //                        }
+
+                //                    }
+                //                }
+                #endregion
+
+                #region Get fields from current table
+
+                string fildsTable = $"SELECT column_name, data_type FROM information_schema.columns WHERE table_schema = 'public' AND table_name = '{tableName}'";
+                await using (var sqlComm = new NpgsqlCommand(fildsTable, sqlConnection))
                 {
                     await using (var reader = sqlComm.ExecuteReader())
                     {
                         if (!reader.HasRows)
                         {
-                            Console.WriteLine("Now tables");
+#if DEBUG
+                            Console.WriteLine("No filds!");
+#endif
                             return;
                         }
-                        while (await reader.ReadAsync())
+                        int i = 0;
+                        while (reader.Read())
                         {
-                            Console.WriteLine(reader.GetString(0));
-                        }
+                            Console.WriteLine($"[{i++}]\t{reader.GetString(0)} => {reader.GetString(1)}");
 
+                        }
                     }
                 }
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); return ; }
+            #endregion
 
         }
 
@@ -70,7 +101,7 @@ namespace MainNS
         {
             try
             {
-                // Insert
+                // InsertData
                 await using (var sqlComm = new NpgsqlCommand("SELECT * FROM \"public\".\"Student\"", sqlConnection))
                 {
 
@@ -82,7 +113,6 @@ namespace MainNS
 
         private async static void PgRetriveData(NpgsqlConnection sqlConnection)
         {
-
             await using (var sqlComm = new NpgsqlCommand("SELECT * FROM \"public\".\"Student\"", sqlConnection))
             {
                 await using (NpgsqlDataReader reader = await sqlComm.ExecuteReaderAsync())
