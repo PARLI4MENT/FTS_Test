@@ -3,14 +3,14 @@ using Npgsql;
 using System;
 using System.Runtime.CompilerServices;
 using System.Configuration;
+using Microsoft.Extensions.Configuration;
+using System.Data;
 
-namespace mainNS
+namespace MainNS
 {
     public class Program
     {
-        const string pgStrConn = "Server=192.168.0.142;Port=5438;Database=student;User ID=postgres;Password=passwd0105";
-
-
+        static string? strConn = "Server=192.168.0.142;Port=5438;Database=student;Uid=postgres;Pwd=passwd0105";
 
         public static void Main(string[] args)
         {
@@ -21,7 +21,7 @@ namespace mainNS
 
         public async static void PGConnect()
         {
-            await using var sqlConnection = new NpgsqlConnection(pgStrConn);
+            await using var sqlConnection = new NpgsqlConnection(strConn);
             await sqlConnection.OpenAsync();
 
             if (sqlConnection.State == System.Data.ConnectionState.Open)
@@ -29,21 +29,32 @@ namespace mainNS
             else
                 Console.WriteLine("State => wasn`t Open");
 
-            //InsertData(conn);
-            //RetriveRow(conn);
-
             DataReader(sqlConnection);
+            //RetriveRow(conn);
+            //InsertData(conn);
         }
 
         private async static void DataReader(NpgsqlConnection sqlConnection)
         {
             try
             {
+                NpgsqlCommand sqlComm = new NpgsqlCommand();
+                sqlComm.Connection = sqlConnection;
+                sqlComm.CommandType = System.Data.CommandType.Text;
+                sqlComm.CommandText = "SELECT * FROM \"public\".\"Student\"";
 
+                NpgsqlDataReader dataReader = sqlComm.ExecuteReader();
+
+                if (dataReader.HasRows)
+                {
+                    DataTable dataTable = new DataTable();
+                    dataTable.Load(dataReader);
+                }
+
+                sqlComm.Dispose();
+                sqlConnection.Close();                
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); return; }
-
-            throw new Exception();
         }
 
 
