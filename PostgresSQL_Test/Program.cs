@@ -1,36 +1,32 @@
 ﻿using Microsoft.VisualBasic;
 using Npgsql;
-using System;
-using System.Runtime.CompilerServices;
-using System.Configuration;
-using Microsoft.Extensions.Configuration;
 using System.Data;
 
 namespace MainNS
 {
     public class Program
     {
-        static string? strConn = "Server=192.168.0.142;Port=5438;Database=student;Uid=postgres;Pwd=passwd0105";
+        static string strConnMain = "Server=192.168.0.142;Port=5438;Database=testdb;Uid=postgres;Pwd=passwd0105";
 
         public static void Main(string[] args)
         {
-            PgConnect();
+            //PgSqlConnect();
+            PgSqlCreateDatabase();
 
             Console.ReadKey();
         }
 
-        public async static void PgConnect()
+        public async static void PgSqlConnect()
         {
             // Connection
-            var dataSourceBuilder = new NpgsqlDataSourceBuilder(strConn);
+            var dataSourceBuilder = new NpgsqlDataSourceBuilder(strConnMain);
             var dataSource = dataSourceBuilder.Build();
             var sqlConnection = await dataSource.OpenConnectionAsync();
 
-            if (sqlConnection.State == System.Data.ConnectionState.Open)
+            if (sqlConnection.State == ConnectionState.Open)
                 Console.WriteLine("State => is Open");
             else
                 Console.WriteLine("State => wasn`t Open");
-
 
             //PgCheckDb(sqlConnection);
 
@@ -39,34 +35,66 @@ namespace MainNS
         }
 
 
-        private async static void PgCheckDb(NpgsqlConnection sqlConnection, string tableName = "Student")
+        public async static void PgSqlCreateDatabase()
+        {
+            string strDbName = "testDB";
+            string strConn = "Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;";
+            string strComm = @$"CREATE DATABASE {strDbName} WITH OWNER postgres ENCODING = 'UTF8' CONNECTION LIMIT = -1;";
+
+            await using (var sqlConn = new NpgsqlConnection(strConn))
+            {
+                sqlConn.Open();
+                var sqlComm = new NpgsqlCommand(strComm, sqlConn);
+                sqlComm.ExecuteNonQuery();
+
+                PgSqlCreateTable();
+            }
+
+        }
+
+        public async static void PgSqlCreateTable()
+        {
+            string strCreateTable = @"CREATE TABLE ""public"".""testTabel1"" (
+                ""ID"" int4 NOT NULL GENERATED ALWAYS AS IDENTITY (INCREMENT 1), ""test1"" bool, ""test2"" char, ""test3"" date,
+                ""test4"" decimal(10,2), ""test5"" float8, ""test6"" int8, ""test7"" text, ""test8"" varchar(255), ""test9"" varchar(255),
+                PRIMARY KEY (""ID"") ) ;";
+
+            await using (var sqlConn = new NpgsqlConnection(strConnMain))
+            {
+                sqlConn.OpenAsync();
+                await using (var sqlComm = new NpgsqlCommand(strCreateTable, sqlConn))
+                    sqlComm.ExecuteNonQuery();
+            }
+        }
+
+        private async static void PgSqlCheckDb(NpgsqlConnection sqlConnection, string tableName = "Student")
         {
             // Get all tables in current Database
-            const string listTables = "SELECT table_name FROM information_schema.tables WHERE table_schema='public'";
-
             try
             {
                 #region Get tables
-                //                await using (var sqlComm = new NpgsqlCommand(listTables, sqlConnection))
-                //                {
-                //                    await using (var reader = sqlComm.ExecuteReader())
-                //                    {
-                //                        if (!reader.HasRows)
-                //                        {
-                //#if DEBUG
-                //                            Console.WriteLine("No tables!");
-                //#endif
-                //                            return;
-                //                        }
-                //                        int i = 0;
-                //                        while (await reader.ReadAsync())
-                //                        {
-                //                            //Console.WriteLine(reader.FieldCount.ToString());
-                //                            Console.WriteLine($"[{i++}]\t{reader.GetString(0)}");
-                //                        }
+                
+                const string listTables = "SELECT table_name FROM information_schema.tables WHERE table_schema='public'";
+                await using (var sqlComm = new NpgsqlCommand(listTables, sqlConnection))
+                {
+                    await using (var reader = sqlComm.ExecuteReader())
+                    {
+                        if (!reader.HasRows)
+                        {
+#if DEBUG
+                            Console.WriteLine("No tables!");
+#endif
+                            return;
+                        }
+                        int i = 0;
+                        while (await reader.ReadAsync())
+                        {
+                            //Console.WriteLine(reader.FieldCount.ToString());
+                            Console.WriteLine($"[{i++}]\t{reader.GetString(0)}");
+                        }
 
-                //                    }
-                //                }
+                    }
+                }
                 #endregion
 
                 #region Get fields from current table
@@ -87,17 +115,15 @@ namespace MainNS
                         while (reader.Read())
                         {
                             Console.WriteLine($"[{i++}]\t{reader.GetString(0)} => {reader.GetString(1)}");
-
                         }
                     }
                 }
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); return ; }
             #endregion
-
         }
 
-        private async static void PgInsertData(NpgsqlConnection sqlConnection)
+        private async static void PgInsertData(NpgsqlConnection sqlConnection, string tableName, int iteration)
         {
             try
             {
@@ -119,7 +145,9 @@ namespace MainNS
                 {
                     if (!reader.HasRows)
                     {
+#if DEBUG
                         Console.WriteLine("No rows!");
+#endif
                         return;
                     } 
 
@@ -130,7 +158,6 @@ namespace MainNS
                 }
             }
         }
-
 
     }
 }
