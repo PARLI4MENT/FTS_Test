@@ -1,6 +1,8 @@
 ﻿using Microsoft.VisualBasic;
 using Npgsql;
+using System.Buffers;
 using System.Data;
+using System.Diagnostics;
 
 namespace MainNS
 {
@@ -11,13 +13,15 @@ namespace MainNS
         public static void Main(string[] args)
         {
             //PgSqlConnect();
-            PgSqlCreateDatabase();
+            //PgSqlCreateDatabase();
+            PgSqlCreateTable();
 
             Console.ReadKey();
         }
 
         public async static void PgSqlConnect()
         {
+
             // Connection
             var dataSourceBuilder = new NpgsqlDataSourceBuilder(strConnMain);
             var dataSource = dataSourceBuilder.Build();
@@ -43,9 +47,15 @@ namespace MainNS
 
             await using (var sqlConn = new NpgsqlConnection(strConn))
             {
+
+                Debug.WriteLine(sqlConn.State.ToString());
                 sqlConn.Open();
+                Debug.WriteLine(sqlConn.State.ToString());
                 var sqlComm = new NpgsqlCommand(strComm, sqlConn);
                 sqlComm.ExecuteNonQuery();
+                Debug.WriteLine("Query is Done!");
+                sqlConn.Close();
+                Debug.WriteLine(sqlConn.State.ToString());
 
                 PgSqlCreateTable();
             }
@@ -57,13 +67,15 @@ namespace MainNS
             string strCreateTable = @"CREATE TABLE ""public"".""testTabel1"" (
                 ""ID"" int4 NOT NULL GENERATED ALWAYS AS IDENTITY (INCREMENT 1), ""test1"" bool, ""test2"" char, ""test3"" date,
                 ""test4"" decimal(10,2), ""test5"" float8, ""test6"" int8, ""test7"" text, ""test8"" varchar(255), ""test9"" varchar(255),
-                PRIMARY KEY (""ID"") ) ;";
+                PRIMARY KEY (""ID""));";
 
             await using (var sqlConn = new NpgsqlConnection(strConnMain))
             {
-                sqlConn.OpenAsync();
+                await sqlConn.OpenAsync();
                 await using (var sqlComm = new NpgsqlCommand(strCreateTable, sqlConn))
-                    sqlComm.ExecuteNonQuery();
+                {
+                    await sqlComm.ExecuteNonQueryAsync();
+                }
             }
         }
 
