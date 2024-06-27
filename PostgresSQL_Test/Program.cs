@@ -14,7 +14,14 @@ namespace MainNS
         {
             //PgSqlConnect();
             //PgSqlCreateDatabase();
-            PgSqlCreateTable();
+            //PgSqlCreateTable();
+
+            //PgSqlCreateTable();
+            var sw = new Stopwatch();
+            sw.Start();
+            PgInsertData("testTabel1");
+            sw.Stop();
+            Console.WriteLine(sw.Elapsed);
 
             Console.ReadKey();
         }
@@ -38,7 +45,6 @@ namespace MainNS
             //PgInsertData(sqlConnection);
         }
 
-
         public async static void PgSqlCreateDatabase()
         {
             string strDbName = "testDB";
@@ -47,7 +53,6 @@ namespace MainNS
 
             await using (var sqlConn = new NpgsqlConnection(strConn))
             {
-
                 Debug.WriteLine(sqlConn.State.ToString());
                 sqlConn.Open();
                 Debug.WriteLine(sqlConn.State.ToString());
@@ -65,16 +70,54 @@ namespace MainNS
         public async static void PgSqlCreateTable()
         {
             string strCreateTable = @"CREATE TABLE ""public"".""testTabel1"" (
-                ""ID"" int4 NOT NULL GENERATED ALWAYS AS IDENTITY (INCREMENT 1), ""test1"" bool, ""test2"" char, ""test3"" date,
+                ""ID"" int4 NOT NULL GENERATED ALWAYS AS IDENTITY (INCREMENT 1), ""test1"" bool, ""test2"" char, ""test3"" varchar(255),
                 ""test4"" decimal(10,2), ""test5"" float8, ""test6"" int8, ""test7"" text, ""test8"" varchar(255), ""test9"" varchar(255),
                 PRIMARY KEY (""ID""));";
 
-            await using (var sqlConn = new NpgsqlConnection(strConnMain))
+            try
             {
-                await sqlConn.OpenAsync();
-                await using (var sqlComm = new NpgsqlCommand(strCreateTable, sqlConn))
+                await using (var sqlConn = new NpgsqlConnection(strConnMain))
                 {
-                    await sqlComm.ExecuteNonQueryAsync();
+                    await sqlConn.OpenAsync();
+                    await using (var sqlComm = new NpgsqlCommand(strCreateTable, sqlConn))
+                    {
+                        await sqlComm.ExecuteNonQueryAsync();
+                    }
+                }
+            }
+            catch (NpgsqlException ex)
+            {
+                switch (ex.SqlState)
+                {
+                    case "42P07":
+#if DEBUG
+                        //Console.WriteLine($"[Code] => {ex.ErrorCode}");
+                        Console.WriteLine($"[Msg] => {ex.Message}");
+                        Console.WriteLine($"[Source] => {ex.Source}");
+                        //Console.WriteLine($"[StackTrace] => {ex.StackTrace}");
+                        //Console.WriteLine($"[HResult] => {ex.HResult}");
+                        Console.WriteLine($"[Data] => {ex.Data}");
+                        Console.WriteLine($"[SqlState] => {ex.SqlState}");
+                        Console.WriteLine($"[BatchCommand] => {ex.BatchCommand}");
+                        Console.WriteLine($"[IsTransient] => {ex.IsTransient}");
+#endif
+                        break;
+                    case "3D000":
+#if DEBUG
+                        //Console.WriteLine($"[Code] => {ex.ErrorCode}");
+                        Console.WriteLine($"[Msg] => {ex.Message}");
+                        Console.WriteLine($"[Source] => {ex.Source}");
+                        //Console.WriteLine($"[StackTrace] => {ex.StackTrace}");
+                        //Console.WriteLine($"[HResult] => {ex.HResult}");
+                        Console.WriteLine($"[Data] => {ex.Data}");
+                        Console.WriteLine($"[SqlState] => {ex.SqlState}");
+                        Console.WriteLine($"[BatchCommand] => {ex.BatchCommand}");
+                        Console.WriteLine($"[IsTransient] => {ex.IsTransient}");
+#endif
+                        PgSqlCreateDatabase();
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -135,16 +178,47 @@ namespace MainNS
             #endregion
         }
 
-        private async static void PgInsertData(NpgsqlConnection sqlConnection, string tableName, int iteration)
+        private async static void PgInsertData(NpgsqlConnection sqlConnection, string tableName, int min = 0, int iteration = 100)
         {
             try
             {
-                // InsertData
-                await using (var sqlComm = new NpgsqlCommand("SELECT * FROM \"public\".\"Student\"", sqlConnection))
+                await using (var sqlComm = new NpgsqlCommand($"INSERT", sqlConnection))
                 {
-
+                    string strComm = @$"INSERT INTO ""public"".""{tableName}"" (
+                        test1, test2, test3, test4, test5, test6, test7, test8, test9)
+                        VALUES ({true}, 'c', {DateTime.Now.ToString("yyyy-MM-dd")}, 3.14, 3.14, 1, 'some_text', 'some_text', 'some_text');";
+#if DEBUG
+                    Console.WriteLine("[DEBUG] => ");
+#endif
                 }
 
+            }
+            catch (Exception ex) { Console.WriteLine(ex.Message); return; }
+        }
+
+        private async static void PgInsertData(string tableName, int min = 0, int iteration = 100)
+        {
+            try
+            {
+                if (min >= iteration)
+                    return;
+                string strComm = @$"INSERT INTO ""public"".""{tableName}"" (
+                        test1, test2, test3, test4, test5, test6, test7, test8, test9)
+                        VALUES ({true}, 'c', {DateTime.Now.ToString("yyyy-MM-dd")}, 3.14, 3.14, 1, 'some_text', 'some_text', 'some_text');";
+
+                await using (var sqlConn = new NpgsqlConnection(strConnMain))
+                {
+                    await sqlConn.OpenAsync();
+                    await using (var sqlComm = new NpgsqlCommand(strComm, sqlConn))
+                    {
+                        await sqlComm.ExecuteNonQueryAsync();
+#if DEBUG
+                        Console.WriteLine("[DEBUG] => Execute {} is Done!");
+#endif
+                    }
+                }
+                min++;
+                PgInsertData(tableName, min, iteration);
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); return; }
         }
