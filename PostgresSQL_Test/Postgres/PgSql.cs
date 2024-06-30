@@ -1,28 +1,40 @@
 ﻿using Npgsql;
 using System.Data;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace PgSql
 {
     public class PgSql
     {
-        private static string _server { get; set; } = "192.168.0.142";
-        private static string _port { get; set; } = "5438";
-        private static string _database { get; set; } = "testdb";
-        private static string _uid { get; set; } = "postgres";
-        private static string _pwd { get; set; } = "passwd0105";
+        public static string Server { get; private set; } = "192.168.0.142";
+        public static string Port { get; private set; } = "5438";
+        public static string Database { get; private set; } = "testdb";
+        public static string Uid { get; private set; } = "postgres";
+        public static string Password { get; private set; } = "passwd0105";
 
-        string strConnMain = $"Server={_server};Port={_port};Database={_database};Uid={_uid};Pwd={_pwd}";
+        private static string _tableName = "";
+
+
+        string strConnMain = $"Server={Server};Port={Port};Database={Database};Uid={Uid};Pwd={Password}";
 
         public PgSql()
         {
 
         }
-        public delegate void PgDataOut(string tableName, int min = 0, int iteration = 100);
 
-        public async static void PgSqlConnect()
+        public PgSql(string Server, string Port, string Uid, string Password)
         {
+            PgSql.Server = Server;
+            PgSql.Port = Port;
+            PgSql.Database = Uid;
+            PgSql.Password = Password;
+        }
 
+        public delegate void PgDataOut(string tableName, int iteration = 100);
+
+        public async void PgSqlConnect()
+        {
             // Connection
             var dataSourceBuilder = new NpgsqlDataSourceBuilder(strConnMain);
             var dataSource = dataSourceBuilder.Build();
@@ -39,7 +51,7 @@ namespace PgSql
             //PgInsertData(sqlConnection);
         }
 
-        private async static void PgSqlCreateDatabase()
+        private async void PgSqlCreateDatabase()
         {
             string strDbName = "testDB";
             string strConn = "Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;";
@@ -61,7 +73,7 @@ namespace PgSql
 
         }
 
-        public async static void PgSqlCreateTable()
+        public async void PgSqlCreateTable()
         {
             string strCreateTable = @"CREATE TABLE ""public"".""testTabel1"" (
                 ""ID"" int4 NOT NULL GENERATED ALWAYS AS IDENTITY (INCREMENT 1), ""test1"" bool, ""test2"" char, ""test3"" varchar(255),
@@ -110,7 +122,7 @@ namespace PgSql
             }
         }
 
-        private async static void PgSqlCheckDb(NpgsqlConnection sqlConnection, string tableName = "Student")
+        private async static void PgSqlCheckDb(NpgsqlConnection sqlConnection, [Optional] string tableName)
         {
             // Get all tables in current Database
             try
@@ -166,7 +178,7 @@ namespace PgSql
             #endregion
         }
 
-        private async static void PgInsertData(string tableName, int iteration = 100)
+        private async void PgInsertData(string tableName, int iteration = 100)
         {
 #if DEBUG
             var sw = new Stopwatch();
@@ -201,7 +213,7 @@ namespace PgSql
 #endif
         }
 
-        private static void PgInsertDataParallel(string tableName, int iteration)
+        private void PgInsertDataParallel(string tableName, int iteration)
         {
 #if DEBUG
             var sw = new Stopwatch();
@@ -251,7 +263,7 @@ namespace PgSql
             }
         }
 
-        public async static void PgClearData(string tableName)
+        public async void PgClearData(string tableName)
         {
 #if DEBUG
             var sw = new Stopwatch();
@@ -271,6 +283,5 @@ namespace PgSql
             Console.WriteLine($"Total time => {sw.ElapsedMilliseconds / 1000} sec ({sw.ElapsedMilliseconds} ms)");
 #endif
         }
-
     }
 }
