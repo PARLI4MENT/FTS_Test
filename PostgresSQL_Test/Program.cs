@@ -1,9 +1,11 @@
-﻿using Microsoft.VisualBasic;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.VisualBasic;
 using Npgsql;
 using System.Buffers;
 using System.Data;
 using System.Diagnostics;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace MainNS
@@ -50,18 +52,25 @@ namespace MainNS
 
             //}
             #endregion
+
+
             //PgClearData("testTabel1");
             //PgInsertData("testTabel1", 100000);
             //PgInsertDataParallel("testTabel1", 100000);
 
-            #region
-            var pgSql = new PgSql.PgSql();
+            #region Test PG Class
+
+            //var pgSql = new PgSql.PgSql();
+            //pgSql.PgInsertData();
+            //pgSql.PgInsertDataParallel(100);
+
+
 
             #endregion
 
 
             Console.ReadKey();
         }
-        
+
     }
 }
