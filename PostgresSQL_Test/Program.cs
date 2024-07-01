@@ -12,7 +12,6 @@ namespace MainNS
 {
     public class Program
     {
-
         public static void Main(string[] args)
         {
             //PgSqlConnect();
@@ -53,20 +52,20 @@ namespace MainNS
             //}
             #endregion
 
-
             //PgClearData("testTabel1");
             //PgInsertData("testTabel1", 100000);
             //PgInsertDataParallel("testTabel1", 100000);
 
             #region Test PG Class
 
-            //var pgSql = new PgSql.PgSql();
-            //pgSql.PgInsertData();
-            //pgSql.PgInsertDataParallel(100);
-
-
+            var pgSql = new PgSql.PgSql();
+            pgSql.PgInsertData();
+            pgSql.PgInsertDataParallel(100);
 
             #endregion
+
+
+
 
 
             Console.ReadKey();
