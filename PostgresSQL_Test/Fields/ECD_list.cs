@@ -6,11 +6,13 @@
         {
             get
             {
-                return $@"CREATE TABLE ""public"".""ECD_list"" (
+                return @"CREATE TABLE ""public"".""ECD_list"" (
                     ""InnerID"" varchar(255) NOT NULL, ""Status"" varchar(255), ""DocsSended"" int8,
                     PRIMARY KEY (""InnerID""));";
             }
         }
+        public static string GetTableName { get { return "ECD_list"; } }
+
         public string InnerID { get; set; }
         public string Status { get; set; }
         public Int16 DocsSended { get;set; }

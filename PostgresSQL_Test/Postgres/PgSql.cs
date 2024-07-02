@@ -19,11 +19,6 @@ namespace SQLTest
 
         public static NpgsqlConnection? _pgConnection;
 
-        //  Main table
-        private static string _tableExchED = "ExchED";
-        // ХЗ что за таблица
-        private static string _tableECD_list = "ECD_list";
-
         string _strConnMain = $"Server={Server};Port={Port};Uid={Uid};Pwd={Password};";
 
         public PgSql() { }
@@ -44,6 +39,7 @@ namespace SQLTest
 
             var dataSourceBuilder = new NpgsqlDataSourceBuilder(_strConnMain);
             var dataSource = dataSourceBuilder.Build();
+
             await using (var sqlConnection = await dataSource.OpenConnectionAsync())
             {
                 if (sqlConnection.State == ConnectionState.Open)
@@ -58,12 +54,12 @@ namespace SQLTest
             }
         }
 
-        public void CheckDatabaseExist(bool CreateIsNotExist = true)
+        public void CheckDatabaseExist()
         {
             string _strConnMain = $"Server={Server};Port={Port};Uid={Uid};Pwd={Password};"; 
         }
 
-        public async void PgSqlCreateDatabase(bool CreateTable = true)
+        public async void PgSqlCreateDatabase(bool CreateTable = false)
         {
             string strComm = @$"CREATE DATABASE {Database} WITH OWNER postgres ENCODING = 'UTF8' CONNECTION LIMIT = -1;";
 
@@ -111,7 +107,7 @@ namespace SQLTest
             {
                 switch (ex.SqlState)
                 {
-                    // DuplicateTable
+                    // DublicateTable
                     case "42P07":
 #if DEBUG
                         Console.WriteLine($"[Msg] => {ex.Message}");
@@ -140,6 +136,12 @@ namespace SQLTest
             }
         }
 
+        /// <summary>
+        /// NOT A DONE
+        /// </summary>
+        /// <param name="sqlConnection"></param>
+        /// <param name="tableName"></param>
+        /// <returns></returns>
         public static bool PgSqlCheckDb(NpgsqlConnection sqlConnection, [Optional] string tableName)
         {
             // Get all tables in current Database
@@ -162,14 +164,15 @@ namespace SQLTest
                         int i = 0;
                         while (reader.Read())
                         {
-                            //Console.WriteLine(reader.FieldCount.ToString());
+#if DEBUG
                             Console.WriteLine($"[{i++}]\t{reader.GetString(0)}");
+#endif
                             if (reader.GetString(0) == tableName)
                             {
 #if DEBUG
                                 Console.WriteLine($"Table is found {reader.GetString(0)}");
-                                return true;
 #endif
+                                return true;
                             }
                         }
                     }
@@ -279,7 +282,9 @@ namespace SQLTest
 #if DEBUG
             var sw = new Stopwatch();
             sw.Start();
+            Console.WriteLine(_tableName);
 #endif
+
             string strCommand = $@"DELETE FROM""public"".""{_tableName}""";
 
             await using (var sqlConnection = new NpgsqlConnection(string.Concat(_strConnMain, "Database=", Database, ";")))

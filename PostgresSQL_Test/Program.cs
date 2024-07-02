@@ -58,8 +58,6 @@ namespace MainNs
             #endregion
 
 
-            var pgSql = new PgSql();
-            PgSql.PgSqlCheckConnection();
 
             Console.ReadKey();
         }
