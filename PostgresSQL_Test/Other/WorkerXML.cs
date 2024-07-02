@@ -30,10 +30,10 @@ namespace PgTest
 #endif
                     string tmpSubfolder = Path.GetFileName(dir);
                     string[] subDir = Directory.GetDirectories(Path.Combine(dir, "files"));
-                    var endPath = Path.Combine(subDir[0], "xml");
+                    //var endPath = Path.Combine(subDir[0], "xml");
 
                     List<string> filesSubfolder = new List<string>();
-                    filesSubfolder.AddRange(Directory.GetFiles(endPath));
+                    filesSubfolder.AddRange(Directory.GetFiles(Path.Combine(subDir[0], "xml")));
 
 #if DEBUG
                     int subIndex = 0;

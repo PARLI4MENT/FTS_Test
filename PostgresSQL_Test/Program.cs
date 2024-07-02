@@ -58,13 +58,8 @@ namespace MainNs
             #endregion
 
 
-            {
-                string str = "C:\\_DestinationFolder\\0be68d4a-444d-4abb-a09f-ce07c9256e30.1f2aa4ac-e439-45f6-b4ce-0a21b4f9fcb9.FreeBinaryDoc.xml";
-
-                string fileName, Id;
-                ExtractXML.ExtractId("", out Id, out fileName);
-                Console.WriteLine($"ID => {Id}\tPath => {fileName}");
-            }
+            var pgSql = new PgSql();
+            PgSql.PgSqlCheckConnection();
 
             Console.ReadKey();
         }

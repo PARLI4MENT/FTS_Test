@@ -1,9 +1,11 @@
 ﻿using Npgsql;
+using Npgsql.Internal.Postgres;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 namespace SQLTest
 {
@@ -11,11 +13,16 @@ namespace SQLTest
     {
         public static string Server { get; private set; } = "localhost";
         public static string Port { get; private set; } = "5432";
-        public static string Database { get; private set; } = "testDB";
+        public static string Database { get; private set; } = "DeclarantPlus";
         public static string Uid { get; private set; } = "postgres";
         public static string Password { get; private set; } = "passwd0105";
 
-        private static string _tableName = "ExchED";
+        public static NpgsqlConnection? _pgConnection;
+
+        //  Main table
+        private static string _tableExchED = "ExchED";
+        // ХЗ что за таблица
+        private static string _tableECD_list = "ECD_list";
 
         string _strConnMain = $"Server={Server};Port={Port};Uid={Uid};Pwd={Password};";
 
@@ -31,19 +38,32 @@ namespace SQLTest
 
         public delegate void PgDataOut(string tableName, int iteration = 100);
 
-        public async void PgSqlConnect()
+        public static async void PgSqlCheckConnection()
         {
+            string _strConnMain = $"Server={Server};Port={Port};Uid={Uid};Pwd={Password};";
+
             var dataSourceBuilder = new NpgsqlDataSourceBuilder(_strConnMain);
             var dataSource = dataSourceBuilder.Build();
-            var sqlConnection = await dataSource.OpenConnectionAsync();
+            await using (var sqlConnection = await dataSource.OpenConnectionAsync())
+            {
+                if (sqlConnection.State == ConnectionState.Open)
+                    Console.WriteLine("Connection state => is Open");
+                else
+                    Console.WriteLine("Connection state => wasn`t Open");
 
-            if (sqlConnection.State == ConnectionState.Open)
-                Console.WriteLine("State => is Open");
-            else
-                Console.WriteLine("State => wasn`t Open");
+                Console.WriteLine($"\nServer => {Server}");
+                Console.WriteLine($"Port => {Port}");
+                Console.WriteLine($"Uid => {Uid}");
+                Console.WriteLine($"Password => {Password}");
+            }
         }
 
-        public async void PgSqlCreateDatabase(bool CreateTable = false)
+        public void CheckDatabaseExist(bool CreateIsNotExist = true)
+        {
+            string _strConnMain = $"Server={Server};Port={Port};Uid={Uid};Pwd={Password};"; 
+        }
+
+        public async void PgSqlCreateDatabase(bool CreateTable = true)
         {
             string strComm = @$"CREATE DATABASE {Database} WITH OWNER postgres ENCODING = 'UTF8' CONNECTION LIMIT = -1;";
 
@@ -59,31 +79,32 @@ namespace SQLTest
                 Debug.WriteLine(sqlConn.State.ToString());
 
                 if (CreateTable)
-                    PgSqlCreateTable();
+                    PgSqlBaseCreateTable();
             }
         }
 
-        public async void PgSqlCreateTable()
+        public async void PgSqlBaseCreateTable()
         {
-            //string strCreateTable = @$"CREATE TABLE ""public"".""{_tableName}"" (
-            //    ""ID"" int4 NOT NULL GENERATED ALWAYS AS IDENTITY (INCREMENT 1), ""test1"" bool, ""test2"" char, ""test3"" varchar(255),
-            //    ""test4"" decimal(10,2), ""test5"" float8, ""test6"" int8, ""test7"" text, ""test8"" varchar(255), ""test9"" varchar(255),
-            //    PRIMARY KEY (""ID""));";
-
-            string strCreateTable = @$"CREATE TABLE ""public"".""{_tableName}"" (""InnerID"" varchar NOT NULL,
-                ""MessageType"" varchar(255), ""EnvelopeID"" varchar, ""CompanySet_key_id"" int4,
-                ""DocumentID"" varchar, ""DocName"" varchar(255), ""DocNum"" varchar(255),
-                ""DocCode"" varchar(255), ""ArchFileName"" varchar(255), PRIMARY KEY(""InnerID""));";
+            /// NOT USE ONLY FOR TEST!
+            /*
+            string strCreateTable = @$"CREATE TABLE ""public"".""{_tableName}"" (
+                ""ID"" int4 NOT NULL GENERATED ALWAYS AS IDENTITY (INCREMENT 1), ""test1"" bool, ""test2"" char, ""test3"" varchar(255),
+                ""test4"" decimal(10,2), ""test5"" float8, ""test6"" int8, ""test7"" text, ""test8"" varchar(255), ""test9"" varchar(255),
+                PRIMARY KEY (""ID""));";
+            */
 
             try
             {
                 await using (var sqlConn = new NpgsqlConnection(string.Concat(_strConnMain, "Database=", Database, ";")))
                 {
                     await sqlConn.OpenAsync();
-                    await using (var sqlComm = new NpgsqlCommand(strCreateTable, sqlConn))
-                    {
+                    /// Create table => ECD_list
+                    await using (var sqlComm = new NpgsqlCommand(Fields.ECD_list.GetSqlCommandCreator, sqlConn))
                         await sqlComm.ExecuteNonQueryAsync();
-                    }
+
+                    /// Create table => ExchED
+                    await using (var sqlComm = new NpgsqlCommand(Fields.ExchED.GetSqlCommandCreator, sqlConn))
+                        await sqlComm.ExecuteNonQueryAsync();
                 }
             }
             catch (NpgsqlException ex)
@@ -126,7 +147,7 @@ namespace SQLTest
             {
                 #region Get tables
                 tableName = "testTabel1";
-                const string listTables = "SELECT table_name FROM information_schema.tables WHERE table_schema='public'";
+                const string listTables = "SELECT * FROM information_schema.tables WHERE table_schema='public'";
                 using (var sqlComm = new NpgsqlCommand(listTables, sqlConnection))
                 {
                     using (var reader = sqlComm.ExecuteReader())
@@ -275,10 +296,10 @@ namespace SQLTest
                     {
                         //Npgsql.PostgresException: '42P01: relation "public.testTable" does not exist
                         case "42P01":
-                            PgSqlCreateTable();
+                            PgSqlBaseCreateTable();
                             break;
                         case "3D000":
-                            PgSqlCreateTable();
+                            PgSqlBaseCreateTable();
                             break;
                         default:
                             break;
