@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
 
-namespace PgSql
+namespace SQLTest
 {
     public class PgSql
     {
@@ -159,6 +159,8 @@ namespace PgSql
             catch (Exception ex) { Console.WriteLine(ex.Message); return false; }
         }
 
+        #region TEST INSERT && INSERT_PARALLEL
+        /*
         public async void PgInsertData(int iteration = 100)
         {
             PgClearData(_tableName);
@@ -226,6 +228,8 @@ namespace PgSql
             Console.WriteLine($"Average => {(long)iteration / (sw.ElapsedMilliseconds / 1000)} q/s");
 #endif
         }
+        */
+        #endregion
 
         private async static void PgRetriveData(NpgsqlConnection sqlConnection)
         {

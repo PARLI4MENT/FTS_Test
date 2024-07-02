@@ -28,44 +28,44 @@ namespace MainNs
 #endif
             string[] listsFile = Directory.GetFiles(pathToInputFolder);
 
-            var regex = new Regex(@"filesList.xml", RegexOptions.IgnoreCase);
+            var regex = new Regex(@"filesList", RegexOptions.IgnoreCase);
+            //var regex = new Regex(@"filesList.xml", RegexOptions.IgnoreCase);
 
-//#if DEBUG
-//            int index = 0;
-//#endif
+            //#if DEBUG
+            int index = 0;
+            //#endif
 
             foreach ( string listFile in listsFile )
             {
                 //Console.WriteLine(Path.GetFileName(listFile));
                 MatchCollection collect = regex.Matches(Path.GetFileName(listFile));
-                if (collect.Count == 0)
+                if (collect.Count > 0)
                 {
 #if DEBUG
-                    Console.WriteLine(Path.GetFileName(listFile));
+                    //Console.WriteLine(Path.GetFileName(listFile));
 #endif
                     lists.Add(listFile);
 
-
                     /// Add per regular expression
-//                    foreach (Match lst in collect)
-//                    {
-//#if DEBUG
-//                        if (lst.Value != "filesList.xml")
-//                        {
+                    foreach (Match lst in collect)
+                    {
+#if DEBUG
+                        if (lst.Value != "filesList.xml")
+                        {
 
-//                            Console.WriteLine($"[{index}] => {lst.Value}\n\t# => {Path.GetFileName(listFile)}");
-//                            index++;
-//                        }
-//#endif
-//                    }
+                            Console.WriteLine($"\t[{index}]  => {Path.GetFileName(listFile)}");
+                            index++;
+                        }
+#endif
+                    }
                 }
             }
 
 
 #if DEBUG
             sw.Stop();
-            Console.WriteLine(@$"Lead time (AddRange) is: {sw.Elapsed}");
-            Console.WriteLine($@"Count => {lists.Count}");
+            Console.WriteLine($"\tLead time (AddRange) is: {sw.Elapsed}");
+            Console.WriteLine($"Count => {lists.Count}");
             Console.WriteLine();
 #endif
 

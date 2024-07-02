@@ -1,14 +1,7 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.VisualBasic;
-using Npgsql;
-using System.Buffers;
-using System.Data;
-using System.Diagnostics;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PostgresSQL_Test.Other;
+using SQLTest;
 
-namespace MainNS
+namespace MainNs
 {
     public class Program
     {
@@ -57,19 +50,24 @@ namespace MainNS
             //PgInsertDataParallel("testTabel1", 100000);
 
             #region Test PG Class
-
-            var pgSql = new PgSql.PgSql();
-            pgSql.PgInsertData();
-            pgSql.PgInsertDataParallel(100);
-
+            //{
+            //    var pgSql = new PgSql();
+            //    pgSql.PgInsertData();
+            //    pgSql.PgInsertDataParallel(100);
+            //}
             #endregion
 
 
+            {
+                string str = "C:\\_DestinationFolder\\0be68d4a-444d-4abb-a09f-ce07c9256e30.1f2aa4ac-e439-45f6-b4ce-0a21b4f9fcb9.FreeBinaryDoc.xml";
 
-
+                string fileName, Id;
+                ExtractXML.ExtractId("", out Id, out fileName);
+                Console.WriteLine($"ID => {Id}\tPath => {fileName}");
+            }
 
             Console.ReadKey();
         }
 
     }
-}
+};

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 
-namespace PostgresSQL_Test.MSSQL
-{
+namespace SQLTest
+{ 
     public class MSQL
     {
         public MSQL()
