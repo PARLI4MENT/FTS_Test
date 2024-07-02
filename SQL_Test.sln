@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SQL_Test", "PostgresSQL_Tes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{BD923331-910F-4784-BF14-6CBEEB48809D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegextMatches", "RegextMatches\RegextMatches.csproj", "{A41E449E-CB83-4BCB-9F6F-76108F67A12C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,9 +19,16 @@ Global
 		{5448BC68-59DB-4833-8FD9-403FE4DA873D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5448BC68-59DB-4833-8FD9-403FE4DA873D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5448BC68-59DB-4833-8FD9-403FE4DA873D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A41E449E-CB83-4BCB-9F6F-76108F67A12C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A41E449E-CB83-4BCB-9F6F-76108F67A12C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A41E449E-CB83-4BCB-9F6F-76108F67A12C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A41E449E-CB83-4BCB-9F6F-76108F67A12C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A41E449E-CB83-4BCB-9F6F-76108F67A12C} = {BD923331-910F-4784-BF14-6CBEEB48809D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC034BBC-14CD-404E-946C-0EFA12833581}

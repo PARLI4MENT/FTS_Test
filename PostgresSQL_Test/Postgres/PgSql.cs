@@ -11,11 +11,11 @@ namespace PgSql
     {
         public static string Server { get; private set; } = "localhost";
         public static string Port { get; private set; } = "5432";
-        public static string Database { get; private set; } = "testdb";
+        public static string Database { get; private set; } = "testDB";
         public static string Uid { get; private set; } = "postgres";
         public static string Password { get; private set; } = "passwd0105";
 
-        private static string _tableName = "testTable";
+        private static string _tableName = "ExchED";
 
         string _strConnMain = $"Server={Server};Port={Port};Uid={Uid};Pwd={Password};";
 
@@ -65,10 +65,15 @@ namespace PgSql
 
         public async void PgSqlCreateTable()
         {
-            string strCreateTable = @$"CREATE TABLE ""public"".""{_tableName}"" (
-                ""ID"" int4 NOT NULL GENERATED ALWAYS AS IDENTITY (INCREMENT 1), ""test1"" bool, ""test2"" char, ""test3"" varchar(255),
-                ""test4"" decimal(10,2), ""test5"" float8, ""test6"" int8, ""test7"" text, ""test8"" varchar(255), ""test9"" varchar(255),
-                PRIMARY KEY (""ID""));";
+            //string strCreateTable = @$"CREATE TABLE ""public"".""{_tableName}"" (
+            //    ""ID"" int4 NOT NULL GENERATED ALWAYS AS IDENTITY (INCREMENT 1), ""test1"" bool, ""test2"" char, ""test3"" varchar(255),
+            //    ""test4"" decimal(10,2), ""test5"" float8, ""test6"" int8, ""test7"" text, ""test8"" varchar(255), ""test9"" varchar(255),
+            //    PRIMARY KEY (""ID""));";
+
+            string strCreateTable = @$"CREATE TABLE ""public"".""{_tableName}"" (""InnerID"" varchar NOT NULL,
+                ""MessageType"" varchar(255), ""EnvelopeID"" varchar, ""CompanySet_key_id"" int4,
+                ""DocumentID"" varchar, ""DocName"" varchar(255), ""DocNum"" varchar(255),
+                ""DocCode"" varchar(255), ""ArchFileName"" varchar(255), PRIMARY KEY(""InnerID""));";
 
             try
             {
