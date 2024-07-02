@@ -28,22 +28,39 @@ namespace MainNs
 #endif
             string[] listsFile = Directory.GetFiles(pathToInputFolder);
 
-            var regex = new Regex(@"(\w).fileList.xml");
-#if DEBUG
-            int index = 0;
-#endif
+            var regex = new Regex(@"filesList.xml", RegexOptions.IgnoreCase);
+
+//#if DEBUG
+//            int index = 0;
+//#endif
+
             foreach ( string listFile in listsFile )
             {
-                MatchCollection collect = regex.Matches(listFile);
-                foreach (Match lst in collect)
+                //Console.WriteLine(Path.GetFileName(listFile));
+                MatchCollection collect = regex.Matches(Path.GetFileName(listFile));
+                if (collect.Count == 0)
                 {
 #if DEBUG
-                    Console.WriteLine($"[{index}] => {lst.Value}");
+                    Console.WriteLine(Path.GetFileName(listFile));
 #endif
+                    lists.Add(listFile);
+
+
+                    /// Add per regular expression
+//                    foreach (Match lst in collect)
+//                    {
+//#if DEBUG
+//                        if (lst.Value != "filesList.xml")
+//                        {
+
+//                            Console.WriteLine($"[{index}] => {lst.Value}\n\t# => {Path.GetFileName(listFile)}");
+//                            index++;
+//                        }
+//#endif
+//                    }
                 }
             }
 
-            //lists.AddRange(Directory.GetFiles(pathToInputFolder));
 
 #if DEBUG
             sw.Stop();
