@@ -5,7 +5,7 @@ using ILogger;
 namespace MainNs
 {
 
-    public class Program
+    public class ILogs_Test
     {
         public static void Main(string[] args)
         {

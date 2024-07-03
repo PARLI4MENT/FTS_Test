@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace RegexMatchesNs
 {
-    public class Program
+    public class RegextMatchers
     {
         public static void Main(string[] args)
         {
