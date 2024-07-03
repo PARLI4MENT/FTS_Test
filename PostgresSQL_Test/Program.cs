@@ -1,5 +1,4 @@
-﻿using PostgresSQL_Test.Other;
-using SQLTest;
+﻿using SQLTest;
 
 namespace MainNs
 {
@@ -7,10 +6,6 @@ namespace MainNs
     {
         public static void Main(string[] args)
         {
-            //PgSqlConnect();
-            //PgSqlCreateDatabase();
-            //PgSqlCreateTable();
-
             /// Dont use
             #region
             //{
@@ -30,7 +25,7 @@ namespace MainNs
             //}
             #endregion
 
-            /// Don`t use
+            /// Dont use
             #region
             //{
             //    var sw = new Stopwatch();
@@ -45,22 +40,14 @@ namespace MainNs
             //}
             #endregion
 
-            //PgClearData("testTabel1");
-            //PgInsertData("testTabel1", 100000);
-            //PgInsertDataParallel("testTabel1", 100000);
+            string pathTemplate = "C:\\_test\\create_doc_in_arch.xml";
+            string pathOut = "C:\\_test\\OUT\\";
+            string pathToArch = "C:\\_test\\arch";
 
-            #region Test PG Class
-            //{
-            //    var pgSql = new PgSql();
-            //    pgSql.PgInsertData();
-            //    pgSql.PgInsertDataParallel(100);
-            //}
-            #endregion
-
-
+            SqlTest.RenamerXML.RootDir = "C:\\_test";
+            SqlTest.RenamerXML.ParseFileByMaskedParallel();
 
             Console.ReadKey();
         }
-
     }
 };

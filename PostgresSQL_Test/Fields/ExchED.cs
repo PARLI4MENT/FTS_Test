@@ -2,6 +2,10 @@
 {
     public class ExchED
     {
+        /// <summary>
+        /// Get string command to Create table into Database
+        /// Default table => "ExchED"
+        /// </summary>
         public static string GetSqlCommandCreator
         {
             get
@@ -12,6 +16,29 @@
                 ""DocCode"" varchar(255), ""ArchFileName"" varchar(255), PRIMARY KEY(""InnerID""));";
             }
         }
+
+        /// <summary>
+        /// Get string command to Insert into Database
+        /// Table name => "ExchED" 
+        /// </summary>
+        /// INSERT INTO "public"."ExchED"
+        /// ("InnerID", "MessageType", "EnvelopeID", "CompanySet_key_id", "DocumentID", "DocName", "DocNum", "DocCode", "ArchFileName")
+        /// VALUES ('InnerID_1', 'MessageType_1', 'EnvelopeID_1', 1, 'DocumentID_1', 'DocName', 'DocNum', 'DocCode', 'ArchFileName_1');
+        public string GetSqlCommandInsert
+        {
+            get
+            {
+                return $@"INSERT INTO ""public"".""ExchED""
+                    (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
+                    ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
+                    VALUES ('{InnerID}', '{MessageType}', '{EnvelopeID}', {CompanySet_key_id}, '{DocumentID}',
+                    '{DocName}', '{DocNum}', '{DocCode}', '{ArchFileName}');";
+            }
+        }
+
+        /// <summary>
+        /// Return table name
+        /// </summary>
         public static string GetTableName { get { return "ExchED"; } }
 
         public string InnerID { get;set; }

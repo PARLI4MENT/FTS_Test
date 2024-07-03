@@ -1,26 +1,22 @@
-﻿using System;
-using System.Diagnostics;
-using System.Reflection.Metadata.Ecma335;
+﻿using System.Diagnostics;
 using System.Text.RegularExpressions;
 
-namespace MainNs
+namespace RegexMatchesNs
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            //var rgx = new Regex(@"(\w).filesList.xml");
-            //MatchCollection matchCollection = rgx.Match();
-
             var tmp = FileList();
 
             Console.ReadKey();
         }
 
-        private static List<string> FileList()
+        public static List<string> FileList()
         {
             string pathToInputFolder = "C:\\_DestinationFolder";
-            var lists = new List<string>();
+            var nonFilesList = new List<string>();
+            var filesLists = new List<string>();
 
 #if DEBUG
             var sw = new Stopwatch();
@@ -29,43 +25,23 @@ namespace MainNs
             string[] listsFile = Directory.GetFiles(pathToInputFolder);
 
             var regex = new Regex(@"filesList", RegexOptions.IgnoreCase);
-            //var regex = new Regex(@"filesList.xml", RegexOptions.IgnoreCase);
-
-            //#if DEBUG
-            int index = 0;
-            //#endif
 
             foreach ( string listFile in listsFile )
             {
-                //Console.WriteLine(Path.GetFileName(listFile));
                 MatchCollection collect = regex.Matches(Path.GetFileName(listFile));
+                // Для не "*filesList.xml"
+                if (collect.Count == 0)
+                    nonFilesList.Add(listFile);
                 if (collect.Count > 0)
-                {
-#if DEBUG
-                    //Console.WriteLine(Path.GetFileName(listFile));
-#endif
-                    lists.Add(listFile);
-
-                    /// Add per regular expression
-                    foreach (Match lst in collect)
-                    {
-#if DEBUG
-                        if (lst.Value != "filesList.xml")
-                        {
-
-                            Console.WriteLine($"\t[{index}]  => {Path.GetFileName(listFile)}");
-                            index++;
-                        }
-#endif
-                    }
-                }
+                    filesLists.Add(listFile);
             }
-
 
 #if DEBUG
             sw.Stop();
-            Console.WriteLine($"\tLead time (AddRange) is: {sw.Elapsed}");
-            Console.WriteLine($"Count => {lists.Count}");
+            Console.WriteLine($"\nLead time (AddRange) is: {sw.Elapsed}");
+            Console.WriteLine($"\tFiles list => {filesLists.Count}");
+            Console.WriteLine($"\tNon files list => {nonFilesList.Count}");
+            Console.WriteLine($"\tTotal => {listsFile.Length}");
             Console.WriteLine();
 #endif
 
@@ -77,7 +53,7 @@ namespace MainNs
             //    indx++;
             //}
 #endif
-            return lists;
+            return nonFilesList;
         }
     }
 }

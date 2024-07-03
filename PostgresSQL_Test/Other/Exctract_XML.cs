@@ -1,7 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.Xml;
 
-namespace PostgresSQL_Test.Other
+namespace SqlTest
 {
     class ExtractXML
     {
