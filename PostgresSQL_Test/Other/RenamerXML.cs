@@ -47,10 +47,10 @@ namespace SqlTest
                 foreach (string file in filesSubfolder)
                 {
 #if DEBUG
-                            Console.WriteLine($"\t[{subIndex}] => {Path.GetFileName(file)}");
+                    Console.WriteLine($"\t[{subIndex}] => {Path.GetFileName(file)}");
 #endif
-                    Task.Run(() => RenameFile(file, tmpSubfolder));
-                    //RenameFile(file, tmpSubfolder);
+                    Task.Run(() =>
+                        File.Move(file, Path.Combine(_dirDestination, string.Concat(tmpSubfolder, ".", Path.GetFileName(file)))));
 #if DEBUG
                     subIndex++;
 #endif
@@ -95,10 +95,11 @@ namespace SqlTest
                 foreach (string file in filesSubfolder)
                 {
 #if DEBUG
-                    Console.WriteLine($"\t[{subIndex}] => {Path.GetFileName(file)}");
+                    Console.WriteLine($"\t[{subIndex}] => {Path.GetFileName(fie)}");
 #endif
-
-                    Task.Run(() => RenameFile(file, tmpSubfolder));
+                    Task.Run(() =>
+                        File.Move(file, Path.Combine(_dirDestination, string.Concat(tmpSubfolder, ".", Path.GetFileName(file))))
+                    );
                     //RenameFile(file, tmpSubfolder);
 #if DEBUG
                     subIndex++;
@@ -111,28 +112,11 @@ namespace SqlTest
             Console.WriteLine($@"Total time: [{sw.Elapsed}]");
         }
 
+
         /// <summary>
-        /// Move and rename targer file
+        /// Для личных нужд
         /// </summary>
-        /// <param name="pathToFile"></param>
-        /// <param name="subName"></param>
-        /// <returns></returns>
-        private static string RenameFile(string pathToFile, string subName)
-        {
-
-#if DEBUG
-            Console.WriteLine($"\t\t[Base path] => " +
-                $"{Path.Combine(Path.GetDirectoryName(pathToFile), Path.GetFileName(pathToFile))}");
-#endif
-            string tmp = Path.Combine(_dirDestination, string.Concat(subName, ".", Path.GetFileName(pathToFile)));
-            File.Move(pathToFile, tmp);
-
-#if DEBUG
-            Console.WriteLine($"\t\t[Dest. path] => {tmp}");
-#endif
-            return tmp;
-        }
-
+        /// <param name="lists"></param>
         public static void OutFilePath(List<string> lists)
         {
             foreach (object item in lists)

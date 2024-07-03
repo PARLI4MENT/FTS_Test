@@ -40,12 +40,16 @@ namespace MainNs
             //}
             #endregion
 
-            string pathTemplate = "C:\\_test\\create_doc_in_arch.xml";
-            string pathOut = "C:\\_test\\OUT\\";
-            string pathToArch = "C:\\_test\\arch";
+            {
+                //string pathTemplate = "C:\\_test\\create_doc_in_arch.xml";
+                //string pathOut = "C:\\_test\\OUT\\";
+                //string pathToArch = "C:\\_test\\arch";
 
-            SqlTest.RenamerXML.RootDir = "C:\\_test";
-            SqlTest.RenamerXML.ParseFileByMaskedParallel();
+                //SqlTest.RenamerXML.RootDir = "C:\\_test";
+                //SqlTest.RenamerXML.ParseFileByMaskedParallel();
+            }
+
+
 
             Console.ReadKey();
         }

@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XML_Test", "XML_Test\XML_Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ILogs_Test", "ILogs_Test\ILogs_Test.csproj", "{3CF52ADD-5F46-4B1D-8876-D4D618F3B57E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvertedCode", "ConvertedCode\ConvertedCode.csproj", "{9E8084B3-E867-4685-A8CE-EE9F33F02E84}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,10 @@ Global
 		{3CF52ADD-5F46-4B1D-8876-D4D618F3B57E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CF52ADD-5F46-4B1D-8876-D4D618F3B57E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CF52ADD-5F46-4B1D-8876-D4D618F3B57E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E8084B3-E867-4685-A8CE-EE9F33F02E84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E8084B3-E867-4685-A8CE-EE9F33F02E84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E8084B3-E867-4685-A8CE-EE9F33F02E84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E8084B3-E867-4685-A8CE-EE9F33F02E84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
