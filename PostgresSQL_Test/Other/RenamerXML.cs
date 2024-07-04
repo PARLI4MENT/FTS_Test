@@ -130,13 +130,13 @@ namespace SqlTest
             Console.WriteLine($"\tBase folder = {baseFolder.Count}");
             Console.WriteLine($"\tParsed files = {subFolder}");
             Console.WriteLine($"\tTotal time: [{sw.Elapsed}]");
-            Console.WriteLine("{\n");
+            Console.WriteLine("}\n");
 
             // Delete non usable base folder
-            Task.Run(() => Delete());
+            //Task.Run(() => Delete());
         }
 
-        public void Delete()
+        private void Delete()
         {
             foreach (var item in Directory.GetDirectories(_dirInput))
             {
