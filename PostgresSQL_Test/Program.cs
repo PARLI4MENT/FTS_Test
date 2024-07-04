@@ -1,4 +1,5 @@
-﻿using SQLTest;
+﻿using SqlTest;
+using SQLTest;
 using System.Configuration;
 using System.Xml;
 
@@ -43,9 +44,10 @@ namespace MainNs
             #endregion
 
 
+            #region Parse internal XML files
             {
                 string pathToInputFile = "C:\\_test\\OUT\\0be68d4a-444d-4abb-a09f-ce07c9256e30.1f2aa4ac-e439-45f6-b4ce-0a21b4f9fcb9.FreeBinaryDoc.xml";
-                string pathTemplate = "C:\\_test\\create_doc_in_arch.xml";
+                const string pathTemplate = "C:\\_test\\create_doc_in_arch.xml";
 
                 var file_xml = new XmlDocument();
                 var archiveXmlDoc = new XmlDocument();
@@ -70,7 +72,7 @@ namespace MainNs
                          */
                         {
                             /// НУЖНО СДЕЛАТЬ !!
-                            PrDocumentName = 
+
                         }
                         break;
 
@@ -258,6 +260,15 @@ namespace MainNs
                 string EnvelopeID = Guid.NewGuid().ToString().ToUpper();
                 string DocumentID = Guid.NewGuid().ToString().ToUpper();
             }
+            #endregion
+
+            #region Parse
+            //{
+            //    var renamer = new RenamerXML();
+            //    renamer.Delete();
+            //    //renamer.ParseFileByMaskedParallel();
+            //}
+            #endregion
 
             Console.ReadKey();
         }

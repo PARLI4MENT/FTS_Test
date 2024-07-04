@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿#define TEST1
+
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
@@ -10,28 +12,30 @@ namespace SqlTest
         static string _rootDir = "C:\\_test\\";
         public static string RootDir { get { return _rootDir; } set { _rootDir = value; } }
 
-        private static string _dirInput = Path.Combine(_rootDir, "arch");
+        private static string _dirInput = Path.Combine(_rootDir, "ParseInput");
 
-        private static string _dirDestination = Path.Combine(_rootDir, "OUT");
+        private static string _dirDestination = Path.Combine(_rootDir, "ParseOutput");
 
         // Убрать в отдельный метод или класс
         /// <summary>
         /// Parse xml`s files by mask
         /// </summary>
-        public static void ParseFileByMasked()
+        public void ParseFileByMasked()
         {
+            // Timer
             var sw = new Stopwatch();
             sw.Start();
 
             var baseFolder = new List<string>();
             baseFolder.AddRange(Directory.GetDirectories(_dirInput).ToList<string>());
 
-#if DEBUG
+#if TEST
             int index = 0;
 #endif
+            int subFolder = 0;
             foreach (var dir in baseFolder)
             {
-#if DEBUG
+#if TEST
                 Console.WriteLine($"[{index}] => {dir}");
 #endif
 
@@ -41,43 +45,56 @@ namespace SqlTest
 
                 List<string> filesSubfolder = new List<string>();
                 filesSubfolder.AddRange(Directory.GetFiles(Path.Combine(subDir[0], "xml")));
-#if DEBUG
-                int subIndex = 0;
+#if TEST
 #endif
                 foreach (string file in filesSubfolder)
                 {
-#if DEBUG
+#if TEST
                     Console.WriteLine($"\t[{subIndex}] => {Path.GetFileName(file)}");
 #endif
+                    subFolder += filesSubfolder.Count;
                     Task.Run(() =>
-                        File.Move(file, Path.Combine(_dirDestination, string.Concat(tmpSubfolder, ".", Path.GetFileName(file)))));
-#if DEBUG
+                        File.Copy(file, Path.Combine(_dirDestination, string.Concat(tmpSubfolder, ".", Path.GetFileName(file)))));
+#if TEST
                     subIndex++;
 #endif
                 }
             }
 
+            // Timer
             sw.Stop();
-            Console.WriteLine("\nOperation => ParseXMLByMaskParallel is DONE!");
-            Console.WriteLine($@"Total time: [{sw.Elapsed}]");
+
+            Console.WriteLine("{");
+            Console.WriteLine("\tOperation => ParseXMLByMask is DONE!");
+            Console.WriteLine($"\tBase folder = {baseFolder.Count}");
+            Console.WriteLine($"\tParsed files = {subFolder}");
+            Console.WriteLine($"\tTotal time: [{sw.Elapsed}]");
+            Console.WriteLine("{\n");
+
+            // Delete non usable base folder
+            Task.Run(() => Delete());
         }
 
         /// <summary>
         /// Parallel parse xml`s files by mask
         /// </summary>
-        public static void ParseFileByMaskedParallel()
+        public void ParseFileByMaskedParallel()
         {
+            // Timer
             Stopwatch sw = new Stopwatch();
             sw.Start();
+            
+            // Переписать на string[]
             var baseFolder = new List<string>();
             baseFolder.AddRange(Directory.GetDirectories(_dirInput).ToList<string>());
 
-#if DEBUG
+#if TEST
             int index = 0;
 #endif
+            int subFolder = 0;
             Parallel.ForEach(baseFolder, dir =>
             {
-#if DEBUG
+#if TEST
                 Console.WriteLine($"[{index}] => {dir}");
 #endif
 
@@ -88,28 +105,43 @@ namespace SqlTest
                 List<string> filesSubfolder = new List<string>();
                 filesSubfolder.AddRange(Directory.GetFiles(Path.Combine(subDir[0], "xml")));
 
-#if DEBUG
-                int subIndex = 0;
-#endif
 
                 foreach (string file in filesSubfolder)
                 {
-#if DEBUG
+#if TEST
                     Console.WriteLine($"\t[{subIndex}] => {Path.GetFileName(fie)}");
 #endif
+                    subFolder += filesSubfolder.Count;
                     Task.Run(() =>
-                        File.Move(file, Path.Combine(_dirDestination, string.Concat(tmpSubfolder, ".", Path.GetFileName(file))))
+                        File.Copy(file, Path.Combine(_dirDestination, string.Concat(tmpSubfolder, ".", Path.GetFileName(file))))
                     );
                     //RenameFile(file, tmpSubfolder);
-#if DEBUG
+#if TEST
                     subIndex++;
 #endif
                 }
             });
 
+            // Timer
             sw.Stop();
-            Console.WriteLine("\nOperation => ParseXMLByMaskParallel is DONE!");
-            Console.WriteLine($@"Total time: [{sw.Elapsed}]");
+
+            Console.WriteLine("{");
+            Console.WriteLine("\tOperation => ParseXMLByMaskParallel is DONE!");
+            Console.WriteLine($"\tBase folder = {baseFolder.Count}");
+            Console.WriteLine($"\tParsed files = {subFolder}");
+            Console.WriteLine($"\tTotal time: [{sw.Elapsed}]");
+            Console.WriteLine("{\n");
+
+            // Delete non usable base folder
+            Task.Run(() => Delete());
+        }
+
+        public void Delete()
+        {
+            foreach (var item in Directory.GetDirectories(_dirInput))
+            {
+                Directory.Delete(item);
+            }
         }
 
 
