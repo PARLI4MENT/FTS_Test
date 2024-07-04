@@ -84,7 +84,7 @@ namespace MainNs
             var file_xml = new XmlDocument();
             var doc_to_arch = new XmlDocument();
 
-            string PrDocumentName, PrDocumentNumber, PrDocumentDate, DocCode, DocName;
+            string? PrDocumentName = "", PrDocumentNumber, PrDocumentDate, DocCode = "", DocName;
 
             string NewDocToArchName = Path.Combine(FileInFolder, Path.GetFileName(FileName));
             File.Copy(FileTemplate, NewDocToArchName, true);
@@ -104,10 +104,13 @@ namespace MainNs
                         DocName = "Договор с ТамПред"
                      */
                     {
-                        /// НУЖНО СДЕЛАТЬ !!
+                        /// НУ ХЗ ХЗ
 #if TEST
-                        Console.WriteLine($"Path => [{FileName}]\nDocumentModeID => 1006196E");
-                        CopyFile(FileName, "1006196E ");
+                        PrDocumentName = ((XmlElement)file_xml.GetElementsByTagName("ContractDetails", "*")[0]).GetElementsByTagName("PrDocumentName", "*")[0].InnerText;
+                        PrDocumentNumber = ((XmlElement)file_xml.GetElementsByTagName("ContractDetails", "*")[0]).GetElementsByTagName("PrDocumentNumber", "*")[0].InnerText;
+                        PrDocumentDate = ((XmlElement)file_xml.GetElementsByTagName("ContractDetails", "*")[0]).GetElementsByTagName("PrDocumentDate", "*")[0].InnerText;
+                        DocCode = "11002";
+                        DocName = "Договор с ТамПред";
 #endif
                     }
                     break;
@@ -221,11 +224,27 @@ namespace MainNs
 
             string EnvelopeID = Guid.NewGuid().ToString().ToUpper();
             string DocumentID = Guid.NewGuid().ToString().ToUpper();
+
+            doc_to_arch.GetElementsByTagName("EnvelopeID", "*")[0].InnerText = EnvelopeID;
+            doc_to_arch.GetElementsByTagName("roi:SenderInformation")[0].InnerText = "SenderInformation_TEMP";
+            doc_to_arch.GetElementsByTagName("roi:PreparationDateTime")[0].InnerText = DateTime.Now.ToString("s") + DateTime.Now.ToString("zzz");
+            doc_to_arch.GetElementsByTagName("ParticipantID")[0].InnerText = "ParticipantID";
+            doc_to_arch.GetElementsByTagName("CustomsCode")[0].InnerText = "10000000";
+            doc_to_arch.GetElementsByTagName("X509Certificate")[0].InnerText = "X509Certificate_TEMP";
+            doc_to_arch.GetElementsByTagName("ct:DocumentID")[0].InnerText = (Guid.NewGuid().ToString()).ToUpper();
+            doc_to_arch.GetElementsByTagName("ct:ArchDeclID")[0].InnerText = "ArchDeclID_TEMP";
+            doc_to_arch.GetElementsByTagName("ct:ArchID")[0].InnerText = "ArchID_TEMP";
+            doc_to_arch.GetElementsByTagName("DocumentID", "*")[1].InnerText = DocumentID;
+            doc_to_arch.GetElementsByTagName("DocCode", "*")[0].InnerText = DocCode;
+            doc_to_arch.GetElementsByTagName("X509Certificate", "*")[0].InnerText = "X509Certificate_TEMP *";
+
+            var tmp = ((XmlElement)doc_to_arch.GetElementsByTagName("DocBaseInfo", "*")[0]).GetElementsByTagName("PrDocumentName", "*")[0].InnerText = PrDocumentName;
         }
+
+
         private static void CopyFile(string pathFile, string str = "")
         {
             File.Copy(pathFile, Path.Combine("C:\\_test\\_test", String.Concat(str, Path.GetFileName(pathFile))));
-
         }
     }
 }
