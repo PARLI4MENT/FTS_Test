@@ -7,6 +7,7 @@ namespace MainNs
 {
     public class Program
     {
+
         public static void Main(string[] args)
         {
             /// Dont use
@@ -43,7 +44,6 @@ namespace MainNs
             //}
             #endregion
 
-
             //{
             //    string[] pathsFiles = Directory.GetFiles("C:\\_test\\ParseOutput");
 
@@ -70,6 +70,7 @@ namespace MainNs
         private static void ParseXML(string FileName)
         {
             string FileInFolder = "C:\\_test\\_test\\DOCS_TO_ARCH";
+            string FileOutFolder = "C:\\_test\\_test\\OUT;";
             const string FileTemplate = "C:\\_test\\create_doc_in_arch.xml";
 
             const int Company_key_id = 1;
@@ -84,7 +85,7 @@ namespace MainNs
             var file_xml = new XmlDocument();
             var doc_to_arch = new XmlDocument();
 
-            string? PrDocumentName = "", PrDocumentNumber, PrDocumentDate, DocCode = "", DocName;
+            string? PrDocumentName = "", PrDocumentNumber = "", PrDocumentDate = "", DocCode = "", DocName;
 
             string NewDocToArchName = Path.Combine(FileInFolder, Path.GetFileName(FileName));
             File.Copy(FileTemplate, NewDocToArchName, true);
@@ -238,9 +239,30 @@ namespace MainNs
             doc_to_arch.GetElementsByTagName("DocCode", "*")[0].InnerText = DocCode;
             doc_to_arch.GetElementsByTagName("X509Certificate", "*")[0].InnerText = "X509Certificate_TEMP *";
 
-            var tmp = ((XmlElement)doc_to_arch.GetElementsByTagName("DocBaseInfo", "*")[0]).GetElementsByTagName("PrDocumentName", "*")[0].InnerText = PrDocumentName;
+            ((XmlElement)doc_to_arch.GetElementsByTagName("DocBaseInfo", "*")[0]).GetElementsByTagName("PrDocumentName", "*")[0].InnerText = PrDocumentName;
+
+            if (string.IsNullOrEmpty(PrDocumentNumber))
+                doc_to_arch.GetElementsByTagName("DocBaseInfo", "*")[0].RemoveChild(((XmlElement)doc_to_arch.GetElementsByTagName("DocBaseInfo", "*")[0]).GetElementsByTagName("PrDocumentNumber", "*")[0]);
+            else
+                ((XmlElement)doc_to_arch.GetElementsByTagName("DocBaseInfo", "*")[0]).GetElementsByTagName("PrDocumentNumber", "*")[0].InnerText = PrDocumentNumber;
+
+            if (string.IsNullOrEmpty(PrDocumentDate))
+                doc_to_arch.GetElementsByTagName("DocBaseInfo", "*")[0].RemoveChild(((XmlElement)doc_to_arch.GetElementsByTagName("DocBaseInfo", "*")[0]).GetElementsByTagName("PrDocumentDate", "*")[0]);
+            else
+                ((XmlElement)doc_to_arch.GetElementsByTagName("DocBaseInfo", "*")[0]).GetElementsByTagName("PrDocumentDate", "*")[0].InnerText = PrDocumentDate;
+
+            doc_to_arch.Save(NewDocToArchName);
+
+            //SignerXMLFile(NewDocToArchName, NewDocToArchName2, Company_key_id);
+            File.Copy(NewDocToArchName, Path.Combine(FileOutFolder, Path.GetFileName(FileName)), true);
+
+
+
         }
 
+        private static void SignerXMLFile(string newDocToArchName, string newDocToArchName2, int company_key_id)
+        {
+        }
 
         private static void CopyFile(string pathFile, string str = "")
         {
