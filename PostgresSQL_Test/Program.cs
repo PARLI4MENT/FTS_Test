@@ -1,9 +1,8 @@
 ﻿#define TEST 
 
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Xml;
-using SqlTest;
-using SQLTest;
 
 namespace MainNs
 {
@@ -45,37 +44,37 @@ namespace MainNs
 
             //}
             #endregion
-            
+
+            // Renaming rawFiles
+            //SqlTest.RenamerXML renamerXML = new SqlTest.RenamerXML();
+            //renamerXML.RenameAndMoveParallel();
+
             {
                 Console.WriteLine("Start...");
-                var sw  = new Stopwatch();
+                var sw = new Stopwatch();
                 sw.Start();
 
-                string[] allFiles = Directory.GetFiles("C:\\_test\\ParseOutput");
+                string[] allFiles = Directory.GetFiles("C:\\_test\\inputFiles");
                 foreach (string file in allFiles)
-                {
-                    ParseXML(file);
-                }
-                
+                    DataExtraction(file);
+
                 sw.Stop();
                 Console.WriteLine($"Total time: {sw.ElapsedMilliseconds}");
                 Console.WriteLine($"Total counts: {allFiles.Count()}");
                 Console.WriteLine($"AVG time (ms): {sw.ElapsedMilliseconds / allFiles.Count()}");
-                Console.WriteLine($"Total files (DOCS_TO_ARCH): {Directory.GetFiles("C:\\_test\\_test\\DOCS_TO_ARCH").Count()}");
-                Console.WriteLine($"Total files (OUT): {Directory.GetFiles("C:\\_test\\_test\\OUT").Count()}");
+                Console.WriteLine($"Total files (inputFiles): {allFiles.Count()}");
+                Console.WriteLine($"Total files (outputFiles): {Directory.GetFiles("C:\\_test\\outputFiles").Count()}");
             }
 
             Console.ReadKey();
         }
 
-        private static async void ParseXML(string FileName)
+        private static async void DataExtraction(string FileName, bool deletedInputFile = false)
         {
-            try
-            {
-                string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
+                //string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
 
-                string FileInFolder = "C:\\_test\\_test\\DOCS_TO_ARCH";
-                string FileOutFolder = "C:\\_test\\_test\\OUT";
+                string FileInFolder = "C:\\_test\\_test\\inputFiles";
+                string FileOutFolder = "C:\\_test\\_test\\outputFiles";
                 const string FileTemplate = "C:\\_test\\create_doc_in_arch.xml";
 
                 //var sw = new Stopwatch();
@@ -101,24 +100,14 @@ namespace MainNs
                 file_xml.Load(new StringReader(File.ReadAllText(FileName)));
                 switch (file_xml.DocumentElement.GetAttribute("DocumentModeID"))
                 {
-                    //'Договор ТамПред
+                    //Договор ТамПред
                     case "1006196E":
-                        /*
-                            PrDocumentName = DirectCast(file_xml.GetElementsByTagName("ContractDetails", "*")(0), XmlElement).GetElementsByTagName("PrDocumentName", "*")(0).InnerText
-                            PrDocumentNumber = DirectCast(file_xml.GetElementsByTagName("ContractDetails", "*")(0), XmlElement).GetElementsByTagName("PrDocumentNumber", "*")(0).InnerText
-                            PrDocumentDate = DirectCast(file_xml.GetElementsByTagName("ContractDetails", "*")(0), XmlElement).GetElementsByTagName("PrDocumentDate", "*")(0).InnerText
-                            DocCode = "11002"
-                            DocName = "Договор с ТамПред"
-                         */
                         {
-                            /// НУ ХЗ ХЗ
-#if TEST
                             PrDocumentName = ((XmlElement)file_xml.GetElementsByTagName("ContractDetails", "*")[0]).GetElementsByTagName("PrDocumentName", "*")[0].InnerText;
                             PrDocumentNumber = ((XmlElement)file_xml.GetElementsByTagName("ContractDetails", "*")[0]).GetElementsByTagName("PrDocumentNumber", "*")[0].InnerText;
                             PrDocumentDate = ((XmlElement)file_xml.GetElementsByTagName("ContractDetails", "*")[0]).GetElementsByTagName("PrDocumentDate", "*")[0].InnerText;
                             DocCode = "11002";
                             DocName = "Договор с ТамПред";
-#endif
                         }
                         break;
 
@@ -176,7 +165,6 @@ namespace MainNs
                         break;
 
                     //Текстовый документ
-                    // Нет документа для теста
                     case "1006088E":
                         {
                             PrDocumentName = file_xml.GetElementsByTagName("DocumentName")[0].InnerText;
@@ -203,7 +191,6 @@ namespace MainNs
                         break;
 
                     //Расчет Утиль Сбора
-                    // Нет документа для теста
                     case "1002048E":
                         {
                             PrDocumentName = "Расчет утилизационного сбора";
@@ -215,7 +202,6 @@ namespace MainNs
                         break;
 
                     //Коносамент
-                    // Нет документа для теста
                     case "1003202E":
                         {
                             PrDocumentName = "Коносамент";
@@ -229,8 +215,6 @@ namespace MainNs
 
                 doc_to_arch.Load(NewDocToArchName);
 
-                //Dim temp_node As XmlNode = doc_to_arch.ImportNode(file_xml.DocumentElement, True)
-                //doc_to_arch.GetElementsByTagName("Object")(1).AppendChild(temp_node)
                 var temp_node = doc_to_arch.ImportNode(file_xml.DocumentElement, true);
                 doc_to_arch.GetElementsByTagName("Object")[1].AppendChild(temp_node);
 
@@ -268,38 +252,38 @@ namespace MainNs
                 File.Copy(NewDocToArchName, Path.Combine(FileOutFolder, Path.GetFileName(FileName)), true);
 
                 File.AppendAllText("C:\\_test\\Arch_docs.log", "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
-                //sw.Stop();
-                //Console.WriteLine($"Parse & filling filds XML file: {sw.ElapsedMilliseconds}");
-                //sw.Restart();
+            //sw.Stop();
+            //Console.WriteLine($"Parse & filling filds XML file: {sw.ElapsedMilliseconds}");
+            //sw.Restart();
 
-                // Send to DB
-                //{
-                //    await using (var conn = new Npgsql.NpgsqlConnection(_strConnMain))
-                //    {
-                //        await conn.OpenAsync();
-                //        // Нет возможности сделать UPDATE
-                //        using (var comm = new Npgsql.NpgsqlCommand(@$"INSERT INTO ""public"".""ECD_list"" (""InnerID"", ""Status"", ""DocsSended"") VALUES ('{NameArray}', 'Отправка в архив', 1)", conn))
-                //        {
-                //            using (var comm2 = conn.CreateCommand())
-                //            {
-                //                await comm.ExecuteNonQueryAsync();
-                //                // ArchivePathDoc ???
-                //                comm.CommandText = $@"INSERT INTO ""public"".""ExchED""
-                //                    (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
-                //                    ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
-                //                    VALUES ('{NameArray}', 'CMN.00202', '{EnvelopeID}', {Company_key_id}, '{DocumentID}',
-                //                    '{PrDocumentName}', '{PrDocumentNumber}', '{DocCode}', '{Path.GetFileName(NewDocToArchName)}');";
-                //                await comm.ExecuteNonQueryAsync();
-                //            }
-                //        }
-                //    }
-                //}
+            // Send to DB
+            //{
+            //    await using (var conn = new Npgsql.NpgsqlConnection(_strConnMain))
+            //    {
+            //        await conn.OpenAsync();
+            //        // Нет возможности сделать UPDATE
+            //        using (var comm = new Npgsql.NpgsqlCommand(@$"INSERT INTO ""public"".""ECD_list"" (""InnerID"", ""Status"", ""DocsSended"") VALUES ('{NameArray}', 'Отправка в архив', 1)", conn))
+            //        {
+            //            using (var comm2 = conn.CreateCommand())
+            //            {
+            //                await comm.ExecuteNonQueryAsync();
+            //                // ArchivePathDoc ???
+            //                comm.CommandText = $@"INSERT INTO ""public"".""ExchED""
+            //                    (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
+            //                    ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
+            //                    VALUES ('{NameArray}', 'CMN.00202', '{EnvelopeID}', {Company_key_id}, '{DocumentID}',
+            //                    '{PrDocumentName}', '{PrDocumentNumber}', '{DocCode}', '{Path.GetFileName(NewDocToArchName)}');";
+            //                await comm.ExecuteNonQueryAsync();
+            //            }
+            //        }
+            //    }
+            //}
 
-                //sw.Stop();
-                //Console.WriteLine($"Sql query: {sw.ElapsedMilliseconds}");
+            //sw.Stop();
+            //Console.WriteLine($"Sql query: {sw.ElapsedMilliseconds}");
 
-            }
-            catch (Exception ex) { Console.WriteLine(ex.Message); Console.ReadKey(); return; }
+            if (deletedInputFile)
+                File.Delete(NewDocToArchName);
         }
 
 

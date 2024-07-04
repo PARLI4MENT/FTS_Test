@@ -9,19 +9,29 @@ namespace SqlTest
     public class RenamerXML
     {
         [NotNull]
-        static string _rootDir = "C:\\_test\\";
+        static string _rootDir = "C:\\_test";
         public static string RootDir { get { return _rootDir; } set { _rootDir = value; } }
 
-        private static string _dirInput = Path.Combine(_rootDir, "ParseInput");
+        private static string _dirInput = Path.Combine(_rootDir, "rawFiles");
 
-        private static string _dirDestination = Path.Combine(_rootDir, "ParseOutput");
+        private static string _dirDestination = Path.Combine(_rootDir, "inputFiles");
 
-        // Убрать в отдельный метод или класс
         /// <summary>
-        /// Parse xml`s files by mask
+        /// Move & rename xml`s files by mask
         /// </summary>
-        public void ParseFileByMasked()
+        /// <param name="rawFile">Путь к папке с исходными файлами</param>
+        /// <param name="destinationPath">Путь к папке назначения</param>
+        /// <param name="deletedRawFolder">Удалять исходную папку</param>
+        public void RenameAndMove([Optional] string rawFile, [Optional] string destinationPath, bool deletedRawFolder = false)
         {
+            Console.WriteLine("Start rename && move...");
+
+            if (!string.IsNullOrEmpty(rawFile))
+                _dirInput = rawFile;
+
+            if (!string.IsNullOrEmpty(destinationPath))
+                _dirDestination = destinationPath;
+
             // Timer
             var sw = new Stopwatch();
             sw.Start();
@@ -72,14 +82,26 @@ namespace SqlTest
             Console.WriteLine("{\n");
 
             // Delete non usable base folder
-            Task.Run(() => Delete());
+            if (deletedRawFolder)
+                Task.Run(() => Delete());
         }
 
         /// <summary>
-        /// Parallel parse xml`s files by mask
+        /// Parallel move & rename xml`s files by mask
         /// </summary>
-        public void ParseFileByMaskedParallel()
+        /// <param name="rawFile">Путь к папке с исходными файлами</param>
+        /// <param name="destinationPath">Путь к папке назначения</param>
+        /// <param name="deletedRawFolder">Удалять исходную папку</param>
+        public void RenameAndMoveParallel([Optional] string rawFile, [Optional] string destinationPath, bool deletedRawFolder = false)
         {
+            Console.WriteLine("Start rename && move...");
+
+            if (!string.IsNullOrEmpty(rawFile))
+                _dirInput = rawFile;
+
+            if (!string.IsNullOrEmpty(destinationPath))
+                _dirDestination = destinationPath;
+
             // Timer
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -133,9 +155,13 @@ namespace SqlTest
             Console.WriteLine("}\n");
 
             // Delete non usable base folder
-            //Task.Run(() => Delete());
+            if (deletedRawFolder)
+                Task.Run(() => Delete());
         }
 
+        /// <summary>
+        /// Deleted raw folder
+        /// </summary>
         private void Delete()
         {
             foreach (var item in Directory.GetDirectories(_dirInput))
@@ -149,7 +175,7 @@ namespace SqlTest
         /// Для личных нужд
         /// </summary>
         /// <param name="lists"></param>
-        public static void OutFilePath(List<string> lists)
+        protected static void OutFilePath(List<string> lists)
         {
             foreach (object item in lists)
             {
