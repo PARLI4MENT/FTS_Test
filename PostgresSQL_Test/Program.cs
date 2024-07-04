@@ -44,39 +44,54 @@ namespace MainNs
             #endregion
 
 
-            //string[] pathsFiles = Directory.GetFiles("C:\\_test\\ParseOutput");
-
-            //foreach (var filePath in pathsFiles)
             //{
-            //    ParseXML(filePath);
+            //    string[] pathsFiles = Directory.GetFiles("C:\\_test\\ParseOutput");
+
+            //    foreach (var filePath in pathsFiles)
+            //    {
+            //        ParseXML(filePath);
+            //    }
             //}
 
-            #region Parse
             {
-                var renamer = new RenamerXML();
-                renamer.ParseFileByMaskedParallel();
+                ParseXML("C:\\_test\\_test\\1001204E\\00251779-b785-4cc1-92f9-8690174f14fa.92ec414c-ce5f-4cb8-a81c-cb62bcb60780.Passport.xml");
             }
-            #endregion
+
+            //#region Parse
+            //{
+            //    var renamer = new RenamerXML();
+            //    renamer.ParseFileByMaskedParallel();
+            //}
+            //#endregion
 
             Console.ReadKey();
         }
 
-        private static void ParseXML(string pathToXmlFile)
+        private static void ParseXML(string FileName)
         {
-            const string pathTemplate = "C:\\_test\\create_doc_in_arch.xml";
+            string FileInFolder = "C:\\_test\\_test\\DOCS_TO_ARCH";
+            const string FileTemplate = "C:\\_test\\create_doc_in_arch.xml";
+
+            const int Company_key_id = 1;
+
+            string DateStr = FileName + ";";
+
+            File.AppendAllText( "C:\\_test\\Arch_docs.log", "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
 
             // Сделать String.Split
-
+            // Переделать, забирает только первую часть [0]
+            string NameArray = (string)Path.GetFileName(FileName).Split('.')[0];
             var file_xml = new XmlDocument();
-            var archiveXmlDoc = new XmlDocument();
-
-            string _doneXmlFile = "C:\\_test\\ParseOutput";
-            //File.Copy(pathTemplate, Path.Combine(_doneXmlFile, Path.GetFileName(pathToXmlFile)), true);
-
+            var doc_to_arch = new XmlDocument();
 
             string PrDocumentName, PrDocumentNumber, PrDocumentDate, DocCode, DocName;
 
-            file_xml.Load(pathToXmlFile);
+            string NewDocToArchName = Path.Combine(FileInFolder, Path.GetFileName(FileName));
+            File.Copy(FileTemplate, NewDocToArchName, true);
+
+            /// Ошибка Unicode
+            //file_xml.Load(pathToXmlFile);
+            file_xml.Load(new StringReader(File.ReadAllText(FileName)));
             switch (file_xml.DocumentElement.GetAttribute("DocumentModeID"))
             {
                 //'Договор ТамПред
@@ -91,233 +106,125 @@ namespace MainNs
                     {
                         /// НУЖНО СДЕЛАТЬ !!
 #if TEST
-                        Console.WriteLine($"Path => [{pathToXmlFile}]\nDocumentModeID => 1006196E");
-                        CopyFile(pathToXmlFile);
-
+                        Console.WriteLine($"Path => [{FileName}]\nDocumentModeID => 1006196E");
+                        CopyFile(FileName, "1006196E ");
 #endif
                     }
                     break;
 
                 //Довереность
                 case "1002008E":
-                    /*
-                        PrDocumentName = file_xml.GetElementsByTagName("PrDocumentName")(0).InnerText
-                        PrDocumentNumber = file_xml.GetElementsByTagName("PrDocumentNumber")(0).InnerText
-                        PrDocumentDate = file_xml.GetElementsByTagName("PrDocumentDate")(0).InnerText
-                        DocCode = "11003"
-                        DocName = "Доверенность"
-                     */
                     {
-#if TEST
-                        Console.WriteLine($"Path => [{pathToXmlFile}]\nDocumentModeID => 1002008E");
-
-#endif
-
-                        //PrDocumentName = file_xml.GetElementsByTagName("PrDocumentName")[0].InnerText;
-                        //PrDocumentNumber = file_xml.GetElementsByTagName("PrDocumentNumber")[0].InnerText;
-                        //PrDocumentDate = file_xml.GetElementsByTagName("PrDocumentDate")[0].InnerText;
-                        //DocCode = "11003";
-                        //DocName = "Доверенность";
+                        PrDocumentName = file_xml.GetElementsByTagName("PrDocumentName")[0].InnerText;
+                        PrDocumentNumber = file_xml.GetElementsByTagName("PrDocumentNumber")[0].InnerText;
+                        PrDocumentDate = file_xml.GetElementsByTagName("PrDocumentDate")[0].InnerText;
+                        DocCode = "11003";
+                        DocName = "Доверенность";
                     }
                     break;
 
                 //Паспорт
                 case "1001204E":
-                    /*
-                        PrDocumentName = "Паспорт гражданина РФ"
-                        PrDocumentNumber = file_xml.GetElementsByTagName("CardSeries")(0).InnerText
-                        PrDocumentNumber = PrDocumentNumber & " " & file_xml.GetElementsByTagName("CardNumber")(0).InnerText
-                        PrDocumentDate = file_xml.GetElementsByTagName("CardDate")(0).InnerText
-                        DocCode = "11001"
-                        DocName = "Паспорт декларанта"
-                     */
                     {
-#if TEST
-                        Console.WriteLine($"Path => [{pathToXmlFile}]\nDocumentModeID => 1001204E");
-#endif
-
-                        //PrDocumentName = "Паспорт гражданина РФ";
-                        //PrDocumentNumber = $"{file_xml.GetElementsByTagName("CardSeries")[0].InnerText}" +
-                        //    $" {file_xml.GetElementsByTagName("CardNumber")[0].InnerText}";
-                        //PrDocumentDate = file_xml.GetElementsByTagName("CardDate")[0].InnerText;
-                        //DocCode = "11001";
-                        //DocName = "Паспорт декларанта";
+                        PrDocumentName = "Паспорт гражданина РФ";
+                        PrDocumentNumber = $"{file_xml.GetElementsByTagName("CardSeries")[0].InnerText}" +
+                            $" {file_xml.GetElementsByTagName("CardNumber")[0].InnerText}";
+                        PrDocumentDate = file_xml.GetElementsByTagName("CardDate")[0].InnerText;
+                        DocCode = "11001";
+                        DocName = "Паспорт декларанта";
                     }
                     break;
 
                 //Индивидуальная
                 case "1002018E":
-                    /*
-                        PrDocumentName = "Индивидуальная накладная при экспресс перевозке"
-                        PrDocumentNumber = file_xml.GetElementsByTagName("WayBillNumber")(0).InnerText
-                        If file_xml.GetElementsByTagName("DateTime").Count > 0 Then
-                            PrDocumentDate = file_xml.GetElementsByTagName("DateTime")(0).InnerText
-                        Else
-                            PrDocumentDate = ""
-                        End If
-                        DocCode = "02021"
-                        DocName = "Индивидуальная накладная"
-                        file_xml.GetElementsByTagName("InternationalDistribution")(0).InnerText = 1
-                     */
                     {
-#if TEST
-                        Console.WriteLine($"Path => [{pathToXmlFile}]\nDocumentModeID => 1002018E");
-#endif
-
-                        //PrDocumentName = "Индивидуальная накладная при экспресс перевозке";
-                        //PrDocumentNumber = file_xml.GetElementsByTagName("WayBillNumber")[0].InnerText;
-                        //if (file_xml.GetElementsByTagName("DateTime").Count > 0)
-                        //    PrDocumentDate = file_xml.GetElementsByTagName("DateTime")[0].InnerText;
-                        //else
-                        //    PrDocumentDate = "";
-                        //DocCode = "02021";
-                        //DocName = "Индивидуальная накладная";
-                        //file_xml.GetElementsByTagName("InternationalDistribution")[0].InnerText = "1";
+                        PrDocumentName = "Индивидуальная накладная при экспресс перевозке";
+                        PrDocumentNumber = file_xml.GetElementsByTagName("WayBillNumber")[0].InnerText;
+                        if (file_xml.GetElementsByTagName("DateTime").Count > 0)
+                            PrDocumentDate = file_xml.GetElementsByTagName("DateTime")[0].InnerText;
+                        else
+                            PrDocumentDate = "";
+                        DocCode = "02021";
+                        DocName = "Индивидуальная накладная";
+                        file_xml.GetElementsByTagName("InternationalDistribution")[0].InnerText = "1";
                     }
                     break;
 
                 //Графические материалы
                 case "1006110E":
-                    /*
-                        PrDocumentName = file_xml.GetElementsByTagName("PrDocumentName")(0).InnerText
-                        PrDocumentNumber = file_xml.GetElementsByTagName("PrDocumentNumber")(0).InnerText
-                        If file_xml.GetElementsByTagName("PrDocumentDate").Count > 0 Then
-                            If file_xml.GetElementsByTagName("PrDocumentDate")(0).InnerText = "0001-01-01" Then
-                                PrDocumentDate = ""
-                        Else
-                            PrDocumentDate = file_xml.GetElementsByTagName("PrDocumentDate")(0).InnerText
-                        End If
-                        End If
-                        DocCode = "09023"
-                        DocName = "Графические материалы: " & PrDocumentName & " " & PrDocumentNumber
-                        file_xml.GetElementsByTagName("FileData")(0).InnerText = Replace(file_xml.GetElementsByTagName("FileData")(0).InnerText, Chr(13), "")
-                     */
                     {
-#if TEST
-                        Console.WriteLine($"Path => [{pathToXmlFile}]\nDocumentModeID => 1006110E");
-
-#endif
-
-                        //PrDocumentName = file_xml.GetElementsByTagName("PrDocumentName")[0].InnerText;
-                        //PrDocumentNumber = file_xml.GetElementsByTagName("PrDocumentNumber")[0].InnerText;
-                        //PrDocumentDate = file_xml.GetElementsByTagName("PrDocumentDate")[0].InnerText;
-                        //DocCode = "09023";
-                        //DocName = $"Графические материалы: {PrDocumentName} {PrDocumentNumber}";
-                        ////file_xml.GetElementsByTagName("FileData")(0).InnerText 
-                        ////    = Replace(file_xml.GetElementsByTagName("FileData")(0).InnerText, Chr(13), "")
-                        //file_xml.GetElementsByTagName("FileData")[0].InnerText =
-                        //    file_xml.GetElementsByTagName("FileData")[0].InnerText.Replace("\r", "");
+                        PrDocumentName = file_xml.GetElementsByTagName("PrDocumentName")[0].InnerText;
+                        PrDocumentNumber = file_xml.GetElementsByTagName("PrDocumentNumber")[0].InnerText;
+                        PrDocumentDate = file_xml.GetElementsByTagName("PrDocumentDate")[0].InnerText;
+                        DocCode = "09023";
+                        DocName = $"Графические материалы: {PrDocumentName} {PrDocumentNumber}";
+                        //file_xml.GetElementsByTagName("FileData")(0).InnerText 
+                        //    = Replace(file_xml.GetElementsByTagName("FileData")(0).InnerText, Chr(13), "")
+                        file_xml.GetElementsByTagName("FileData")[0].InnerText =
+                            file_xml.GetElementsByTagName("FileData")[0].InnerText.Replace("\r", "");
                     }
                     break;
 
                 //Текстовый документ
+                // Нет документа для теста
                 case "1006088E":
-                    /*
-                        PrDocumentName = file_xml.GetElementsByTagName("DocumentName")(0).InnerText
-                        PrDocumentNumber = file_xml.GetElementsByTagName("DocumentNumber")(0).InnerText
-                        If file_xml.GetElementsByTagName("DocumentDate").Count > 0 Then
-                            PrDocumentDate = file_xml.GetElementsByTagName("DocumentDate")(0).InnerText
-                        End If
-                        If PrDocumentName = "Экспертиза" Then
-                            DocCode = "10023"
-                        Else
-                            DocCode = "09999"
-                        End If
-                        DocName = PrDocumentName
-                     */
                     {
-#if TEST
-                        Console.WriteLine($"Path => [{pathToXmlFile}]\nDocumentModeID => 1006088E");
-
-#endif
-                        //PrDocumentName = file_xml.GetElementsByTagName("DocumentName")[0].InnerText;
-                        //PrDocumentNumber = file_xml.GetElementsByTagName("DocumentNumber")[0].InnerText;
-                        //if (file_xml.GetElementsByTagName("DocumentDate").Count > 0)
-                        //    if (PrDocumentName == "Экспертиза")
-                        //        DocCode = "10023";
-                        //    else
-                        //        DocCode = "09999";
-                        //DocName = PrDocumentName;
+                        PrDocumentName = file_xml.GetElementsByTagName("DocumentName")[0].InnerText;
+                        PrDocumentNumber = file_xml.GetElementsByTagName("DocumentNumber")[0].InnerText;
+                        if (file_xml.GetElementsByTagName("DocumentDate").Count > 0)
+                            if (PrDocumentName == "Экспертиза")
+                                DocCode = "10023";
+                            else
+                                DocCode = "09999";
+                        DocName = PrDocumentName;
                     }
                     break;
 
                 //Инвойс
                 case "1002007E":
-                    /*
-                        PrDocumentName = "Инвойс"
-                        PrDocumentNumber = file_xml.GetElementsByTagName("PrDocumentNumber", "*")(0).InnerText
-                        If file_xml.GetElementsByTagName("PrDocumentDate", "*").Count > 0 Then
-                            PrDocumentDate = file_xml.GetElementsByTagName("PrDocumentDate", "*")(0).InnerText
-                        End If
-                        DocCode = "04021"
-                        DocName = PrDocumentName
-                     */
                     {
-#if TEST
-                        Console.WriteLine($"Path => [{pathToXmlFile}]\nDocumentModeID => 1002007E");
-
-#endif
-                        //PrDocumentName = "Инвойс";
-                        //PrDocumentNumber = file_xml.GetElementsByTagName("PrDocumentNumber", "*")[0].InnerText;
-                        //if (file_xml.GetElementsByTagName("PrDocumentDate", "*").Count > 0)
-                        //    PrDocumentDate = file_xml.GetElementsByTagName("PrDocumentDate", "*")[0].InnerText;
-                        //DocCode = "04021";
-                        //DocName = PrDocumentName;
+                        PrDocumentName = "Инвойс";
+                        PrDocumentNumber = file_xml.GetElementsByTagName("PrDocumentNumber", "*")[0].InnerText;
+                        if (file_xml.GetElementsByTagName("PrDocumentDate", "*").Count > 0)
+                            PrDocumentDate = file_xml.GetElementsByTagName("PrDocumentDate", "*")[0].InnerText;
+                        DocCode = "04021";
+                        DocName = PrDocumentName;
                     }
                     break;
 
                 //Расчет Утиль Сбора
+                // Нет документа для теста
                 case "1002048E":
-                    /*
-                        PrDocumentName = "Расчет утилизационного сбора"
-                        PrDocumentNumber = ""
-                        PrDocumentDate = file_xml.GetElementsByTagName("CalculateDate", "*")(0).InnerText
-                        DocCode = "10064"
-                        DocName = PrDocumentName
-                     */
                     {
-#if TEST
-                        Console.WriteLine($"Path => [{pathToXmlFile}]\nDocumentModeID => 1002048E");
-
-#endif
-                        //PrDocumentName = "Расчет утилизационного сбора";
-                        //PrDocumentNumber = "";
-                        //PrDocumentDate = file_xml.GetElementsByTagName("CalculateDate", "*")[0].InnerText;
-                        //DocCode = "10064";
-                        //DocName = PrDocumentName;
+                        PrDocumentName = "Расчет утилизационного сбора";
+                        PrDocumentNumber = "";
+                        PrDocumentDate = file_xml.GetElementsByTagName("CalculateDate", "*")[0].InnerText;
+                        DocCode = "10064";
+                        DocName = PrDocumentName;
                     }
                     break;
 
                 //Коносамент
+                // Нет документа для теста
                 case "1003202E":
-                    /*
-                        PrDocumentName = "Коносамент"
-                        PrDocumentNumber = file_xml.GetElementsByTagName("PrDocumentNumber", "*")(0).InnerText
-                        PrDocumentDate = file_xml.GetElementsByTagName("PrDocumentDate")(0).InnerText
-                        DocCode = "02011"
-                        DocName = PrDocumentName
-                     */
                     {
-#if TEST
-                        Console.WriteLine($"Path => [{pathToXmlFile}]\nDocumentModeID => 1003202E");
-#endif
-                        //PrDocumentName = "Коносамент";
-                        //PrDocumentNumber = file_xml.GetElementsByTagName("PrDocumentNumber", "*")[0].InnerText;
-                        //PrDocumentDate = file_xml.GetElementsByTagName("PrDocumentDate")[0].InnerText;
-                        //DocCode = "02011";
-                        //DocName = PrDocumentName;
+                        PrDocumentName = "Коносамент";
+                        PrDocumentNumber = file_xml.GetElementsByTagName("PrDocumentNumber", "*")[0].InnerText;
+                        PrDocumentDate = file_xml.GetElementsByTagName("PrDocumentDate")[0].InnerText;
+                        DocCode = "02011";
+                        DocName = PrDocumentName;
                     }
                     break;
             }
 
-            //archiveXmlDoc.Load(Path.Combine(_doneXmlFile, Path.GetFileName(pathToXmlFile)));
+            doc_to_arch.Load(NewDocToArchName);
 
-            //string EnvelopeID = Guid.NewGuid().ToString().ToUpper();
-            //string DocumentID = Guid.NewGuid().ToString().ToUpper();
+            string EnvelopeID = Guid.NewGuid().ToString().ToUpper();
+            string DocumentID = Guid.NewGuid().ToString().ToUpper();
         }
-        private static void CopyFile(string pathFile)
+        private static void CopyFile(string pathFile, string str = "")
         {
-            File.Copy(pathFile, Path.Combine("C:\\_test\\_test", Path.GetFileName(pathFile)));
+            File.Copy(pathFile, Path.Combine("C:\\_test\\_test", String.Concat(str, Path.GetFileName(pathFile))));
 
         }
     }
