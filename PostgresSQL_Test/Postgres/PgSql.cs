@@ -11,9 +11,9 @@ namespace SQLTest
 {
     public class PgSql
     {
-        public static string Server { get; private set; } = "localhost";
-        public static string Port { get; private set; } = "5432";
-        public static string Database { get; private set; } = "DeclarantPlus";
+        public static string Server { get; private set; } = "192.168.0.142";
+        public static string Port { get; private set; } = "5438";
+        public static string Database { get; private set; } = "declarantplus";
         public static string Uid { get; private set; } = "postgres";
         public static string Password { get; private set; } = "passwd0105";
 
@@ -77,6 +77,8 @@ namespace SQLTest
                 if (CreateTable)
                     PgSqlBaseCreateTable();
             }
+
+            /// Npgsql.PostgresException: '42P04: database "declarantplus" already exists'
         }
 
         public async void PgSqlBaseCreateTable()

@@ -3,6 +3,7 @@
 using System.Diagnostics;
 using System.Xml;
 using SqlTest;
+using SQLTest;
 
 namespace MainNs
 {
@@ -44,34 +45,35 @@ namespace MainNs
 
             //}
             #endregion
-
-            //{
-            //    string[] pathsFiles = Directory.GetFiles("C:\\_test\\ParseOutput");
-
-            //    foreach (var filePath in pathsFiles)
-            //    {
-            //        ParseXML(filePath);
-            //    }
-            //}
-
+            
             {
-                ParseXML("C:\\_test\\_test\\1001204E\\00251779-b785-4cc1-92f9-8690174f14fa.92ec414c-ce5f-4cb8-a81c-cb62bcb60780.Passport.xml");
-            }
+                Console.WriteLine("Start...");
+                var sw  = new Stopwatch();
+                sw.Start();
 
-            //#region Parse
-            //{
-            //    var renamer = new RenamerXML();
-            //    renamer.ParseFileByMaskedParallel();
-            //}
-            //#endregion
+                string[] allFiles = Directory.GetFiles("C:\\_test\\ParseOutput");
+                foreach (string file in allFiles)
+                {
+                    ParseXML(file);
+                }
+                
+                sw.Stop();
+                Console.WriteLine($"Total time: {sw.ElapsedMilliseconds}");
+                Console.WriteLine($"Total counts: {allFiles.Count()}");
+                Console.WriteLine($"AVG time (ms): {sw.ElapsedMilliseconds / allFiles.Count()}");
+                Console.WriteLine($"Total files (DOCS_TO_ARCH): {Directory.GetFiles("C:\\_test\\_test\\DOCS_TO_ARCH").Count()}");
+                Console.WriteLine($"Total files (OUT): {Directory.GetFiles("C:\\_test\\_test\\OUT").Count()}");
+            }
 
             Console.ReadKey();
         }
 
-        private static void ParseXML(string FileName)
+        private static async void ParseXML(string FileName)
         {
             try
             {
+                string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
+
                 string FileInFolder = "C:\\_test\\_test\\DOCS_TO_ARCH";
                 string FileOutFolder = "C:\\_test\\_test\\OUT";
                 const string FileTemplate = "C:\\_test\\create_doc_in_arch.xml";
@@ -85,8 +87,6 @@ namespace MainNs
 
                 //File.AppendAllText("C:\\_test\\Arch_docs.log", Environment.NewLine + "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
 
-                // Сделать String.Split
-                // Переделать, забирает только первую часть [0]
                 string NameArray = (string)Path.GetFileName(FileName).Split('.')[0];
                 var file_xml = new XmlDocument();
                 var doc_to_arch = new XmlDocument();
@@ -268,9 +268,38 @@ namespace MainNs
                 File.Copy(NewDocToArchName, Path.Combine(FileOutFolder, Path.GetFileName(FileName)), true);
 
                 File.AppendAllText("C:\\_test\\Arch_docs.log", "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
+                //sw.Stop();
+                //Console.WriteLine($"Parse & filling filds XML file: {sw.ElapsedMilliseconds}");
+                //sw.Restart();
+
+                // Send to DB
+                //{
+                //    await using (var conn = new Npgsql.NpgsqlConnection(_strConnMain))
+                //    {
+                //        await conn.OpenAsync();
+                //        // Нет возможности сделать UPDATE
+                //        using (var comm = new Npgsql.NpgsqlCommand(@$"INSERT INTO ""public"".""ECD_list"" (""InnerID"", ""Status"", ""DocsSended"") VALUES ('{NameArray}', 'Отправка в архив', 1)", conn))
+                //        {
+                //            using (var comm2 = conn.CreateCommand())
+                //            {
+                //                await comm.ExecuteNonQueryAsync();
+                //                // ArchivePathDoc ???
+                //                comm.CommandText = $@"INSERT INTO ""public"".""ExchED""
+                //                    (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
+                //                    ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
+                //                    VALUES ('{NameArray}', 'CMN.00202', '{EnvelopeID}', {Company_key_id}, '{DocumentID}',
+                //                    '{PrDocumentName}', '{PrDocumentNumber}', '{DocCode}', '{Path.GetFileName(NewDocToArchName)}');";
+                //                await comm.ExecuteNonQueryAsync();
+                //            }
+                //        }
+                //    }
+                //}
+
+                //sw.Stop();
+                //Console.WriteLine($"Sql query: {sw.ElapsedMilliseconds}");
 
             }
-            catch (Exception ex) { Console.WriteLine(ex.Message); return; }
+            catch (Exception ex) { Console.WriteLine(ex.Message); Console.ReadKey(); return; }
         }
 
 
