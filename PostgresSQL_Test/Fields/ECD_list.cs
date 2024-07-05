@@ -11,8 +11,8 @@
             get
             {
                 return @"CREATE TABLE ""public"".""ECD_list"" (
-                    ""InnerID"" varchar(255) NOT NULL, ""Status"" varchar(255), ""DocsSended"" int8,
-                    PRIMARY KEY (""InnerID""));";
+                    ""InnerID"" varchar(255) NOT NULL, ""Status"" varchar(255), 
+                    ""DocsSended"" int8 DEFAULT 0, PRIMARY KEY (""InnerID""));";
             }
         }
 

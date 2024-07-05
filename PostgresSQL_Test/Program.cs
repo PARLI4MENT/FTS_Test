@@ -9,8 +9,7 @@ namespace MainNs
 {
     public class Program
     {
-
-        public static async void Main(string[] args)
+        public static void Main(string[] args)
         {
             /// Dont use
             #region
@@ -46,8 +45,7 @@ namespace MainNs
             //}
             #endregion
 
-            /// Renaming rawFiles
-            //{
+            #region Renaming rawFiles
             //    Console.WriteLine("Start...");
             //    var sw = new Stopwatch();
             //    sw.Start();
@@ -61,35 +59,32 @@ namespace MainNs
             //        $"/ {Directory.GetFiles("C:\\_test\\inputFiles").Count()})");
             //    Console.WriteLine($"AVG time (ms): {sw.ElapsedMilliseconds / Directory.GetFiles("C:\\_test\\outputFiles").Count()}");
             //}
-
+            #endregion
 
             /// Extraction xml files
-            {
-                Console.WriteLine("Start...");
-                var sw = new Stopwatch();
-                sw.Start();
+            Console.WriteLine("Start...");
+            var sw = new Stopwatch();
+            sw.Start();
 
-                string[] allFiles = Directory.GetFiles("C:\\_test\\inputFiles");
-                string _strConnMain = $"Server=localhost;Port=5432;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
+            string[] allFiles = Directory.GetFiles("C:\\_test\\inputFiles");
 
-                NpgsqlConnection conn = new NpgsqlConnection(_strConnMain);
-                await conn.OpenAsync();
-                Parallel.ForEach(allFiles, file => { DataExtraction(ref conn, file); });
-                conn.Close();
+            Parallel.ForEach(allFiles, new ParallelOptions { MaxDegreeOfParallelism = 20 }, 
+                file => { DataExtraction(file); });
 
-                sw.Stop();
-                Console.WriteLine($"\nTotal time: {sw.ElapsedMilliseconds}");
-                Console.WriteLine($"Total counts ({Directory.GetFiles("C:\\_test\\outputFiles").Count()} " +
-                    $"/ {Directory.GetFiles("C:\\_test\\inputFiles").Count()})");
-                Console.WriteLine($"AVG time: {allFiles.Count() / (int)(sw.ElapsedMilliseconds / 1000)}," +
-                    $"{sw.ElapsedMilliseconds % 1000} sec");
-            }
+            sw.Stop();
+            Console.WriteLine($"\nTotal time: {sw.ElapsedMilliseconds}");
+            Console.WriteLine($"Total counts ({Directory.GetFiles("C:\\_test\\outputFiles").Count()} " +
+                $"/ {Directory.GetFiles("C:\\_test\\inputFiles").Count()})");
+            Console.WriteLine($"AVG time: {allFiles.Count() / (int)(sw.ElapsedMilliseconds / 1000)}," +
+                $"{sw.ElapsedMilliseconds % 1000} sec");
 
             Console.ReadKey();
         }
 
-        private static void DataExtraction(ref NpgsqlConnection sqlConn, string FileName, bool deletedInputFile = false)
+        private static async void DataExtraction(string FileName, bool deletedInputFile = false)
         {
+            string _strConnMain = $"Server=localhost;Port=5432;Uid=postgres;Pwd=passwd0105;Database=declarantplus;" +
+                $"Connection Idle Lifetime=20;Maximum Pool Size=150;";
 
             string FileInFolder = "C:\\_test\\inputFiles";
             string FileOutFolder = "C:\\_test\\outputFiles";
@@ -276,22 +271,38 @@ namespace MainNs
             //sw.Restart();
 
             //Send to DB
+            try
             {
-                using (var comm = new Npgsql.NpgsqlCommand(@$"INSERT INTO ""public"".""ECD_list"" (""InnerID"", ""Status"", ""DocsSended"") VALUES ('{NameArray}', 'Отправка в архив', 1)", sqlConn))
+                await using (var sqlConn = new NpgsqlConnection(_strConnMain))
                 {
-                    using (var comm2 = sqlConn.CreateCommand())
-                    {
-                        comm.ExecuteNonQuery();
-                        // ArchivePathDoc ???
-                        comm.CommandText = $@"INSERT INTO ""public"".""ExchED""
+                    await sqlConn.OpenAsync();
+                    await using (var comm = new Npgsql.NpgsqlCommand($@"INSERT INTO ""public"".""ExchED""
                                 (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
                                 ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
                                 VALUES ('{NameArray}', 'CMN.00202', '{EnvelopeID}', {Company_key_id}, '{DocumentID}',
-                                '{PrDocumentName}', '{PrDocumentNumber}', '{DocCode}', '{Path.GetFileName(NewDocToArchName)}');";
-                        comm.ExecuteNonQuery();
+                                '{PrDocumentName}', '{PrDocumentNumber}', '{DocCode}', '{Path.GetFileName(NewDocToArchName)}');", sqlConn))
+                    {
+                        await comm.ExecuteNonQueryAsync();
+                        // ArchivePathDoc ???
                     }
                 }
             }
+            catch (Exception ex) { Console.WriteLine(ex.Message); Console.ReadKey(); }
+
+            //await using (var sqlConn = new NpgsqlConnection(_strConnMain))
+            //{
+            //    await sqlConn.OpenAsync();
+            //    await using (var comm = new Npgsql.NpgsqlCommand($@"INSERT INTO ""public"".""ExchED""
+            //                (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
+            //                ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
+            //                VALUES ('{NameArray}', 'CMN.00202', '{EnvelopeID}', {Company_key_id}, '{DocumentID}',
+            //                '{PrDocumentName}', '{PrDocumentNumber}', '{DocCode}', '{Path.GetFileName(NewDocToArchName)}');", sqlConn))
+            //    //(""InnerID"", ""Status"", ""DocsSended"") VALUES ('{NameArray}', 'Отправка в архив', 1)", sqlConn))
+            //    {
+            //        await comm.ExecuteNonQueryAsync();
+            //        // ArchivePathDoc ???
+            //    }
+            //}
 
             //sw.Stop();
             //Console.WriteLine($"Sql query: {sw.ElapsedMilliseconds}");
@@ -301,13 +312,8 @@ namespace MainNs
         }
 
 
-        private static void SignerXMLFile(string newDocToArchName, string newDocToArchName2, int company_key_id)
-        {
-        }
-
-        private static void CopyFile(string pathFile, string str = "")
-        {
-            File.Copy(pathFile, Path.Combine("C:\\_test\\_test", String.Concat(str, Path.GetFileName(pathFile))));
-        }
+        //private static void SignerXMLFile(string newDocToArchName, string newDocToArchName2, int company_key_id)
+        //{
+        //}
     }
 }
