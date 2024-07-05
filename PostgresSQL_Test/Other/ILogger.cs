@@ -13,10 +13,10 @@ namespace ILogger
         /// <param name="logLevel"></param>
         /// <param name="message"></param>
         /// <param name="writeToLogFile"></param>
-        abstract static void Log(LogLevel logLevel, string message, bool writeToLogFile);
+        public void Log(LogLevel logLevel, string message, bool writeToLogFile);
 
         private static string _pathToLogFile;
-        public static abstract string PathToLogFile { get; set; }
+        public static string PathToLogFile { get; set; }
 
         private static bool _openLogFile;
         public static bool OpenLogFile { private get; set; }
@@ -28,7 +28,7 @@ namespace ILogger
     /// <summary>
     /// Class for logging info to Console or/and Log file
     /// </summary>
-    public class ConsoleLogger : ILogger
+    public class ConsoleLogger
     {
         private static bool _openLogFile = false;
         public static bool OpenLogFile

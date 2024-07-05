@@ -73,8 +73,8 @@ namespace MainNs
         {
                 //string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
 
-                string FileInFolder = "C:\\_test\\_test\\inputFiles";
-                string FileOutFolder = "C:\\_test\\_test\\outputFiles";
+                string FileInFolder = "C:\\_test\\inputFiles";
+                string FileOutFolder = "C:\\_test\\outputFiles";
                 const string FileTemplate = "C:\\_test\\create_doc_in_arch.xml";
 
                 //var sw = new Stopwatch();
