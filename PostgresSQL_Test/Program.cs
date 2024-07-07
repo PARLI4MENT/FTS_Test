@@ -2,7 +2,6 @@
 
 using Npgsql;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Xml;
 
 namespace MainNs
@@ -68,11 +67,11 @@ namespace MainNs
 
             string[] allFiles = Directory.GetFiles("C:\\_test\\inputFiles");
 
-            Parallel.ForEach(allFiles, new ParallelOptions { MaxDegreeOfParallelism = 20 }, 
+            Parallel.ForEach(allFiles, new ParallelOptions { MaxDegreeOfParallelism = 20 },
                 file => { DataExtraction(file); });
 
             sw.Stop();
-            Console.WriteLine($"\nTotal time: {sw.ElapsedMilliseconds}");
+            Console.WriteLine($"\nTotal time: {sw.ElapsedMilliseconds / 1000},{sw.ElapsedMilliseconds%1000} sec");
             Console.WriteLine($"Total counts ({Directory.GetFiles("C:\\_test\\outputFiles").Count()} " +
                 $"/ {Directory.GetFiles("C:\\_test\\inputFiles").Count()})");
             Console.WriteLine($"AVG time: {allFiles.Count() / (int)(sw.ElapsedMilliseconds / 1000)}," +
@@ -81,10 +80,11 @@ namespace MainNs
             Console.ReadKey();
         }
 
-        private static async void DataExtraction(string FileName, bool deletedInputFile = false)
+        private static void DataExtraction(string FileName, bool deletedInputFile = false)
         {
-            string _strConnMain = $"Server=localhost;Port=5432;Uid=postgres;Pwd=passwd0105;Database=declarantplus;" +
-                $"Connection Idle Lifetime=20;Maximum Pool Size=150;";
+            //string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;" +
+            //    $"Connection Idle Lifetime=20;Maximum Pool Size=150;";
+            string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
 
             string FileInFolder = "C:\\_test\\inputFiles";
             string FileOutFolder = "C:\\_test\\outputFiles";
@@ -273,22 +273,26 @@ namespace MainNs
             //Send to DB
             try
             {
-                await using (var sqlConn = new NpgsqlConnection(_strConnMain))
+                using (var sqlConn = new NpgsqlConnection(_strConnMain))
                 {
-                    await sqlConn.OpenAsync();
-                    await using (var comm = new Npgsql.NpgsqlCommand($@"INSERT INTO ""public"".""ExchED""
+                    sqlConn.Open();
+                    using (var sqlComm = new Npgsql.NpgsqlCommand())
+                    {
+                        sqlComm.CommandText = $@"INSERT INTO ""public"".""ExchED""
                                 (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
                                 ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
                                 VALUES ('{NameArray}', 'CMN.00202', '{EnvelopeID}', {Company_key_id}, '{DocumentID}',
-                                '{PrDocumentName}', '{PrDocumentNumber}', '{DocCode}', '{Path.GetFileName(NewDocToArchName)}');", sqlConn))
-                    {
-                        await comm.ExecuteNonQueryAsync();
+                                '{PrDocumentName}', '{PrDocumentNumber}', '{DocCode}', '{Path.GetFileName(NewDocToArchName)}');";
+                        sqlComm.Connection = sqlConn;
+                        sqlComm.ExecuteNonQuery();
                         // ArchivePathDoc ???
                     }
+                    sqlConn.Close();
                 }
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); Console.ReadKey(); }
 
+            #region
             //await using (var sqlConn = new NpgsqlConnection(_strConnMain))
             //{
             //    await sqlConn.OpenAsync();
@@ -306,9 +310,35 @@ namespace MainNs
 
             //sw.Stop();
             //Console.WriteLine($"Sql query: {sw.ElapsedMilliseconds}");
+            #endregion
 
             if (deletedInputFile)
                 File.Delete(NewDocToArchName);
+        }
+
+        public static void NpgSqlTest()
+        {
+            string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
+            try
+            {
+                using (var sqlConn = new NpgsqlConnection(_strConnMain))
+                {
+                    sqlConn.Open();
+                    using (var sqlComm = new Npgsql.NpgsqlCommand())
+                    {
+                        sqlComm.CommandText = $@"INSERT INTO ""public"".""ExchED""
+                                (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
+                                ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
+                                VALUES ('NameArray', 'CMN.00202', '{Guid.NewGuid().ToString()}', 1, 'DocumentID',
+                                'PrDocumentName', 'PrDocumentNumber', 'DocCode', 'Path.GetFileName(NewDocToArchName)');";
+                        sqlComm.Connection = sqlConn;
+                        sqlComm.ExecuteNonQuery();
+                        // ArchivePathDoc ???
+                    }
+                    sqlConn.Close();
+                }
+            }
+            catch (Exception ex) { Console.WriteLine(ex.Message); Console.ReadKey(); }
         }
 
 
