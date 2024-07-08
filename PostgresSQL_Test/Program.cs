@@ -3,6 +3,8 @@
 using Npgsql;
 using System.Diagnostics;
 using System.Xml;
+using Microsoft.Data.SqlClient;
+using System.Security;
 
 namespace MainNs
 {
@@ -10,6 +12,19 @@ namespace MainNs
     {
         public static void Main(string[] args)
         {
+            const string _strMssqlCreateTable = @"CREATE TABLE [mainScheme].[Untitled] (
+              [InnerID] nvarchar(255) NULL,
+              [MessageType] nvarchar(255) NULL,
+              [EnvelopeID] nvarchar(255) NOT NULL,
+              [CompanySet_key_id] int NULL,
+              [DocumentID] nvarchar(255) NULL,
+              [DocName] nvarchar(255) NULL,
+              [DocNum] nvarchar(255) NULL,
+              [DocCode] nvarchar NULL,
+              [ArchFileName] varbinary(max) NULL,
+              PRIMARY KEY CLUSTERED ([EnvelopeID])
+                WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+                )";
             /// Dont use
             #region
             //{
@@ -60,27 +75,48 @@ namespace MainNs
             //}
             #endregion
 
+            ///
+            {
+                string _strMssqlConn = @"Server=192.168.0.142,1433;Database=master;User Id=SA;Password=P&sswd0105;Encrypt=True;TrustServerCertificate=True";
+                try
+                {
+                    using (var sqlConn = new SqlConnection(_strMssqlConn))
+                    {
+                        Console.WriteLine(sqlConn.State.ToString());
+                        using (var sqlComm = sqlConn.CreateCommand())
+                        {
+
+                        }
+                        sqlConn.Close();
+                    }
+
+                }
+                catch (Exception ex) { Console.WriteLine(ex.Message); return; }
+            }
+
             /// Extraction xml files
-            Console.WriteLine("Start...");
-            var sw = new Stopwatch();
-            sw.Start();
+            //{
+            //    Console.WriteLine("Start...");
+            //    var sw = new Stopwatch();
+            //    sw.Start();
 
-            string[] allFiles = Directory.GetFiles("C:\\_test\\inputFiles");
+            //    string[] allFiles = Directory.GetFiles("C:\\_test\\inputFiles");
 
-            Parallel.ForEach(allFiles, new ParallelOptions { MaxDegreeOfParallelism = 20 },
-                file => { DataExtraction(file); });
+            //    Parallel.ForEach(allFiles, new ParallelOptions { MaxDegreeOfParallelism = 20 },
+            //        file => { DataExtraction(file); });
 
-            sw.Stop();
-            Console.WriteLine($"\nTotal time: {sw.ElapsedMilliseconds / 1000},{sw.ElapsedMilliseconds%1000} sec");
-            Console.WriteLine($"Total counts ({Directory.GetFiles("C:\\_test\\outputFiles").Count()} " +
-                $"/ {Directory.GetFiles("C:\\_test\\inputFiles").Count()})");
-            Console.WriteLine($"AVG time: {allFiles.Count() / (int)(sw.ElapsedMilliseconds / 1000)}," +
-                $"{sw.ElapsedMilliseconds % 1000} sec");
+            //    sw.Stop();
+            //    Console.WriteLine($"\nTotal time: {sw.ElapsedMilliseconds / 1000},{sw.ElapsedMilliseconds % 1000} sec");
+            //    Console.WriteLine($"Total counts ({Directory.GetFiles("C:\\_test\\outputFiles").Count()} " +
+            //        $"/ {Directory.GetFiles("C:\\_test\\inputFiles").Count()})");
+            //    Console.WriteLine($"AVG time: {allFiles.Count() / (int)(sw.ElapsedMilliseconds / 1000)}," +
+            //        $"{sw.ElapsedMilliseconds % 1000} sec");
+            //}
 
             Console.ReadKey();
         }
 
-        private static void DataExtraction(string FileName, bool deletedInputFile = false)
+        private async static void DataExtraction(string FileName, bool deletedInputFile = false)
         {
             //string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;" +
             //    $"Connection Idle Lifetime=20;Maximum Pool Size=150;";
@@ -270,27 +306,30 @@ namespace MainNs
             //Console.WriteLine($"Parse & filling filds XML file: {sw.ElapsedMilliseconds}");
             //sw.Restart();
 
-            //Send to DB
-            try
+            //Send to PostgresSQL DB
+            await using (var sqlConnection = new SqlConnection())
             {
-                using (var sqlConn = new NpgsqlConnection(_strConnMain))
-                {
-                    sqlConn.Open();
-                    using (var sqlComm = new Npgsql.NpgsqlCommand())
-                    {
-                        sqlComm.CommandText = $@"INSERT INTO ""public"".""ExchED""
-                                (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
-                                ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
-                                VALUES ('{NameArray}', 'CMN.00202', '{EnvelopeID}', {Company_key_id}, '{DocumentID}',
-                                '{PrDocumentName}', '{PrDocumentNumber}', '{DocCode}', '{Path.GetFileName(NewDocToArchName)}');";
-                        sqlComm.Connection = sqlConn;
-                        sqlComm.ExecuteNonQuery();
-                        // ArchivePathDoc ???
-                    }
-                    sqlConn.Close();
-                }
+
+                await sqlConnection.OpenAsync(); 
             }
-            catch (Exception ex) { Console.WriteLine(ex.Message); Console.ReadKey(); }
+
+            //Send to PostgresSQL DB
+            //using (var sqlConn = new NpgsqlConnection(_strConnMain))
+            //{
+            //    sqlConn.Open();
+            //    using (var sqlComm = new Npgsql.NpgsqlCommand())
+            //    {
+            //        sqlComm.CommandText = $@"INSERT INTO ""public"".""ExchED""
+            //                    (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
+            //                    ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
+            //                    VALUES ('{NameArray}', 'CMN.00202', '{EnvelopeID}', {Company_key_id}, '{DocumentID}',
+            //                    '{PrDocumentName}', '{PrDocumentNumber}', '{DocCode}', '{Path.GetFileName(NewDocToArchName)}');";
+            //        sqlComm.Connection = sqlConn;
+            //        sqlComm.ExecuteNonQuery();
+            //        // ArchivePathDoc ???
+            //    }
+            //    sqlConn.Close();
+            //}
 
             #region
             //await using (var sqlConn = new NpgsqlConnection(_strConnMain))
