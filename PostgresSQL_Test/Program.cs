@@ -122,9 +122,6 @@ namespace MainNs
         /// <param name="deletedInputFile"></param>
         private static void DataExtraction(string FileName, bool deletedInputFile = false)
         {
-            //string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;" +
-            //    $"Connection Idle Lifetime=20;Maximum Pool Size=150;";
-            string _strConnMain = $"Server=localhost;Port=5432;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
 
             string FileInFolder = "C:\\_test\\inputFiles";
             string FileOutFolder = "C:\\_test\\outputFiles";
@@ -309,6 +306,9 @@ namespace MainNs
             //File.AppendAllText("C:\\_test\\Arch_docs.log", "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
 
             //Send to PostgresSQL DB
+            //string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;" +
+            //    $"Connection Idle Lifetime=20;Maximum Pool Size=150;";
+            string _strConnMain = $"Server=localhost;Port=5432;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
             using (var sqlConn = new NpgsqlConnection(_strConnMain))
             {
                 sqlConn.Open();
@@ -382,8 +382,8 @@ namespace MainNs
             catch (Exception ex) { Console.WriteLine(ex.Message); Console.ReadKey(); }
         }
 
-        //private static void SignerXMLFile(string newDocToArchName, string newDocToArchName2, int company_key_id)
-        //{
-        //}
+        private static void SignerXMLFile(string newDocToArchName, string newDocToArchName2, int company_key_id)
+        {
+        }
     }
 }
