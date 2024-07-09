@@ -95,6 +95,8 @@ namespace SqlTest
         public void RenameAndMoveParallel([Optional] string rawFile, [Optional] string destinationPath, bool deletedRawFolder = false)
         {
             Console.WriteLine("Start rename && move...");
+            var swRename = new Stopwatch();
+            swRename.Start();
 
             if (!string.IsNullOrEmpty(rawFile))
                 _dirInput = rawFile;
@@ -147,11 +149,17 @@ namespace SqlTest
             // Timer
             sw.Stop();
 
+            //Console.WriteLine($"\tParsed files = {subFolder}");
+
+            swRename.Stop();
             Console.WriteLine("{");
             Console.WriteLine("\tOperation => ParseXMLByMaskParallel is DONE!");
-            Console.WriteLine($"\tBase folder = {baseFolder.Count}");
-            Console.WriteLine($"\tParsed files = {subFolder}");
-            Console.WriteLine($"\tTotal time: [{sw.Elapsed}]");
+            Console.WriteLine($"\nTotal time: {swRename.ElapsedMilliseconds},{swRename.ElapsedMilliseconds%1000} msec");
+            Console.WriteLine($"\tRaw folder with files: {baseFolder.Count}");
+            Console.WriteLine($"Total files ({Directory.GetFiles("C:\\_test\\inputFiles").Count()} " +
+                $"/ {Directory.GetFiles("C:\\_test\\rawFiles").Count()})");
+            Console.WriteLine($"AVG time: {Directory.GetFiles("C:\\_test\\inputFiles").Count() / (int)(swRename.ElapsedMilliseconds / 1000)},"
+                 + $"{swRename.ElapsedMilliseconds % 1000} units");
             Console.WriteLine("}\n");
 
             // Delete non usable base folder

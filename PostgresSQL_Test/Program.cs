@@ -6,6 +6,11 @@ using System.Xml;
 using Microsoft.Data.SqlClient;
 using System.Security;
 
+using GostCryptography.Xml;
+using GostCryptography.Base;
+using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography.Xml;
+
 namespace MainNs
 {
     public class Program
@@ -59,75 +64,71 @@ namespace MainNs
             //}
             #endregion
 
-            #region Renaming rawFiles
-            //    Console.WriteLine("Start...");
-            //    var sw = new Stopwatch();
-            //    sw.Start();
+            //#region Renaming rawFiles
+            //Console.WriteLine("Start process...");
+            //SqlTest.RenamerXML renamerXML = new SqlTest.RenamerXML();
+            //renamerXML.RenameAndMoveParallel();
+            //#endregion
 
-            //    SqlTest.RenamerXML renamerXML = new SqlTest.RenamerXML();
-            //    renamerXML.RenameAndMoveParallel();
+            #region MSSQL Test
+            //{
+            //    string _strMssqlConn = @"Server=192.168.0.142,1433;Database=master;User Id=SA;Password=P&sswd0105;Encrypt=True;TrustServerCertificate=True";
+            //    try
+            //    {
+            //        using (var sqlConn = new SqlConnection(_strMssqlConn))
+            //        {
+            //            Console.WriteLine(sqlConn.State.ToString());
+            //            using (var sqlComm = sqlConn.CreateCommand())
+            //            {
 
-            //    sw.Stop();
-            //    Console.WriteLine($"\nTotal time: {sw.ElapsedMilliseconds}");
-            //    Console.WriteLine($"Total counts ({Directory.GetFiles("C:\\_test\\outputFiles").Count()} " +
-            //        $"/ {Directory.GetFiles("C:\\_test\\inputFiles").Count()})");
-            //    Console.WriteLine($"AVG time (ms): {sw.ElapsedMilliseconds / Directory.GetFiles("C:\\_test\\outputFiles").Count()}");
+            //            }
+            //            sqlConn.Close();
+            //        }
+
+            //    }
+            //    catch (Exception ex) { Console.WriteLine(ex.Message); return; }
             //}
             #endregion
 
-            ///
+            #region PostgresSql Aria Test
             {
-                string _strMssqlConn = @"Server=192.168.0.142,1433;Database=master;User Id=SA;Password=P&sswd0105;Encrypt=True;TrustServerCertificate=True";
-                try
-                {
-                    using (var sqlConn = new SqlConnection(_strMssqlConn))
-                    {
-                        Console.WriteLine(sqlConn.State.ToString());
-                        using (var sqlComm = sqlConn.CreateCommand())
-                        {
+                Console.WriteLine("Start...");
+                var swExtraction = new Stopwatch();
+                swExtraction.Start();
 
-                        }
-                        sqlConn.Close();
-                    }
+                string[] allFiles = Directory.GetFiles("C:\\_test\\inputFiles");
 
-                }
-                catch (Exception ex) { Console.WriteLine(ex.Message); return; }
+                Parallel.ForEach(allFiles, new ParallelOptions { MaxDegreeOfParallelism = 30 },
+                    file => { DataExtraction(file, true); });
+
+                //DataExtraction(Path.Combine("C:\\_test\\inputFiles", "00251779 -b785-4cc1-92f9-8690174f14fa.00cc6f90-d1e8-4332-b65c-85894d8c5a76.WayBillExpressIndividual"));
+
+                swExtraction.Stop();
+                Console.WriteLine($"\nTotal time: {swExtraction.ElapsedMilliseconds / 1000},{swExtraction.ElapsedMilliseconds % 1000} sec");
+                Console.WriteLine($"Total files ({Directory.GetFiles("C:\\_test\\outputFiles").Count()} " +
+                    $"/ {Directory.GetFiles("C:\\_test\\inputFiles").Count()})");
+                Console.WriteLine($"AVG time: {allFiles.Count() / (int)(swExtraction.ElapsedMilliseconds / 1000)}," +
+                    $"{swExtraction.ElapsedMilliseconds % 1000} units");
             }
-
-            /// Extraction xml files
-            //{
-            //    Console.WriteLine("Start...");
-            //    var sw = new Stopwatch();
-            //    sw.Start();
-
-            //    string[] allFiles = Directory.GetFiles("C:\\_test\\inputFiles");
-
-            //    Parallel.ForEach(allFiles, new ParallelOptions { MaxDegreeOfParallelism = 20 },
-            //        file => { DataExtraction(file); });
-
-            //    sw.Stop();
-            //    Console.WriteLine($"\nTotal time: {sw.ElapsedMilliseconds / 1000},{sw.ElapsedMilliseconds % 1000} sec");
-            //    Console.WriteLine($"Total counts ({Directory.GetFiles("C:\\_test\\outputFiles").Count()} " +
-            //        $"/ {Directory.GetFiles("C:\\_test\\inputFiles").Count()})");
-            //    Console.WriteLine($"AVG time: {allFiles.Count() / (int)(sw.ElapsedMilliseconds / 1000)}," +
-            //        $"{sw.ElapsedMilliseconds % 1000} sec");
-            //}
+            #endregion
 
             Console.ReadKey();
         }
 
-        private async static void DataExtraction(string FileName, bool deletedInputFile = false)
+        /// <summary>
+        /// Заполнение, подписание и отправка в БД
+        /// </summary>
+        /// <param name="FileName"></param>
+        /// <param name="deletedInputFile"></param>
+        private static void DataExtraction(string FileName, bool deletedInputFile = false)
         {
             //string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;" +
             //    $"Connection Idle Lifetime=20;Maximum Pool Size=150;";
-            string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
+            string _strConnMain = $"Server=localhost;Port=5432;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
 
             string FileInFolder = "C:\\_test\\inputFiles";
             string FileOutFolder = "C:\\_test\\outputFiles";
             const string FileTemplate = "C:\\_test\\create_doc_in_arch.xml";
-
-            //var sw = new Stopwatch();
-            //sw.Start();
 
             const int Company_key_id = 1;
 
@@ -144,8 +145,7 @@ namespace MainNs
             string NewDocToArchName = Path.Combine(FileInFolder, Path.GetFileName(FileName));
             File.Copy(FileTemplate, NewDocToArchName, true);
 
-            /// Ошибка Unicode
-            //file_xml.Load(pathToXmlFile);
+
             file_xml.Load(new StringReader(File.ReadAllText(FileName)));
             switch (file_xml.DocumentElement.GetAttribute("DocumentModeID"))
             {
@@ -297,39 +297,34 @@ namespace MainNs
 
             doc_to_arch.Save(NewDocToArchName);
 
+            #region SignXmlFile
             //SignerXMLFile(NewDocToArchName, NewDocToArchName2, Company_key_id);
+            {
+
+            }
+            #endregion
+
             File.Copy(NewDocToArchName, Path.Combine(FileOutFolder, Path.GetFileName(FileName)), true);
 
             //File.AppendAllText("C:\\_test\\Arch_docs.log", "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
 
-            //sw.Stop();
-            //Console.WriteLine($"Parse & filling filds XML file: {sw.ElapsedMilliseconds}");
-            //sw.Restart();
-
             //Send to PostgresSQL DB
-            await using (var sqlConnection = new SqlConnection())
+            using (var sqlConn = new NpgsqlConnection(_strConnMain))
             {
-
-                await sqlConnection.OpenAsync(); 
+                sqlConn.Open();
+                using (var sqlComm = new Npgsql.NpgsqlCommand())
+                {
+                    sqlComm.CommandText = $@"INSERT INTO ""public"".""ExchED""
+                                (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
+                                ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
+                                VALUES ('{NameArray}', 'CMN.00202', '{EnvelopeID}', {Company_key_id}, '{DocumentID}',
+                                '{PrDocumentName}', '{PrDocumentNumber}', '{DocCode}', '{Path.GetFileName(NewDocToArchName)}');";
+                    sqlComm.Connection = sqlConn;
+                    sqlComm.ExecuteNonQuery();
+                    // ArchivePathDoc ???
+                }
+                sqlConn.Close();
             }
-
-            //Send to PostgresSQL DB
-            //using (var sqlConn = new NpgsqlConnection(_strConnMain))
-            //{
-            //    sqlConn.Open();
-            //    using (var sqlComm = new Npgsql.NpgsqlCommand())
-            //    {
-            //        sqlComm.CommandText = $@"INSERT INTO ""public"".""ExchED""
-            //                    (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
-            //                    ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
-            //                    VALUES ('{NameArray}', 'CMN.00202', '{EnvelopeID}', {Company_key_id}, '{DocumentID}',
-            //                    '{PrDocumentName}', '{PrDocumentNumber}', '{DocCode}', '{Path.GetFileName(NewDocToArchName)}');";
-            //        sqlComm.Connection = sqlConn;
-            //        sqlComm.ExecuteNonQuery();
-            //        // ArchivePathDoc ???
-            //    }
-            //    sqlConn.Close();
-            //}
 
             #region
             //await using (var sqlConn = new NpgsqlConnection(_strConnMain))
@@ -346,14 +341,21 @@ namespace MainNs
             //        // ArchivePathDoc ???
             //    }
             //}
-
-            //sw.Stop();
-            //Console.WriteLine($"Sql query: {sw.ElapsedMilliseconds}");
             #endregion
 
             if (deletedInputFile)
+            {
+                File.Delete(FileName);
                 File.Delete(NewDocToArchName);
+            }
         }
+
+        //private static void SignerXMLFile()
+        //{
+        //    GostSignedXml signer = new GostSignedXml(doc_to_arch);
+        //    X509Certificate2 cert = new X509Certificate2();
+        //    cert.
+        //}
 
         public static void NpgSqlTest()
         {
@@ -379,7 +381,6 @@ namespace MainNs
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); Console.ReadKey(); }
         }
-
 
         //private static void SignerXMLFile(string newDocToArchName, string newDocToArchName2, int company_key_id)
         //{
