@@ -10,6 +10,7 @@ using GostCryptography.Xml;
 using GostCryptography.Base;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
+using System.Net.Sockets;
 
 namespace MainNs
 {
@@ -91,24 +92,33 @@ namespace MainNs
             #endregion
 
             #region PostgresSql Aria Test
+            //{
+            //    Console.WriteLine("Start...");
+            //    var swExtraction = new Stopwatch();
+            //    swExtraction.Start();
+
+            //    string[] allFiles = Directory.GetFiles("C:\\_test\\inputFiles");
+
+            //    Parallel.ForEach(allFiles, new ParallelOptions { MaxDegreeOfParallelism = 30 },
+            //        file => { DataExtraction(file, true); });
+
+            //    //DataExtraction(Path.Combine("C:\\_test\\inputFiles", "00251779 -b785-4cc1-92f9-8690174f14fa.00cc6f90-d1e8-4332-b65c-85894d8c5a76.WayBillExpressIndividual"));
+
+            //    swExtraction.Stop();
+            //    Console.WriteLine($"\nTotal time: {swExtraction.ElapsedMilliseconds / 1000},{swExtraction.ElapsedMilliseconds % 1000} sec");
+            //    Console.WriteLine($"Total files ({Directory.GetFiles("C:\\_test\\outputFiles").Count()} " +
+            //        $"/ {Directory.GetFiles("C:\\_test\\inputFiles").Count()})");
+            //    Console.WriteLine($"AVG time: {allFiles.Count() / (int)(swExtraction.ElapsedMilliseconds / 1000)}," +
+            //        $"{swExtraction.ElapsedMilliseconds % 1000} units");
+            //}
+            #endregion
+
+            #region Encrypt Certificate
             {
-                Console.WriteLine("Start...");
-                var swExtraction = new Stopwatch();
-                swExtraction.Start();
+                var tmp = SqlTest.CertToSign.SelectedCertificate;
+                Console.WriteLine(tmp.SubjectName.ToString());
 
-                string[] allFiles = Directory.GetFiles("C:\\_test\\inputFiles");
-
-                Parallel.ForEach(allFiles, new ParallelOptions { MaxDegreeOfParallelism = 30 },
-                    file => { DataExtraction(file, true); });
-
-                //DataExtraction(Path.Combine("C:\\_test\\inputFiles", "00251779 -b785-4cc1-92f9-8690174f14fa.00cc6f90-d1e8-4332-b65c-85894d8c5a76.WayBillExpressIndividual"));
-
-                swExtraction.Stop();
-                Console.WriteLine($"\nTotal time: {swExtraction.ElapsedMilliseconds / 1000},{swExtraction.ElapsedMilliseconds % 1000} sec");
-                Console.WriteLine($"Total files ({Directory.GetFiles("C:\\_test\\outputFiles").Count()} " +
-                    $"/ {Directory.GetFiles("C:\\_test\\inputFiles").Count()})");
-                Console.WriteLine($"AVG time: {allFiles.Count() / (int)(swExtraction.ElapsedMilliseconds / 1000)}," +
-                    $"{swExtraction.ElapsedMilliseconds % 1000} units");
+                //SignerXMLFile();
             }
             #endregion
 
@@ -308,23 +318,23 @@ namespace MainNs
             //Send to PostgresSQL DB
             //string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;" +
             //    $"Connection Idle Lifetime=20;Maximum Pool Size=150;";
-            string _strConnMain = $"Server=localhost;Port=5432;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
-            using (var sqlConn = new NpgsqlConnection(_strConnMain))
-            {
-                sqlConn.Open();
-                using (var sqlComm = new Npgsql.NpgsqlCommand())
-                {
-                    sqlComm.CommandText = $@"INSERT INTO ""public"".""ExchED""
-                                (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
-                                ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
-                                VALUES ('{NameArray}', 'CMN.00202', '{EnvelopeID}', {Company_key_id}, '{DocumentID}',
-                                '{PrDocumentName}', '{PrDocumentNumber}', '{DocCode}', '{Path.GetFileName(NewDocToArchName)}');";
-                    sqlComm.Connection = sqlConn;
-                    sqlComm.ExecuteNonQuery();
-                    // ArchivePathDoc ???
-                }
-                sqlConn.Close();
-            }
+            //string _strConnMain = $"Server=localhost;Port=5432;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
+            //using (var sqlConn = new NpgsqlConnection(_strConnMain))
+            //{
+            //    sqlConn.Open();
+            //    using (var sqlComm = new Npgsql.NpgsqlCommand())
+            //    {
+            //        sqlComm.CommandText = $@"INSERT INTO ""public"".""ExchED""
+            //                    (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
+            //                    ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
+            //                    VALUES ('{NameArray}', 'CMN.00202', '{EnvelopeID}', {Company_key_id}, '{DocumentID}',
+            //                    '{PrDocumentName}', '{PrDocumentNumber}', '{DocCode}', '{Path.GetFileName(NewDocToArchName)}');";
+            //        sqlComm.Connection = sqlConn;
+            //        sqlComm.ExecuteNonQuery();
+            //        // ArchivePathDoc ???
+            //    }
+            //    sqlConn.Close();
+            //}
 
             #region
             //await using (var sqlConn = new NpgsqlConnection(_strConnMain))
@@ -350,14 +360,29 @@ namespace MainNs
             }
         }
 
-        //private static void SignerXMLFile()
-        //{
-        //    GostSignedXml signer = new GostSignedXml(doc_to_arch);
-        //    X509Certificate2 cert = new X509Certificate2();
-        //    cert.
-        //}
+        /// <summary>
+        /// Подписание XML-документа
+        /// </summary>
+        /// <param name="newDocToArchName"></param>
+        /// <param name="newDocToArchName2"></param>
+        /// <param name="company_key_id"></param>
+        private static void SignerXMLFile(string newDocToArchName, string newDocToArchName2, int company_key_id) { }
 
-        public static void NpgSqlTest()
+        /// <summary>
+        /// Подписание XML-документа
+        /// </summary>
+        private static void SignerXMLFile()
+        {
+            //GostEncryptedXml gostEncryptedXml = new GostEncryptedXml();
+            //var cert = new X509Certificate2();
+
+            //gostEncryptedXml.Encrypt();
+        }
+
+        /// <summary>
+        /// Для внутренего использования
+        /// </summary>
+        private static void NpgSqlTest()
         {
             string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
             try
@@ -380,10 +405,6 @@ namespace MainNs
                 }
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); Console.ReadKey(); }
-        }
-
-        private static void SignerXMLFile(string newDocToArchName, string newDocToArchName2, int company_key_id)
-        {
         }
     }
 }
