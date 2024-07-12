@@ -1,16 +1,23 @@
 ﻿#define TEST 
 
+//using CryptoPro.Net.Security;
+//using CryptoPro.Net.Http;
+//using CryptoPro.Security;
+//using CryptoPro.Security.Cryptography.Pkcs;
+//using CryptoPro.Security.Cryptography.X509Certificates;
+//using CryptoPro.Security.Cryptography.AuthenticatedEncryption;
+//using CryptoPro.Security.Cryptography.Xml;
+
 using Npgsql;
 using System.Diagnostics;
-using System.Xml;
 using Microsoft.Data.SqlClient;
-using System.Security;
 
-using GostCryptography.Xml;
-using GostCryptography.Base;
+using System.Xml;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
-using System.Net.Sockets;
+
+using GostCryptography.Base;
+using GostCryptography.Xml;
 
 namespace MainNs
 {
@@ -113,16 +120,86 @@ namespace MainNs
             //}
             #endregion
 
-            #region Encrypt Certificate
-            {
-                var tmp = SqlTest.CertToSign.SelectedCertificate;
-                Console.WriteLine(tmp.SubjectName.ToString());
+            #region Encrypt xml
+            string[] listSignFiles = Directory.GetFiles("C:\\_test\\signingFiles");
+            foreach (string signFile in listSignFiles)
+                File.Delete(signFile);
 
-                //SignerXMLFile();
-            }
+            string pathToFile = @"C:\_test\test.xml";
+
+            var cert = SqlTest.CertToSign.SelectSerificate();
+            Console.WriteLine(cert.SubjectName.Name.ToString());
+
+            SignXmlDoc(pathToFile, cert);
             #endregion
 
             Console.ReadKey();
+        }
+
+        /// <summary>
+        /// Пописание XML документа выбранной подписью
+        /// </summary>
+        /// <param name="xmlDoc">Путь к XML документу</param>
+        /// <param name="certificate">Сертификат подписи</param>
+        private static void SignXmlDoc(string pathToFile, X509Certificate2 certificate)
+        {
+            try
+            {
+                var xmlDocument = new XmlDocument();
+                File.Copy(pathToFile, Path.Combine("C:\\_test\\signingFiles", Path.GetFileName(pathToFile)));
+                pathToFile = Path.Combine("C:\\_test\\signingFiles", Path.GetFileName(pathToFile));
+
+                xmlDocument.Load(new StringReader(File.ReadAllText(pathToFile)));
+
+                var signedXml = new GostSignedXml(xmlDocument);
+
+                // Установка ключа для создания подписи
+                signedXml.SetSigningCertificate(certificate);
+
+                var dataReference = new Reference { Uri = "", DigestMethod = GetDigestMethod(certificate) };
+
+                dataReference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
+
+                signedXml.AddReference(dataReference);
+
+                var keyInfo = new KeyInfo();
+                keyInfo.AddClause(new KeyInfoX509Data(certificate));
+                signedXml.KeyInfo = keyInfo;
+
+                signedXml.ComputeSignature();
+
+                var signatureXml = signedXml.GetXml();
+
+                xmlDocument.DocumentElement.AppendChild(xmlDocument.ImportNode(signatureXml, true));
+            }
+            catch(Exception ex) { Console.WriteLine($"!!!! Exception => {ex.Message}"); }
+        }
+
+        private static string GetDigestMethod(X509Certificate2 cert)
+        {
+            using (var publicKey = (GostAsymmetricAlgorithm)cert.GetPublicKeyAlgorithm())
+            {
+                using (var hashAlgorith = publicKey.CreateHashAlgorithm())
+                {
+                    return hashAlgorith.AlgorithmName;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Проверка на подпись
+        /// </summary>
+        /// <param name="signedXmlDoc"></param>
+        /// <returns></returns>
+        private bool VerifyXmlDocumentSignature(XmlDocument signedXmlDoc)
+        {
+            var signedXml = new GostSignedXml(signedXmlDoc);
+
+            var nodeList = signedXmlDoc.GetElementsByTagName("Signature", SignedXml.XmlDsigNamespaceUrl);
+
+            signedXml.LoadXml((XmlElement)nodeList[0]);
+
+            return signedXml.CheckSignature();
         }
 
         /// <summary>
