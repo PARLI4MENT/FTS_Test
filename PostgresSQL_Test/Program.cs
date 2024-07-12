@@ -127,6 +127,7 @@ namespace MainNs
 
             string pathToFile = @"C:\_test\test.xml";
 
+            //SqlTest.CertToSign.SelectSerificate();
             var cert = SqlTest.CertToSign.SelectSerificate();
             Console.WriteLine(cert.SubjectName.Name.ToString());
 
