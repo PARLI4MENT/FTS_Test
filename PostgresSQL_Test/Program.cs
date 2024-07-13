@@ -1,22 +1,13 @@
 ﻿#define TEST 
 
-//using CryptoPro.Net.Security;
-//using CryptoPro.Net.Http;
-//using CryptoPro.Security;
-//using CryptoPro.Security.Cryptography.Pkcs;
-//using CryptoPro.Security.Cryptography.X509Certificates;
-//using CryptoPro.Security.Cryptography.AuthenticatedEncryption;
-//using CryptoPro.Security.Cryptography.Xml;
-
 using Npgsql;
-using System.Diagnostics;
-using Microsoft.Data.SqlClient;
 
-using System.Xml;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
+using System.Xml;
 
 using GostCryptography.Base;
+using GostCryptography.Gost_R3410;
 using GostCryptography.Xml;
 
 namespace MainNs
@@ -127,11 +118,10 @@ namespace MainNs
 
             string pathToFile = @"C:\_test\test.xml";
 
-            //SqlTest.CertToSign.SelectSerificate();
             var cert = SqlTest.CertToSign.SelectSerificate();
             Console.WriteLine(cert.SubjectName.Name.ToString());
 
-            SignXmlDoc(pathToFile, cert);
+            ShouldSignXmlWithGost_R3410_2012_256(pathToFile, cert);
             #endregion
 
             Console.ReadKey();
@@ -142,7 +132,7 @@ namespace MainNs
         /// </summary>
         /// <param name="xmlDoc">Путь к XML документу</param>
         /// <param name="certificate">Сертификат подписи</param>
-        private static void SignXmlDoc(string pathToFile, X509Certificate2 certificate)
+        private static void ShouldSignXmlWithGost_R3410_2012_256(string pathToFile, X509Certificate2 certificate)
         {
             try
             {
@@ -152,28 +142,47 @@ namespace MainNs
 
                 xmlDocument.Load(new StringReader(File.ReadAllText(pathToFile)));
 
-                var signedXml = new GostSignedXml(xmlDocument);
+                Console.WriteLine(certificate.HasPrivateKey);
+                var keyContainer = certificate.GetPrivateKeyInfo();
+                var signingKey = new Gost_R3410_2012_256_AsymmetricAlgorithm(keyContainer);
+                var signedXmlDocument = SignXmlDocument(xmlDocument, new Gost_R3410_2012_256_KeyValue(signingKey));
 
-                // Установка ключа для создания подписи
-                signedXml.SetSigningCertificate(certificate);
-
-                var dataReference = new Reference { Uri = "", DigestMethod = GetDigestMethod(certificate) };
-
-                dataReference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
-
-                signedXml.AddReference(dataReference);
-
-                var keyInfo = new KeyInfo();
-                keyInfo.AddClause(new KeyInfoX509Data(certificate));
-                signedXml.KeyInfo = keyInfo;
-
-                signedXml.ComputeSignature();
-
-                var signatureXml = signedXml.GetXml();
-
-                xmlDocument.DocumentElement.AppendChild(xmlDocument.ImportNode(signatureXml, true));
+                //Assert.IsTrue(VerifyXmlDocumentSignature(signedXmlDocument));
             }
             catch(Exception ex) { Console.WriteLine($"!!!! Exception => {ex.Message}"); }
+        }
+
+        private static XmlDocument SignXmlDocument(XmlDocument xmlDocument, GostKeyValue keyValue)
+        {
+            var signingKey = keyValue.PublicKey;
+
+            // Создание подписчика XML-документа
+            var signedXml = new GostSignedXml(xmlDocument);
+
+            // Установка ключа для создания подписи
+            signedXml.SigningKey = signingKey;
+
+            // Ссылка на узел, который нужно подписать, с указанием алгоритма хэширования
+            var dataReference = new Reference { Uri = "#Id1", DigestMethod = GetDigestMethod(signingKey) };
+
+            // Установка ссылки на узел
+            signedXml.AddReference(dataReference);
+
+            // Установка информации о ключе, который использовался для создания подписи
+            var keyInfo = new KeyInfo();
+            keyInfo.AddClause(keyValue);
+            signedXml.KeyInfo = keyInfo;
+
+            // Вычисление подписи
+            signedXml.ComputeSignature();
+
+            // Получение XML-представления подписи
+            var signatureXml = signedXml.GetXml();
+
+            // Добавление подписи в исходный документ
+            xmlDocument.DocumentElement.AppendChild(xmlDocument.ImportNode(signatureXml, true));
+
+            return xmlDocument;
         }
 
         private static string GetDigestMethod(X509Certificate2 cert)
@@ -184,6 +193,16 @@ namespace MainNs
                 {
                     return hashAlgorith.AlgorithmName;
                 }
+            }
+        }
+
+        private static string GetDigestMethod(GostAsymmetricAlgorithm signingKey)
+        {
+            // Имя алгоритма вычисляем динамически, чтобы сделать код теста универсальным
+
+            using (var hashAlgorithm = signingKey.CreateHashAlgorithm())
+            {
+                return hashAlgorithm.AlgorithmName;
             }
         }
 

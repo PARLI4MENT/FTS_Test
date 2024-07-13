@@ -5,9 +5,10 @@ using System.Runtime.ConstrainedExecution;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
-
 using GostCryptography.Base;
 using GostCryptography.Xml;
+using GostCryptography.Config;
+using CryptoPro.Security.Cryptography;
 
 namespace SqlTest
 {
@@ -23,26 +24,11 @@ namespace SqlTest
 
             var collection = store.Certificates;
             var certTmp = store.Certificates[1];
+            Console.WriteLine(certTmp.GetKeyAlgorithmParametersString());
+            Console.WriteLine((Gost3410CryptoServiceProvider)certTmp.GetKeyAlgorithm());
 
             //var certTmp = X509Certificate2UI.SelectFromCollection(collection, "Select", "Select sertificate to sign", X509SelectionFlag.SingleSelection);
 
-            //Console.WriteLine();
-
-            ////#if DEBUG
-            //foreach (X509Certificate2 cert in collection)
-            //{
-            //    Console.WriteLine($"IssuerName => {cert.IssuerName.ToString()}");
-            //    Console.WriteLine($"IssuerName.Name => {cert.IssuerName.Name}");
-            //    Console.WriteLine($"IssuerName.Oid => {cert.IssuerName.Oid.ToString()}");
-            //    Console.WriteLine($"IssuerName.RawData => {cert.IssuerName.RawData.ToString()}");
-            //    Console.WriteLine($"Subject => {cert.Subject}");
-            //    Console.WriteLine($"SubjectName.Name => {cert.SubjectName.Name}");
-            //    Console.WriteLine($"SubjectName.Oid => {cert.SubjectName.Oid.ToString()}");
-            //    Console.WriteLine($"Version => {cert.Version.ToString()}");
-            //    Console.WriteLine($"GetPrivateKeyAlgorithm => {((GostAsymmetricAlgorithm)cert.GetPrivateKeyAlgorithm()).ToString}");
-            //    Console.WriteLine("");
-            //}
-            //#endif
             store.Close();
 
             //#if DEBUG
