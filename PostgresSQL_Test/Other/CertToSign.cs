@@ -25,7 +25,7 @@ namespace SqlTest
             var collection = store.Certificates;
             var certTmp = store.Certificates[1];
             Console.WriteLine(certTmp.GetKeyAlgorithmParametersString());
-            Console.WriteLine((Gost3410CryptoServiceProvider)certTmp.GetKeyAlgorithm());
+            Console.WriteLine(certTmp.GetKeyAlgorithm());
 
             //var certTmp = X509Certificate2UI.SelectFromCollection(collection, "Select", "Select sertificate to sign", X509SelectionFlag.SingleSelection);
 
