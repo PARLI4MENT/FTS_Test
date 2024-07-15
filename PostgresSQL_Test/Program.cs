@@ -4,9 +4,9 @@ using Npgsql;
 
 using System.Xml;
 using System.Security.Cryptography.X509Certificates;
+using GostCryptography.Xml;
 using GostCryptography.Base;
 using GostCryptography.Config;
-
 
 namespace MainNs
 {
@@ -64,11 +64,11 @@ namespace MainNs
             //}
             #endregion
 
-            //#region Renaming rawFiles
+            #region Renaming rawFiles
             //Console.WriteLine("Start process...");
             //SqlTest.RenamerXML renamerXML = new SqlTest.RenamerXML();
             //renamerXML.RenameAndMoveParallel();
-            //#endregion
+            #endregion
 
             #region MSSQL Test
             //{
@@ -118,11 +118,28 @@ namespace MainNs
             foreach (string signFile in listSignFiles)
                 File.Delete(signFile);
 
-            string pathToFile = @"C:\_test\test.xml";
+            string pathToFile = @"C:\_test\EncryptedXmlExample.xml";
 
-            var cert = FindGostCertificate();
+            var certificate = FindGostCertificate();
+
+            var xmlDocument = new XmlDocument();
+            xmlDocument.Load(new StringReader(File.ReadAllText(pathToFile)));
+            
+            var encryptedXml = new GostEncryptedXml(GostCryptoConfig.ProviderType_2012_1024);
+            var elements = xmlDocument.SelectNodes("//SomeElement[@Encrypt='true']");
 
 
+            if (elements != null)
+            {
+                foreach (XmlElement element in elements)
+                {
+                    // Шифрация элемента
+                    var elementEncryptedData = encryptedXml.Encrypt(element, certificate);
+
+                    // Замена элемента его зашифрованным представлением
+                    GostEncryptedXml.ReplaceElement(element, elementEncryptedData, false);
+                }
+            }
 
             #endregion
 

@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="GostCryptography" Version="2.0.11" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.1" />
   </ItemGroup>
 
 </Project>
