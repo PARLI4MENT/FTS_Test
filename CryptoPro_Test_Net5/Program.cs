@@ -1,26 +1,17 @@
-﻿#define Test
-
-using System.Net.WebSockets;
-using System.Runtime.ConstrainedExecution;
-using System.Security.Cryptography;
+﻿using GostCryptography.Config;
+using GostCryptography.Gost_R3410;
+using System;
 using System.Security.Cryptography.X509Certificates;
 
-using GostCryptography.Base;
-using GostCryptography.Xml;
-using GostCryptography.Config;
-using CryptoPro.Security.Cryptography;
-using GostCryptography.Gost_R3410;
-using Microsoft.IdentityModel.Tokens;
-using Windows.Security.Cryptography.Certificates;
-
-namespace SqlTest
+namespace CryptoPro_Test_Net5
 {
-    public class CertToSign
+    internal class Program
     {
-        private static X509Certificate2 _cert;
-        public static X509Certificate2 SelectedCertificate { get { return _cert; } private set { _cert = SelectSerificate(); } }
-        
-        public static X509Certificate2 SelectSerificate()
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Hello World!");
+        }
+    public static X509Certificate2 SelectSerificate()
         {
             var store = new X509Store("MY", StoreLocation.CurrentUser);
             store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
@@ -50,6 +41,6 @@ namespace SqlTest
 
             return certTmp;
         }
-
     }
+
 }
