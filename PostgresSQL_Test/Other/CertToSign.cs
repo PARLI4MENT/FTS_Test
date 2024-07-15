@@ -12,6 +12,7 @@ using CryptoPro.Security.Cryptography;
 using GostCryptography.Gost_R3410;
 using Microsoft.IdentityModel.Tokens;
 using Windows.Security.Cryptography.Certificates;
+using CryptoPro.Security.Cryptography.Xml;
 
 namespace SqlTest
 {
@@ -22,12 +23,15 @@ namespace SqlTest
         
         public static X509Certificate2 SelectSerificate()
         {
-            var store = new X509Store("MY", StoreLocation.CurrentUser);
+            var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
             store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
 
             var collection = store.Certificates;
-            var certTmp = store.Certificates[1];
-            GostCryptoConfig.ProviderType = (GostCryptography.Base.ProviderType)certTmp.GetPrivateKeyInfo().ProviderType;
+            var cert = store.Certificates[1];
+
+
+
+            //GostCryptoConfig.ProviderType = (GostCryptography.Base.ProviderType)certTmp.GetPrivateKeyInfo().ProviderType;
             Console.WriteLine($"{GostCryptoConfig.ProviderType.ToString()}");
 
             //var certTmp = X509Certificate2UI.SelectFromCollection(collection, "Select", "Select sertificate to sign", X509SelectionFlag.SingleSelection);
@@ -48,7 +52,7 @@ namespace SqlTest
             //            }
             //#endif
 
-            return certTmp;
+            return cert;
         }
 
     }

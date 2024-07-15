@@ -2,13 +2,11 @@
 
 using Npgsql;
 
-using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography.Xml;
 using System.Xml;
-
+using System.Security.Cryptography.X509Certificates;
 using GostCryptography.Base;
-using GostCryptography.Gost_R3410;
-using GostCryptography.Xml;
+using GostCryptography.Config;
+
 
 namespace MainNs
 {
@@ -16,19 +14,22 @@ namespace MainNs
     {
         public static void Main(string[] args)
         {
-            const string _strMssqlCreateTable = @"CREATE TABLE [mainScheme].[Untitled] (
-              [InnerID] nvarchar(255) NULL,
-              [MessageType] nvarchar(255) NULL,
-              [EnvelopeID] nvarchar(255) NOT NULL,
-              [CompanySet_key_id] int NULL,
-              [DocumentID] nvarchar(255) NULL,
-              [DocName] nvarchar(255) NULL,
-              [DocNum] nvarchar(255) NULL,
-              [DocCode] nvarchar NULL,
-              [ArchFileName] varbinary(max) NULL,
-              PRIMARY KEY CLUSTERED ([EnvelopeID])
-                WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
-                )";
+            #region
+            //const string _strMssqlCreateTable = @"CREATE TABLE [mainScheme].[Untitled] (
+            //  [InnerID] nvarchar(255) NULL,
+            //  [MessageType] nvarchar(255) NULL,
+            //  [EnvelopeID] nvarchar(255) NOT NULL,
+            //  [CompanySet_key_id] int NULL,
+            //  [DocumentID] nvarchar(255) NULL,
+            //  [DocName] nvarchar(255) NULL,
+            //  [DocNum] nvarchar(255) NULL,
+            //  [DocCode] nvarchar NULL,
+            //  [ArchFileName] varbinary(max) NULL,
+            //  PRIMARY KEY CLUSTERED ([EnvelopeID])
+            //    WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+            //    )";
+            #endregion
+
             /// Dont use
             #region
             //{
@@ -112,114 +113,43 @@ namespace MainNs
             #endregion
 
             #region Encrypt xml
+
             string[] listSignFiles = Directory.GetFiles("C:\\_test\\signingFiles");
             foreach (string signFile in listSignFiles)
                 File.Delete(signFile);
 
             string pathToFile = @"C:\_test\test.xml";
 
-            var cert = SqlTest.CertToSign.SelectSerificate();
-            Console.WriteLine(cert.SubjectName.Name.ToString());
+            var cert = FindGostCertificate();
 
-            ShouldSignXmlWithGost_R3410_2012_256(pathToFile, cert);
+
+
             #endregion
 
             Console.ReadKey();
         }
 
-        /// <summary>
-        /// Пописание XML документа выбранной подписью
-        /// </summary>
-        /// <param name="xmlDoc">Путь к XML документу</param>
-        /// <param name="certificate">Сертификат подписи</param>
-        private static void ShouldSignXmlWithGost_R3410_2012_256(string pathToFile, X509Certificate2 certificate)
+        public static X509Certificate2 FindGostCertificate(StoreName storeName = StoreName.My, StoreLocation storeLocation = StoreLocation.LocalMachine, Predicate<X509Certificate2> filter = null)
         {
+            var store = new X509Store(storeName, storeLocation);
+            store.Open(OpenFlags.OpenExistingOnly | OpenFlags.ReadOnly);
+
             try
             {
-                var xmlDocument = new XmlDocument();
-                File.Copy(pathToFile, Path.Combine("C:\\_test\\signingFiles", Path.GetFileName(pathToFile)));
-                pathToFile = Path.Combine("C:\\_test\\signingFiles", Path.GetFileName(pathToFile));
-
-                xmlDocument.Load(new StringReader(File.ReadAllText(pathToFile)));
-
-                Console.WriteLine(certificate.HasPrivateKey);
-                var keyContainer = certificate.GetPrivateKeyInfo();
-                var signingKey = new Gost_R3410_2012_256_AsymmetricAlgorithm(keyContainer);
-                var signedXmlDocument = SignXmlDocument(xmlDocument, new Gost_R3410_2012_256_KeyValue(signingKey));
-
-                //Assert.IsTrue(VerifyXmlDocumentSignature(signedXmlDocument));
-            }
-            catch(Exception ex) { Console.WriteLine($"!!!! Exception => {ex.Message}"); }
-        }
-
-        private static XmlDocument SignXmlDocument(XmlDocument xmlDocument, GostKeyValue keyValue)
-        {
-            var signingKey = keyValue.PublicKey;
-
-            // Создание подписчика XML-документа
-            var signedXml = new GostSignedXml(xmlDocument);
-
-            // Установка ключа для создания подписи
-            signedXml.SigningKey = signingKey;
-
-            // Ссылка на узел, который нужно подписать, с указанием алгоритма хэширования
-            var dataReference = new Reference { Uri = "#Id1", DigestMethod = GetDigestMethod(signingKey) };
-
-            // Установка ссылки на узел
-            signedXml.AddReference(dataReference);
-
-            // Установка информации о ключе, который использовался для создания подписи
-            var keyInfo = new KeyInfo();
-            keyInfo.AddClause(keyValue);
-            signedXml.KeyInfo = keyInfo;
-
-            // Вычисление подписи
-            signedXml.ComputeSignature();
-
-            // Получение XML-представления подписи
-            var signatureXml = signedXml.GetXml();
-
-            // Добавление подписи в исходный документ
-            xmlDocument.DocumentElement.AppendChild(xmlDocument.ImportNode(signatureXml, true));
-
-            return xmlDocument;
-        }
-
-        private static string GetDigestMethod(X509Certificate2 cert)
-        {
-            using (var publicKey = (GostAsymmetricAlgorithm)cert.GetPublicKeyAlgorithm())
-            {
-                using (var hashAlgorith = publicKey.CreateHashAlgorithm())
+                foreach (var certificate in store.Certificates)
                 {
-                    return hashAlgorith.AlgorithmName;
+                    if (certificate.HasPrivateKey && certificate.IsGost() && (filter == null || filter(certificate)))
+                    {
+                        return certificate;
+                    }
                 }
             }
-        }
-
-        private static string GetDigestMethod(GostAsymmetricAlgorithm signingKey)
-        {
-            // Имя алгоритма вычисляем динамически, чтобы сделать код теста универсальным
-
-            using (var hashAlgorithm = signingKey.CreateHashAlgorithm())
+            finally
             {
-                return hashAlgorithm.AlgorithmName;
+                store.Close();
             }
-        }
 
-        /// <summary>
-        /// Проверка на подпись
-        /// </summary>
-        /// <param name="signedXmlDoc"></param>
-        /// <returns></returns>
-        private bool VerifyXmlDocumentSignature(XmlDocument signedXmlDoc)
-        {
-            var signedXml = new GostSignedXml(signedXmlDoc);
-
-            var nodeList = signedXmlDoc.GetElementsByTagName("Signature", SignedXml.XmlDsigNamespaceUrl);
-
-            signedXml.LoadXml((XmlElement)nodeList[0]);
-
-            return signedXml.CheckSignature();
+            return null;
         }
 
         /// <summary>
@@ -468,13 +398,7 @@ namespace MainNs
         /// <summary>
         /// Подписание XML-документа
         /// </summary>
-        private static void SignerXMLFile()
-        {
-            //GostEncryptedXml gostEncryptedXml = new GostEncryptedXml();
-            //var cert = new X509Certificate2();
-
-            //gostEncryptedXml.Encrypt();
-        }
+        private static void SignerXMLFile() { }
 
         /// <summary>
         /// Для внутренего использования
