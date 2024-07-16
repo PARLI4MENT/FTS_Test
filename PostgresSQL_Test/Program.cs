@@ -34,25 +34,6 @@ namespace MainNs
             #region
             //{
             //    var sw = new Stopwatch();
-            //    sw.Restart();
-
-            //    var thread = new Thread(() =>
-            //    {
-            //        PgInsertData("testTabel1", 0, 10000);
-            //    });
-
-            //    thread.Start();
-            //    thread.Join();
-
-            //    sw.Stop();
-            //    Console.WriteLine(sw.Elapsed);
-            //}
-            #endregion
-
-            /// Dont use
-            #region
-            //{
-            //    var sw = new Stopwatch();
             //    sw.Start();
             //    sw.Restart();
 
@@ -93,8 +74,6 @@ namespace MainNs
             #region PostgresSql Aria Test
             //{
             //    Console.WriteLine("Start...");
-            //    var swExtraction = new Stopwatch();
-            //    swExtraction.Start();
 
             //    string[] allFiles = Directory.GetFiles("C:\\_test\\inputFiles");
 
@@ -103,7 +82,6 @@ namespace MainNs
 
             //    //DataExtraction(Path.Combine("C:\\_test\\inputFiles", "00251779 -b785-4cc1-92f9-8690174f14fa.00cc6f90-d1e8-4332-b65c-85894d8c5a76.WayBillExpressIndividual"));
 
-            //    swExtraction.Stop();
             //    Console.WriteLine($"\nTotal time: {swExtraction.ElapsedMilliseconds / 1000},{swExtraction.ElapsedMilliseconds % 1000} sec");
             //    Console.WriteLine($"Total files ({Directory.GetFiles("C:\\_test\\outputFiles").Count()} " +
             //        $"/ {Directory.GetFiles("C:\\_test\\inputFiles").Count()})");
