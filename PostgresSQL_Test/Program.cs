@@ -46,9 +46,9 @@ namespace MainNs
             #endregion
 
             #region Renaming rawFiles
-            //Console.WriteLine("Start process...");
-            //SqlTest.RenamerXML renamerXML = new SqlTest.RenamerXML();
-            //renamerXML.RenameAndMoveParallel();
+            Console.WriteLine("Start process...");
+            SqlTest.RenamerXML renamerXML = new SqlTest.RenamerXML();
+            renamerXML.RenameAndMoveParallel();
             #endregion
 
             #region MSSQL Test
@@ -92,32 +92,32 @@ namespace MainNs
 
             #region Encrypt xml
 
-            string[] listSignFiles = Directory.GetFiles("C:\\_test\\signingFiles");
-            foreach (string signFile in listSignFiles)
-                File.Delete(signFile);
+            //string[] listSignFiles = Directory.GetFiles("C:\\_test\\signingFiles");
+            //foreach (string signFile in listSignFiles)
+            //    File.Delete(signFile);
 
-            string pathToFile = @"C:\_test\EncryptedXmlExample.xml";
+            //string pathToFile = @"C:\_test\EncryptedXmlExample.xml";
 
-            var certificate = FindGostCertificate();
+            //var certificate = FindGostCertificate();
 
-            var xmlDocument = new XmlDocument();
-            xmlDocument.Load(new StringReader(File.ReadAllText(pathToFile)));
+            //var xmlDocument = new XmlDocument();
+            //xmlDocument.Load(new StringReader(File.ReadAllText(pathToFile)));
             
-            var encryptedXml = new GostEncryptedXml(GostCryptoConfig.ProviderType_2012_1024);
-            var elements = xmlDocument.SelectNodes("//SomeElement[@Encrypt='true']");
+            //var encryptedXml = new GostEncryptedXml(GostCryptoConfig.ProviderType_2012_1024);
+            //var elements = xmlDocument.SelectNodes("//SomeElement[@Encrypt='true']");
 
 
-            if (elements != null)
-            {
-                foreach (XmlElement element in elements)
-                {
-                    // Шифрация элемента
-                    var elementEncryptedData = encryptedXml.Encrypt(element, certificate);
+            //if (elements != null)
+            //{
+            //    foreach (XmlElement element in elements)
+            //    {
+            //        // Шифрация элемента
+            //        var elementEncryptedData = encryptedXml.Encrypt(element, certificate);
 
-                    // Замена элемента его зашифрованным представлением
-                    GostEncryptedXml.ReplaceElement(element, elementEncryptedData, false);
-                }
-            }
+            //        // Замена элемента его зашифрованным представлением
+            //        GostEncryptedXml.ReplaceElement(element, elementEncryptedData, false);
+            //    }
+            //}
 
             #endregion
 

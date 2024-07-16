@@ -1,9 +1,12 @@
-﻿using GostCryptography.Base;
+﻿#define TEST
+
+using GostCryptography.Base;
 using GostCryptography.Xml;
+using SqlTest;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
@@ -14,35 +17,47 @@ namespace CryptoPro
     {
         static void Main(string[] args)
         {
-            
-
 
             /// Rename file from inputFiles to outputFiles
-            {
-                Console.WriteLine("Start process...");
-                SqlTest.RenamerXML renamerXML = new SqlTest.RenamerXML();
-                renamerXML.RenameAndMoveParallel();
-            }
+            Console.WriteLine("Start process...");
+            SqlTest.RenamerXML renamerXML = new SqlTest.RenamerXML();
+            renamerXML.RenameAndMoveParallel();
+            //RenamerXML.GetLastStatistics();
 
-            string pathXml = @"C:\_test\0be68d4a-444d-4abb-a09f-ce07c9256e30.1f2aa4ac-e439-45f6-b4ce-0a21b4f9fcb9.FreeBinaryDoc.xml";
+            /// Get Certificate
             var certificate = FindGostCertificate();
 
-            /// Remove SignedFiles from singedFiles folder
-            {
-                string[] signedFiles = Directory.GetFiles("");
-                if (signedFiles.Count() != 0)
-                    foreach (var signedFile in signedFiles)
-                        File.Delete(signedFile);
-            }
 
-            string[] outputFile = Directory.GetFiles("C:\\_test\\inputFiles");
-            foreach (string path in outputFile)
+
+            /// Clear SignedFiles from singedFiles folder
+            var signedFiles = Directory.GetFiles("C:\\_test\\signedFiles");
+            if (signedFiles.Count() != 0)
+                foreach (var signedFile in signedFiles)
+                    File.Delete(signedFile);
+
+            string[] inputFiles = Directory.GetFiles("C:\\_test\\inputFiles");
+            Console.WriteLine("Start Signing Xml files from inputFiles folder");
+#if TEST
+            var swSigning = new Stopwatch();
+            swSigning.Start();
+#endif
+            foreach (string path in inputFiles)
             {
                 var signedXml = SignXmlDocument(path, ref certificate);
-                signedXml.Save(Path.Combine("C:\\_test\\signedFiles", ("Signed_" + Path.GetFileName(pathXml))));
+                signedXml.Save(Path.Combine("C:\\_test\\signedFiles", ("Signed_" + Path.GetFileName(path))));
             }
-
-
+            swSigning.Stop();
+#if TEST
+            Console.WriteLine("{");
+            Console.WriteLine("\tOperation => ParseXMLByMaskParallel is DONE!");
+            Console.WriteLine($"\nTotal time: {swSigning.ElapsedMilliseconds},{swSigning.ElapsedMilliseconds % 1000} msec");
+            Console.WriteLine($"\tRaw folder with files: {inputFiles.Count()}");
+            Console.WriteLine($"Total files ({Directory.GetFiles("C:\\_test\\inputFiles").Count()} " +
+                $"/ {Directory.GetFiles("C:\\_test\\rawFiles").Count()})");
+            Console.WriteLine($"AVG time: {Directory.GetFiles("C:\\_test\\inputFiles").Count() / (int)(swSigning.ElapsedMilliseconds / 1000)},"
+                 + $"{swSigning.ElapsedMilliseconds % 1000} units");
+            Console.WriteLine("}\n");
+#endif
             Console.ReadKey();
         }
 

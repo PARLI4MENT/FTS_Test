@@ -7,6 +7,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SqlTest
 {
@@ -19,6 +20,10 @@ namespace SqlTest
 
         private static string _dirDestination = Path.Combine(_rootDir, "inputFiles");
 
+		private static long _elapsedMilliseconds { get; set; }
+        private static int _countRawFiles { get; set; }
+        private static int _subFolder { get; set; }
+
         /// <summary>
         /// Перемещение и переименование Xml-файлов по маске
         /// </summary>
@@ -27,6 +32,14 @@ namespace SqlTest
         /// <param name="deletedRawFolder">Удалять исходную папку</param>
         public void RenameAndMove([Optional] string rawFile, [Optional] string destinationPath, bool deletedRawFolder = false)
         {
+            /// Clear InputFiles from inputFiles folder
+            {
+                var inputFiles = Directory.GetFiles(_dirDestination);
+                if (inputFiles.Count() != 0)
+                    foreach (var inFile in inputFiles)
+                        File.Delete(inFile);
+            }
+
             Console.WriteLine("Start rename && move...");
 
             if (!string.IsNullOrEmpty(rawFile))
@@ -36,52 +49,35 @@ namespace SqlTest
                 _dirDestination = destinationPath;
 
             // Timer
-            var sw = new Stopwatch();
-            sw.Start();
+            var swRename = new Stopwatch();
+            swRename.Start();
 
             var baseFolder = new List<string>();
             baseFolder.AddRange(Directory.GetDirectories(_dirInput).ToList<string>());
 
-#if TEST
-            int index = 0;
-#endif
             int subFolder = 0;
             foreach (var dir in baseFolder)
             {
-#if TEST
-                Console.WriteLine($"[{index}] => {dir}");
-#endif
-
-                /// Тут можно упростить => 
+                /// Тут можно упростить =>
                 string tmpSubfolder = Path.GetFileName(dir);
                 string[] subDir = Directory.GetDirectories(Path.Combine(dir, "files"));
 
                 List<string> filesSubfolder = new List<string>();
                 filesSubfolder.AddRange(Directory.GetFiles(Path.Combine(subDir[0], "xml")));
-#if TEST
-#endif
+
                 foreach (string file in filesSubfolder)
                 {
-#if TEST
-                    Console.WriteLine($"\t[{subIndex}] => {Path.GetFileName(file)}");
-#endif
                     subFolder += filesSubfolder.Count;
                     Task.Run(() =>
                         File.Copy(file, Path.Combine(_dirDestination, string.Concat(tmpSubfolder, ".", Path.GetFileName(file)))));
-#if TEST
-                    subIndex++;
-#endif
                 }
             }
 
             // Timer
-            sw.Stop();
+            swRename.Stop();
+            _elapsedMilliseconds = swRename.ElapsedMilliseconds;
+            _countRawFiles = baseFolder.Count();
 
-            Console.WriteLine("{");
-            Console.WriteLine("\tOperation => ParseXMLByMask is DONE!");
-            Console.WriteLine($"\tBase folder = {baseFolder.Count}");
-            Console.WriteLine($"\tParsed files = {subFolder}");
-            Console.WriteLine($"\tTotal time: [{sw.Elapsed}]");
             Console.WriteLine("{\n");
 
             // Delete non usable base folder
@@ -97,7 +93,15 @@ namespace SqlTest
         /// <param name="deletedRawFolder">Удалять исходную папку</param>
         public void RenameAndMoveParallel([Optional] string rawFile, [Optional] string destinationPath, bool deletedRawFolder = false)
         {
-            Console.WriteLine("Start rename && move...");
+            /// Clear InputFiles from inputFiles folder
+            {
+                var inputFiles = Directory.GetFiles(_dirDestination);
+                if (inputFiles.Count() != 0)
+                    foreach (var inFile in inputFiles)
+                        File.Delete(inFile);
+            }
+
+            Console.WriteLine("Старт переименования и перемещения...");
             var swRename = new Stopwatch();
             swRename.Start();
 
@@ -107,26 +111,13 @@ namespace SqlTest
             if (!string.IsNullOrEmpty(destinationPath))
                 _dirDestination = destinationPath;
 
-            // Timer
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
             // Переписать на string[]
-            var baseFolder = new List<string>();
-            baseFolder.AddRange(Directory.GetDirectories(_dirInput).ToList<string>());
+            string[] baseFolder = Directory.GetDirectories(_dirInput);
 
-#if TEST
-            int index = 0;
-#endif
             int subFolder = 0;
             Parallel.ForEach(baseFolder, dir =>
             {
-#if TEST
-                Console.WriteLine($"[{index}] => {dir}");
-#endif
-
-                /// Тут можно упростить => 
-                string tmpSubfolder = Path.GetFileName(dir);
+                /// Тут можно упростить =>
                 string[] subDir = Directory.GetDirectories(Path.Combine(dir, "files"));
 
                 List<string> filesSubfolder = new List<string>();
@@ -135,40 +126,38 @@ namespace SqlTest
 
                 foreach (string file in filesSubfolder)
                 {
-#if TEST
-                    Console.WriteLine($"\t[{subIndex}] => {Path.GetFileName(fie)}");
-#endif
                     subFolder += filesSubfolder.Count;
                     Task.Run(() =>
-                        File.Copy(file, Path.Combine(_dirDestination, string.Concat(tmpSubfolder, ".", Path.GetFileName(file))))
+                        File.Copy(file, Path.Combine(_dirDestination, string.Concat(Path.GetFileName(dir), ".", Path.GetFileName(file))))
                     );
-                    //RenameFile(file, tmpSubfolder);
-#if TEST
-                    subIndex++;
-#endif
                 }
             });
 
-            // Timer
-            sw.Stop();
+            _subFolder = subFolder; ;
 
             //Console.WriteLine($"\tParsed files = {subFolder}");
 
             swRename.Stop();
-            Console.WriteLine("{");
-            Console.WriteLine("\tOperation => ParseXMLByMaskParallel is DONE!");
-            Console.WriteLine($"\nTotal time: {swRename.ElapsedMilliseconds},{swRename.ElapsedMilliseconds % 1000} msec");
-            Console.WriteLine($"\tRaw folder with files: {baseFolder.Count}");
-            Console.WriteLine($"Total files ({Directory.GetFiles("C:\\_test\\inputFiles").Count()} " +
-                $"/ {Directory.GetFiles("C:\\_test\\rawFiles").Count()})");
-            Console.WriteLine($"AVG time: {Directory.GetFiles("C:\\_test\\inputFiles").Count() / (int)(swRename.ElapsedMilliseconds / 1000)},"
-                 + $"{swRename.ElapsedMilliseconds % 1000} units");
-            Console.WriteLine("}\n");
+            _elapsedMilliseconds = swRename.ElapsedMilliseconds;
+            _countRawFiles = baseFolder.Count();
 
             // Delete non usable base folder
             if (deletedRawFolder)
                 Task.Run(() => Delete());
         }
+
+        //public static void GetLastStatistics()
+        //{
+        //    Console.WriteLine("{");
+        //    Console.WriteLine("\tOperation => ParseXMLByMaskParallel is DONE!");
+        //    Console.WriteLine($"\nTotal time: {_elapsedMilliseconds/1000},{_elapsedMilliseconds % 1000} msec");
+        //    Console.WriteLine($"\tRaw folder with files: {_countRawFiles}");
+        //    Console.WriteLine($"Total files ({Directory.GetFiles("C:\\_test\\inputFiles").Count()} " +
+        //        $"/ {Directory.GetFiles("C:\\_test\\rawFiles").Count()})");
+        //    Console.WriteLine($"AVG time: {Directory.GetFiles("C:\\_test\\inputFiles").Count() / (int)(_elapsedMilliseconds / 1000)},"
+        //         + $"{_elapsedMilliseconds % 1000} units");
+        //    Console.WriteLine("}\n");
+        //}
 
         /// <summary>
         /// Deleted raw folder
