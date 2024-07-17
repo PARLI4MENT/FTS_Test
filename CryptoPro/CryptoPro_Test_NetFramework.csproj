@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{55DEF16F-1F1C-4E1A-92EA-32C564E652F6}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>CryptoPro</RootNamespace>
-    <AssemblyName>CryptoPro</AssemblyName>
+    <RootNamespace>XMLSigner</RootNamespace>
+    <AssemblyName>XMLSigner</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>XMLSigner.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="GostCryptography, Version=2.0.11.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GostCryptography.2.0.11\lib\net452\GostCryptography.dll</HintPath>
@@ -47,9 +50,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OutClass\Exctract_XML.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RenamerXml.cs" />
+    <Compile Include="OutClass\RenamerXml.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

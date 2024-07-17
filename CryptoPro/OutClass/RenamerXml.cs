@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 
-namespace SqlTest
+namespace FileNs
 {
     public class RenamerXML
     {
