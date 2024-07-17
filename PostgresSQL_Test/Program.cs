@@ -8,8 +8,8 @@ using GostCryptography.Xml;
 using GostCryptography.Base;
 using GostCryptography.Config;
 
-namespace MainNs
-{
+namespace XMLSigner
+{ 
     public class Program
     {
         public static void Main(string[] args)

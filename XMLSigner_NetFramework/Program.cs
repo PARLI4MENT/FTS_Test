@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Diagnostics;
 using System.Linq;
+using Npgsql;
 
 namespace XMLSigner
 {
@@ -49,30 +50,32 @@ namespace XMLSigner
             // Inplement to XML, signing and sending request to BD
             Console.WriteLine("Start inplement...");
             string[] implementFiles= Directory.GetFiles("C:\\_test\\intermidateFiles");
-            Parallel.ForEach(implementFiles, implementFile =>
-            {
+            Parallel.ForEach(implementFiles,
+                new ParallelOptions { MaxDegreeOfParallelism = -1 },
+                implementFile => {
                 DataImplementation(implementFile);
             });
             sw.Stop();
-            Console.WriteLine($"Total inplement => {sw.ElapsedMilliseconds/1000},{sw.ElapsedMilliseconds%1000}");
-            Console.WriteLine($"Total destination files => {Directory.GetFiles("C:\\_test\\implementFiles").Count()}");
-            Console.WriteLine($"AVG => {(long)Directory.GetFiles("C:\\_test\\intermidateFiles").Count()/sw.ElapsedMilliseconds/1000}");
+            Console.WriteLine($"Time inplement => {sw.ElapsedMilliseconds/1000},{sw.ElapsedMilliseconds%1000} sec");
+            Console.WriteLine($"Total destination files => {Directory.GetFiles("C:\\_test\\implementFiles").Count()} units");
+            Console.WriteLine($"AVG => {(Directory.GetFiles("C:\\_test\\intermidateFiles").Count())/((int)sw.ElapsedMilliseconds/1000)}");
 
-            sw.Restart();
-            Console.WriteLine("/nStart signing XML...");
+
+            Console.WriteLine("\nStart signing XML...");
             string[] singingFiles = Directory.GetFiles("C:\\_test\\implementFiles");
             Parallel.ForEach(singingFiles, singFile =>
             {
                 var signedXml = SignXmlDocument(singFile, ref certificate);
-                signedXml.Save(Path.Combine("C:\\_test\\signedFiles", ("Signed_" + Path.GetFileName(singFile))));
+                signedXml.Save(Path.Combine("C:\\_test\\signedFiles", ("Signed." + Path.GetFileName(singFile))));
             });
 
             sw.Stop();
-            Console.WriteLine($"Total signed => {sw.ElapsedMilliseconds/1000},{sw.ElapsedMilliseconds%1000}");
-            Console.WriteLine($"Total destination files => {Directory.GetFiles("C:\\_test\\signedFiles").Count()}");
-            Console.WriteLine($"AVG => {(long)Directory.GetFiles("C:\\_test\\implementFiles").Count()/sw.ElapsedMilliseconds/1000}");
+            Console.WriteLine($"Time signed => {sw.ElapsedMilliseconds/1000},{sw.ElapsedMilliseconds%1000} sec");
+            Console.WriteLine($"Total destination files => {Directory.GetFiles("C:\\_test\\signedFiles").Count()} units");
+            Console.WriteLine($"AVG => {(Directory.GetFiles("C:\\_test\\implementFiles").Count())/((int)sw.ElapsedMilliseconds/1000)}");
 
 
+            Console.WriteLine($"\nTotal time => {sw.ElapsedMilliseconds/1000},{sw.ElapsedMilliseconds%1000} sec");
             Console.WriteLine("DONE !");
             Console.ReadKey();
         }
@@ -90,7 +93,7 @@ namespace XMLSigner
 
             //File.AppendAllText("C:\\_test\\Arch_docs.log", Environment.NewLine + "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
 
-            string NameArray = (string)Path.GetFileName(FileName).Split('.')[0];
+            string NameArray = (string)Path.GetFileName(FileName).Split('.')[0]; // Можно упростить
             var file_xml = new XmlDocument();
             var doc_to_arch = new XmlDocument();
 
@@ -258,23 +261,23 @@ namespace XMLSigner
             //Send to PostgresSQL DB
             //string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;" +
             //    $"Connection Idle Lifetime=20;Maximum Pool Size=150;";
-            //string _strConnMain = $"Server=localhost;Port=5432;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
-            //using (var sqlConn = new NpgsqlConnection(_strConnMain))
-            //{
-            //    sqlConn.Open();
-            //    using (var sqlComm = new Npgsql.NpgsqlCommand())
-            //    {
-            //        sqlComm.CommandText = $@"INSERT INTO ""public"".""ExchED""
-            //                    (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
-            //                    ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
-            //                    VALUES ('{NameArray}', 'CMN.00202', '{EnvelopeID}', {Company_key_id}, '{DocumentID}',
-            //                    '{PrDocumentName}', '{PrDocumentNumber}', '{DocCode}', '{Path.GetFileName(NewDocToArchName)}');";
-            //        sqlComm.Connection = sqlConn;
-            //        sqlComm.ExecuteNonQuery();
-            //        // ArchivePathDoc ???
-            //    }
-            //    sqlConn.Close();
-            //}
+            string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
+            using (var sqlConn = new NpgsqlConnection(_strConnMain))
+            {
+                sqlConn.Open();
+                using (var sqlComm = new Npgsql.NpgsqlCommand())
+                {
+                    sqlComm.CommandText = $@"INSERT INTO ""public"".""ExchED""
+                                (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
+                                ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
+                                VALUES ('{NameArray}', 'CMN.00202', '{EnvelopeID}', {Company_key_id}, '{DocumentID}',
+                                '{PrDocumentName}', '{PrDocumentNumber}', '{DocCode}', '{Path.GetFileName(NewDocToArchName)}');";
+                    sqlComm.Connection = sqlConn;
+                    sqlComm.ExecuteNonQuery();
+                    // ArchivePathDoc ???
+                }
+                sqlConn.Close();
+            }
 
             #region
             //await using (var sqlConn = new NpgsqlConnection(_strConnMain))
