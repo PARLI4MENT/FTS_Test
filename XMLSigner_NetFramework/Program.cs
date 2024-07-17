@@ -45,7 +45,9 @@ namespace XMLSigner
             //});
 
             var sw = new Stopwatch();
+            var swTotal = new Stopwatch();
             sw.Start();
+            swTotal.Start();
 
             // Inplement to XML, signing and sending request to BD
             Console.WriteLine("Start inplement...");
@@ -61,6 +63,7 @@ namespace XMLSigner
             Console.WriteLine($"AVG => {(Directory.GetFiles("C:\\_test\\intermidateFiles").Count())/((int)sw.ElapsedMilliseconds/1000)}");
 
 
+            sw.Restart();
             Console.WriteLine("\nStart signing XML...");
             string[] singingFiles = Directory.GetFiles("C:\\_test\\implementFiles");
             Parallel.ForEach(singingFiles, singFile =>
@@ -70,12 +73,13 @@ namespace XMLSigner
             });
 
             sw.Stop();
+            swTotal.Stop();
             Console.WriteLine($"Time signed => {sw.ElapsedMilliseconds/1000},{sw.ElapsedMilliseconds%1000} sec");
             Console.WriteLine($"Total destination files => {Directory.GetFiles("C:\\_test\\signedFiles").Count()} units");
             Console.WriteLine($"AVG => {(Directory.GetFiles("C:\\_test\\implementFiles").Count())/((int)sw.ElapsedMilliseconds/1000)}");
 
 
-            Console.WriteLine($"\nTotal time => {sw.ElapsedMilliseconds/1000},{sw.ElapsedMilliseconds%1000} sec");
+            Console.WriteLine($"\nTotal time => {swTotal.ElapsedMilliseconds/1000},{swTotal.ElapsedMilliseconds%1000} sec");
             Console.WriteLine("DONE !");
             Console.ReadKey();
         }
