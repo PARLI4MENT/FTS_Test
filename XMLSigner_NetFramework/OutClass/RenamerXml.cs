@@ -24,53 +24,76 @@ namespace FileNs
         private static int _countRawFiles { get; set; }
         private static int _subFolder { get; set; }
 
-        public static void RenameMoveParallel(string[] rawFiles, int _MaxDegreeOfParallelism = -1)
+        public static void RenameMove(string[] rawFolders, int _MaxDegreeOfParallelism = -1)
         {
-            if (_MaxDegreeOfParallelism < -1)
-                _MaxDegreeOfParallelism = -1;
-
-            Parallel.ForEach(rawFiles,
-                new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
-                rawFile =>
+            foreach (var rawFolder in rawFolders)
             {
-                string[] subDir = Directory.GetDirectories(Path.Combine(rawFile, "files"));
-
+                string[] subDir = Directory.GetDirectories(Path.Combine(rawFolder, "files"));
                 string[] filesSubfolder = (Directory.GetFiles(Path.Combine(subDir[0], "xml")));
 
                 foreach (string file in filesSubfolder)
                 {
-                    Task.Run(() =>
+                    // Combine Xml
+                    string tmpPathCombine = Path.Combine("C:\\_test\\intermidateFiles", string.Concat(Path.GetFileName(rawFolder), ".", Path.GetFileName(file)));
+                    File.Copy(file, tmpPathCombine);
+                }
+            }
+        }
+        public static void RenameMoveParallel(string[] rawFolders, int _MaxDegreeOfParallelism = -1)
+        {
+            if (_MaxDegreeOfParallelism < -1)
+                _MaxDegreeOfParallelism = -1;
+
+            Parallel.ForEach(rawFolders,
+                new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
+                rawFolder => {
+                    string[] subDir = Directory.GetDirectories(Path.Combine(rawFolder, "files"));
+                    string[] filesSubfolder = (Directory.GetFiles(Path.Combine(subDir[0], "xml")));
+                    foreach (string file in filesSubfolder)
                     {
                         // Combine Xml
-                        string tmpPathCombine = Path.Combine("C:\\_test\\intermidateFiles", string.Concat(Path.GetFileName(rawFile), ".", Path.GetFileName(file)));
+                        string tmpPathCombine = Path.Combine("C:\\_test\\intermidateFiles", string.Concat(Path.GetFileName(rawFolder), ".", Path.GetFileName(file)));
                         File.Copy(file, tmpPathCombine);
-                    });
+                    }
+                });
+        }
+
+        public static void RenameMove(string pathRawFiles, int _MaxDegreeOfParallelism = -1)
+        {
+            var rawFolder = Directory.GetDirectories(pathRawFiles);
+            foreach (var rawFile in rawFolder)
+            {
+                string[] subDir = Directory.GetDirectories(Path.Combine(rawFile, "files"));
+                string[] filesSubfolder = (Directory.GetFiles(Path.Combine(subDir[0], "xml")));
+
+                foreach (string file in filesSubfolder)
+                {
+                    // Combine Xml
+                    string tmpPathCombine = Path.Combine("C:\\_test\\intermidateFiles", string.Concat(Path.GetFileName(rawFile), ".", Path.GetFileName(file)));
+                    File.Copy(file, tmpPathCombine);
                 }
-            });
+            }
         }
         public static void RenameMoveParallel(string pathRawFiles, int _MaxDegreeOfParallelism = -1)
         {
             if (_MaxDegreeOfParallelism < -1)
                 _MaxDegreeOfParallelism = -1;
 
-            Parallel.ForEach(Directory.GetFiles(pathRawFiles),
+            var rawFolder = Directory.GetDirectories(pathRawFiles);
+            Parallel.ForEach(rawFolder,
                 new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
-                rawFile =>
-            {
-                string[] subDir = Directory.GetDirectories(Path.Combine(rawFile, "files"));
+                rawFile => {
+                    string[] subDir = Directory.GetDirectories(Path.Combine(rawFile, "files"));
+                    string[] filesSubfolder = (Directory.GetFiles(Path.Combine(subDir[0], "xml")));
 
-                string[] filesSubfolder = (Directory.GetFiles(Path.Combine(subDir[0], "xml")));
-
-                foreach (string file in filesSubfolder)
-                {
-                    Task.Run(() =>
+                    foreach (string file in filesSubfolder)
                     {
+
                         // Combine Xml
                         string tmpPathCombine = Path.Combine("C:\\_test\\intermidateFiles", string.Concat(Path.GetFileName(rawFile), ".", Path.GetFileName(file)));
                         File.Copy(file, tmpPathCombine);
-                    });
-                }
-            });
+                    }
+                });
         }
 
         /// <summary>
