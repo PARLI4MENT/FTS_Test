@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GostCryptographyNet", "Gost
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XMLSigner_NetFramework", "XMLSigner_NetFramework\XMLSigner_NetFramework.csproj", "{55DEF16F-1F1C-4E1A-92EA-32C564E652F6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GostSignerService", "GostSignerService\GostSignerService.csproj", "{ADB85631-FE5E-4891-B1B1-FA5B0D4058B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,10 @@ Global
 		{55DEF16F-1F1C-4E1A-92EA-32C564E652F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55DEF16F-1F1C-4E1A-92EA-32C564E652F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55DEF16F-1F1C-4E1A-92EA-32C564E652F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADB85631-FE5E-4891-B1B1-FA5B0D4058B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADB85631-FE5E-4891-B1B1-FA5B0D4058B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADB85631-FE5E-4891-B1B1-FA5B0D4058B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADB85631-FE5E-4891-B1B1-FA5B0D4058B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
