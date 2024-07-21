@@ -5,6 +5,15 @@ namespace Fields
     public class ECD_list
     {
         /// <summary>
+        /// Return table name (string)
+        /// </summary>
+        public static string GetTableName { get { return "ECD_list"; } }
+
+        public string InnerID { get; set; }
+        public string Status { get; set; }
+        public Int16 DocsSended { get; set; }
+
+        /// <summary>
         /// Get string command to Create table into Database
         /// Default table => "ECD_list"
         /// </summary>
@@ -42,13 +51,6 @@ namespace Fields
         //    }
         //}
 
-        /// <summary>
-        /// Return table name (string)
-        /// </summary>
-        public static string GetTableName { get { return "ECD_list"; } }
 
-        public string InnerID { get; set; }
-        public string Status { get; set; }
-        public Int16 DocsSended { get; set; }
     }
 }

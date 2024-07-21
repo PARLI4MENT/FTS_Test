@@ -4,7 +4,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace SQLTest
+namespace SQLTestNs
 {
     public class PgSql
     {
