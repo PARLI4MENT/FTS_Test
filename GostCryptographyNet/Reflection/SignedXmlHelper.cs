@@ -39,7 +39,7 @@ namespace GostCryptography.Reflection
 
 				if (_keyInfoEnumerableField == null)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.XmlCannotFindPrivateMember, "m_keyInfoEnum");
+					throw ExceptionUtility.CryptographicException(Resource.XmlCannotFindPrivateMember, "m_keyInfoEnum");
 				}
 
 				return _keyInfoEnumerableField;
@@ -77,7 +77,7 @@ namespace GostCryptography.Reflection
 
 				if (_x509EnumerableField == null)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.XmlCannotFindPrivateMember, "m_x509Enum");
+					throw ExceptionUtility.CryptographicException(Resource.XmlCannotFindPrivateMember, "m_x509Enum");
 				}
 
 				return _x509EnumerableField;
@@ -115,7 +115,7 @@ namespace GostCryptography.Reflection
 
 				if (_keyInfoEnumerableField == null)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.XmlCannotFindPrivateMember, "m_x509Collection");
+					throw ExceptionUtility.CryptographicException(Resource.XmlCannotFindPrivateMember, "m_x509Collection");
 				}
 
 				return _x509CollectionField;

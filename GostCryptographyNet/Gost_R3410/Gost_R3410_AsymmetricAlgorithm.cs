@@ -160,7 +160,7 @@ namespace GostCryptography.Gost_R3410
 
 			if (includePrivateParameters)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.UserExportBulkBlob);
+				throw ExceptionUtility.CryptographicException(Resource.UserExportBulkBlob);
 			}
 
 			return CryptoApiHelper.ExportCspBlob(_keyHandle, SafeKeyHandleImpl.InvalidHandle, Constants.PUBLICKEYBLOB);
@@ -177,7 +177,7 @@ namespace GostCryptography.Gost_R3410
 
 			if (!IsPublicKeyBlob(importedKeyBytes))
 			{
-				throw ExceptionUtility.Argument(nameof(importedKeyBytes), Resources.UserImportBulkBlob);
+				throw ExceptionUtility.Argument(nameof(importedKeyBytes), Resource.UserImportBulkBlob);
 			}
 
 			var hProv = CryptoApiHelper.GetProviderHandle(ProviderType);
@@ -260,7 +260,7 @@ namespace GostCryptography.Gost_R3410
 
 			if (IsPublicKeyOnly)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.NoPrivateKey);
+				throw ExceptionUtility.CryptographicException(Resource.NoPrivateKey);
 			}
 
 			GetKeyPair();
@@ -358,7 +358,7 @@ namespace GostCryptography.Gost_R3410
 		{
 			if (includePrivateKey)
 			{
-				throw ExceptionUtility.NotSupported(Resources.UserExportBulkKeyNotSupported);
+				throw ExceptionUtility.NotSupported(Resource.UserExportBulkKeyNotSupported);
 			}
 
 			GetKeyPair();
@@ -372,7 +372,7 @@ namespace GostCryptography.Gost_R3410
 		{
 			if (keyParameters.PrivateKey != null)
 			{
-				throw ExceptionUtility.NotSupported(Resources.UserImportBulkKeyNotSupported);
+				throw ExceptionUtility.NotSupported(Resource.UserImportBulkKeyNotSupported);
 			}
 
 			_keyHandle.TryDispose();
@@ -398,7 +398,7 @@ namespace GostCryptography.Gost_R3410
 		{
 			if (IsPublicKeyOnly)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.NoPrivateKey);
+				throw ExceptionUtility.CryptographicException(Resource.NoPrivateKey);
 			}
 
 			GetKeyPair();
@@ -487,7 +487,7 @@ namespace GostCryptography.Gost_R3410
 
 				if ((keyAlgId != ExchangeAlgId) && (keyAlgId != SignatureAlgId))
 				{
-					throw ExceptionUtility.NotSupported(Resources.KeyAlgorithmNotSupported);
+					throw ExceptionUtility.NotSupported(Resource.KeyAlgorithmNotSupported);
 				}
 			}
 			catch (Exception)
@@ -603,7 +603,7 @@ namespace GostCryptography.Gost_R3410
 
 				if ((flags & notExpectedFlags) != CspProviderFlags.NoFlags)
 				{
-					throw ExceptionUtility.Argument(nameof(flags), Resources.InvalidCspProviderFlags);
+					throw ExceptionUtility.Argument(nameof(flags), Resource.InvalidCspProviderFlags);
 				}
 			}
 
@@ -612,7 +612,7 @@ namespace GostCryptography.Gost_R3410
 			{
 				if (!Environment.UserInteractive)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.UserInteractiveNotSupported);
+					throw ExceptionUtility.CryptographicException(Resource.UserInteractiveNotSupported);
 				}
 
 				new UIPermission(UIPermissionWindow.SafeTopLevelWindows).Demand();

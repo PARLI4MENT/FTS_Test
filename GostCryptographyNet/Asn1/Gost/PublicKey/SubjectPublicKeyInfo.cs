@@ -22,7 +22,7 @@ namespace GostCryptography.Asn1.Gost.PublicKey
 
 			if (!context.MatchElemTag(0, 0x20, 0x10, parsedLen, false))
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1MissingRequiredException, buffer.ByteCount);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1MissingRequiredException, buffer.ByteCount);
 			}
 
 			Algorithm = new AlgorithmIdentifier();
@@ -30,7 +30,7 @@ namespace GostCryptography.Asn1.Gost.PublicKey
 
 			if (!context.MatchElemTag(0, 0, 3, parsedLen, false))
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1MissingRequiredException, buffer.ByteCount);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1MissingRequiredException, buffer.ByteCount);
 			}
 
 			SubjectPublicKey = new Asn1BitString();

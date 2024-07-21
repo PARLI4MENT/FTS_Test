@@ -24,7 +24,7 @@ namespace GostCryptography.Base
 			if ((createSignatureMethod == null || createSignatureMethod.ReturnType != typeof(byte[]))
 			    || (verifySignatureMethod == null || verifySignatureMethod.ReturnType != typeof(bool)))
 			{
-				throw ExceptionUtility.Argument(nameof(algorithm), Resources.ShouldSupportGost3410);
+				throw ExceptionUtility.Argument(nameof(algorithm), Resource.ShouldSupportGost3410);
 			}
 
 			_algorithm = algorithm;

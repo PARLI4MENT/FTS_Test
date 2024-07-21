@@ -12,7 +12,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Serialization.Xml" Version="4.3.0" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.1" />
+    <PackageReference Include="System.Security.Permissions" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>

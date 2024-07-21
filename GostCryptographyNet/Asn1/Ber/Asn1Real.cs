@@ -63,7 +63,7 @@ namespace GostCryptography.Asn1.Ber
 							return;
 					}
 
-					throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidFormatOfConstructedValue, buffer.ByteCount);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidFormatOfConstructedValue, buffer.ByteCount);
 				}
 
 				length--;
@@ -81,7 +81,7 @@ namespace GostCryptography.Asn1.Ber
 
 						if (num7 == -1)
 						{
-							throw ExceptionUtility.CryptographicException(Resources.Asn1EndOfBufferException, buffer.ByteCount);
+							throw ExceptionUtility.CryptographicException(Resource.Asn1EndOfBufferException, buffer.ByteCount);
 						}
 
 						builder[num9++] = (char)num7;
@@ -106,7 +106,7 @@ namespace GostCryptography.Asn1.Ber
 						}
 						else if ((num11 != 0) || (ch != ' '))
 						{
-							throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidFormatOfConstructedValue, buffer.ByteCount);
+							throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidFormatOfConstructedValue, buffer.ByteCount);
 						}
 					}
 					try
@@ -115,7 +115,7 @@ namespace GostCryptography.Asn1.Ber
 					}
 					catch (FormatException)
 					{
-						throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidFormatOfConstructedValue, buffer.ByteCount);
+						throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidFormatOfConstructedValue, buffer.ByteCount);
 					}
 				}
 				else
@@ -163,7 +163,7 @@ namespace GostCryptography.Asn1.Ber
 							break;
 
 						default:
-							throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidFormatOfConstructedValue, buffer.ByteCount);
+							throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidFormatOfConstructedValue, buffer.ByteCount);
 					}
 
 					Value = num5 * Math.Pow(num6, num4);

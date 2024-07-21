@@ -44,7 +44,7 @@ namespace GostCryptography.Base
 			{
 				if (publicKey.SignatureAlgorithm.IndexOf("gost", StringComparison.OrdinalIgnoreCase) < 0)
 				{
-					throw ExceptionUtility.ArgumentOutOfRange(nameof(publicKey), Resources.ShouldSupportGost3410);
+					throw ExceptionUtility.ArgumentOutOfRange(nameof(publicKey), Resource.ShouldSupportGost3410);
 				}
 
 				gostPublicKey = new GostExternalAsymmetricAlgorithm(publicKey);

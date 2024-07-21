@@ -39,7 +39,7 @@ namespace GostCryptography.Asn1.Ber
 
 			if (len <= 0)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidLengthException);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidLengthException);
 			}
 
 			OidValue = OidValue.FromArray(buffer.DecodeOidContents(len));
@@ -50,7 +50,7 @@ namespace GostCryptography.Asn1.Ber
 		{
 			if (((OidValue.Items.Length < 2) || (OidValue.Items[0] > 2)) || ((OidValue.Items[0] != 2) && (OidValue.Items[1] > 0x27)))
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidObjectIdException);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidObjectIdException);
 			}
 
 			var len = 0;
@@ -72,7 +72,7 @@ namespace GostCryptography.Asn1.Ber
 		{
 			if (((OidValue.Items.Length < 2) || (OidValue.Items[0] > 2)) || ((OidValue.Items[0] != 2) && (OidValue.Items[1] > 0x27)))
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidObjectIdException);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidObjectIdException);
 			}
 
 			var len = 1;

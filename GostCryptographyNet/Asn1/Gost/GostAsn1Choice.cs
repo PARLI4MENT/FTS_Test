@@ -49,7 +49,7 @@ namespace GostCryptography.Asn1.Gost
 			{
 				if (!tag.Equals(0, TagForm, TagIdCode))
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidChoiceOptionTagException, tag, buffer.ByteCount);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidChoiceOptionTagException, tag, buffer.ByteCount);
 				}
 
 				buffer.Reset();
@@ -69,7 +69,7 @@ namespace GostCryptography.Asn1.Gost
 					return GetElement().Encode(buffer, true);
 			}
 
-			throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidChoiceOptionException);
+			throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidChoiceOptionException);
 		}
 	}
 }

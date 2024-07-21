@@ -108,7 +108,7 @@ namespace GostCryptography.Gost_R3410
 
 			if (hash.Length != Gost_R3411_94_HashAlgorithm.DefaultHashSizeValue / 8)
 			{
-				throw ExceptionUtility.ArgumentOutOfRange(nameof(hash), Resources.InvalidHashSize, Gost_R3411_94_HashAlgorithm.DefaultHashSizeValue / 8);
+				throw ExceptionUtility.ArgumentOutOfRange(nameof(hash), Resource.InvalidHashSize, Gost_R3411_94_HashAlgorithm.DefaultHashSizeValue / 8);
 			}
 		}
 

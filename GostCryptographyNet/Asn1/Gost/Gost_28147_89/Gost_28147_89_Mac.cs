@@ -21,7 +21,7 @@ namespace GostCryptography.Asn1.Gost.Gost_28147_89
 
 			if ((Length < 1) || (Length > 4))
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1ConsVioException, nameof(Length), Length);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1ConsVioException, nameof(Length), Length);
 			}
 		}
 
@@ -29,7 +29,7 @@ namespace GostCryptography.Asn1.Gost.Gost_28147_89
 		{
 			if ((Length < 1) || (Length > 4))
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1ConsVioException, nameof(Length), Length);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1ConsVioException, nameof(Length), Length);
 			}
 
 			var len = base.Encode(buffer, false);

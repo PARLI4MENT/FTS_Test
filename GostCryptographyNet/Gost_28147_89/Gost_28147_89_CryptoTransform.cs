@@ -133,12 +133,12 @@ namespace GostCryptography.Gost_28147_89
 
 			if ((inputCount <= 0) || ((inputCount % InputBlockSize) != 0) || (inputCount > inputBuffer.Length))
 			{
-				throw ExceptionUtility.Argument(nameof(inputOffset), Resources.InvalidDataOffset);
+				throw ExceptionUtility.Argument(nameof(inputOffset), Resource.InvalidDataOffset);
 			}
 
 			if ((inputBuffer.Length - inputCount) < inputOffset)
 			{
-				throw ExceptionUtility.Argument(nameof(inputOffset), Resources.InvalidDataOffset);
+				throw ExceptionUtility.Argument(nameof(inputOffset), Resource.InvalidDataOffset);
 			}
 
 			if (_transformMode == Gost_28147_89_CryptoTransformMode.Encrypt)
@@ -192,12 +192,12 @@ namespace GostCryptography.Gost_28147_89
 
 			if ((inputCount < 0) || (inputCount > inputBuffer.Length))
 			{
-				throw ExceptionUtility.ArgumentOutOfRange(nameof(inputOffset), Resources.InvalidDataOffset);
+				throw ExceptionUtility.ArgumentOutOfRange(nameof(inputOffset), Resource.InvalidDataOffset);
 			}
 
 			if ((inputBuffer.Length - inputCount) < inputOffset)
 			{
-				throw ExceptionUtility.ArgumentOutOfRange(nameof(inputOffset), Resources.InvalidDataOffset);
+				throw ExceptionUtility.ArgumentOutOfRange(nameof(inputOffset), Resource.InvalidDataOffset);
 			}
 
 			byte[] buffer = null;
@@ -218,7 +218,7 @@ namespace GostCryptography.Gost_28147_89
 
 			if ((inputCount % InputBlockSize) != 0)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.DecryptInvalidDataSize);
+				throw ExceptionUtility.CryptographicException(Resource.DecryptInvalidDataSize);
 			}
 
 			if (_dataBuffer == null)

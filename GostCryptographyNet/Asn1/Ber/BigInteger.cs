@@ -428,12 +428,12 @@ namespace GostCryptography.Asn1.Ber
 			{
 				if (index != 0)
 				{
-					throw new FormatException(Resources.Asn1IllegalEmbeddedMinusSign);
+					throw new FormatException(Resource.Asn1IllegalEmbeddedMinusSign);
 				}
 
 				if (val.Length == 1)
 				{
-					throw new FormatException(Resources.Asn1ZeroLengthBigInteger);
+					throw new FormatException(Resource.Asn1ZeroLengthBigInteger);
 				}
 
 				_sign = -1;
@@ -473,7 +473,7 @@ namespace GostCryptography.Asn1.Ber
 
 				if (_value[_value.Length - 1] < 0)
 				{
-					throw new FormatException(Resources.Asn1IllegalDigit);
+					throw new FormatException(Resource.Asn1IllegalDigit);
 				}
 
 				var y = ByteRadix[radix];
@@ -487,7 +487,7 @@ namespace GostCryptography.Asn1.Ber
 
 					if (z < 0)
 					{
-						throw new FormatException(Resources.Asn1IllegalDigit);
+						throw new FormatException(Resource.Asn1IllegalDigit);
 					}
 
 					DestructiveMulAdd(_value, y, z);
@@ -582,7 +582,7 @@ namespace GostCryptography.Asn1.Ber
 		{
 			if (ivalue.Length > MaxBigIntLen)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1TooBigIntegerValue, ivalue.Length);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1TooBigIntegerValue, ivalue.Length);
 			}
 
 			if ((ivalue.Length > 0) && ((ivalue[0] & 0x80) != 0))

@@ -238,7 +238,7 @@ namespace GostCryptography.Xml
 					{
 						if (encryptedData.EncryptionMethod == null)
 						{
-							throw ExceptionUtility.CryptographicException(Resources.XmlMissingAlgorithm);
+							throw ExceptionUtility.CryptographicException(Resource.XmlMissingAlgorithm);
 						}
 
 						symmetricAlgorithmUri = encryptedData.EncryptionMethod.KeyAlgorithm;
@@ -389,7 +389,7 @@ namespace GostCryptography.Xml
 
 			if (decryptionKey == null)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.XmlMissingAlgorithm);
+				throw ExceptionUtility.CryptographicException(Resource.XmlMissingAlgorithm);
 			}
 
 			return decryptionKey;
@@ -419,7 +419,7 @@ namespace GostCryptography.Xml
 
 			if (decryptionKey == null)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.XmlMissingAlgorithm);
+				throw ExceptionUtility.CryptographicException(Resource.XmlMissingAlgorithm);
 			}
 
 			return decryptionKey;

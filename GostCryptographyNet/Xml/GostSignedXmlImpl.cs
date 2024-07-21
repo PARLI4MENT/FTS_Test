@@ -79,7 +79,7 @@ namespace GostCryptography.Xml
 		{
 			if (KeyInfo == null)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.XmlKeyInfoRequired);
+				throw ExceptionUtility.CryptographicException(Resource.XmlKeyInfoRequired);
 			}
 
 			if (X509Enumerable != null)

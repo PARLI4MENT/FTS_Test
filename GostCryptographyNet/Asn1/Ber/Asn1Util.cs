@@ -120,7 +120,7 @@ namespace GostCryptography.Asn1.Ber
 
 			if (num < 0)
 			{
-				throw ExceptionUtility.Argument("c", Resources.Asn1IllegalCharacter, c);
+				throw ExceptionUtility.Argument("c", Resource.Asn1IllegalCharacter, c);
 			}
 
 			return num;
@@ -215,7 +215,7 @@ namespace GostCryptography.Asn1.Ber
 
 				if (!flag && ((c < 'A') || (c >= 'F')))
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1ValueParseException, str, num3);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1ValueParseException, str, num3);
 				}
 
 				if ((num3 % 2) != 0)

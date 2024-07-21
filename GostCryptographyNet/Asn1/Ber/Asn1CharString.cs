@@ -65,7 +65,7 @@ namespace GostCryptography.Asn1.Ber
 
 					if (num2 == -1)
 					{
-						throw ExceptionUtility.CryptographicException(Resources.Asn1EndOfBufferException, buffer.ByteCount);
+						throw ExceptionUtility.CryptographicException(Resource.Asn1EndOfBufferException, buffer.ByteCount);
 					}
 
 					StringBuffer[num4++] = (char)num2;
@@ -83,7 +83,7 @@ namespace GostCryptography.Asn1.Ber
 
 					if (num5 <= 0)
 					{
-						throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidFormatOfConstructedValue, buffer.ByteCount);
+						throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidFormatOfConstructedValue, buffer.ByteCount);
 					}
 
 					capacity += num5;
@@ -95,7 +95,7 @@ namespace GostCryptography.Asn1.Ber
 
 						if (num2 == -1)
 						{
-							throw ExceptionUtility.CryptographicException(Resources.Asn1EndOfBufferException, buffer.ByteCount);
+							throw ExceptionUtility.CryptographicException(Resource.Asn1EndOfBufferException, buffer.ByteCount);
 						}
 
 						StringBuffer.Append((char)num2);

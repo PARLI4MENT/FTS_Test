@@ -31,7 +31,7 @@ namespace GostCryptography.Asn1.Ber
 		{
 			if (OidValue.Items.Length < 1)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidObjectIdException);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidObjectIdException);
 			}
 
 			var len = 0;

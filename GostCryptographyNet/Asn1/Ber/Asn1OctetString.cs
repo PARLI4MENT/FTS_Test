@@ -117,7 +117,7 @@ namespace GostCryptography.Asn1.Ber
 
 					if (num2 <= 0)
 					{
-						throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidFormatOfConstructedValue, buffer.ByteCount);
+						throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidFormatOfConstructedValue, buffer.ByteCount);
 					}
 
 					nbytes += num2;

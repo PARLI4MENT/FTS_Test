@@ -78,7 +78,7 @@ namespace GostCryptography.Gost_R3410
 			}
 			else
 			{
-				throw ExceptionUtility.Argument(nameof(keyExchangeAlgorithm), Resources.RequiredGost28147);
+				throw ExceptionUtility.Argument(nameof(keyExchangeAlgorithm), Resource.RequiredGost28147);
 			}
 
 			return EncodeKeyExchangeInternal(exportKey, exportAlgId);

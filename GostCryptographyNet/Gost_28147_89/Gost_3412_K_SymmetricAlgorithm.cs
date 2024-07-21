@@ -60,7 +60,7 @@ namespace GostCryptography.Gost_28147_89
 
             if (CryptoApiHelper.GetKeyParameterInt32(_keyHandle, Constants.KP_ALGID) != Constants.CALG_GR3412_2015_K)
             {
-                throw ExceptionUtility.Argument(nameof(keyHandle), Resources.RequiredGost3412_K);
+                throw ExceptionUtility.Argument(nameof(keyHandle), Resource.RequiredGost3412_K);
             }
         }
 
@@ -144,7 +144,7 @@ namespace GostCryptography.Gost_28147_89
 
             if (sessionKey.Length != DefaultKeySize / 8)
             {
-                throw ExceptionUtility.Argument(nameof(sessionKey), Resources.InvalidHashSize, DefaultKeySize / 8);
+                throw ExceptionUtility.Argument(nameof(sessionKey), Resource.InvalidHashSize, DefaultKeySize / 8);
             }
 
             var providerHandle = CryptoApiHelper.GetProviderHandle(providerType);
@@ -184,9 +184,9 @@ namespace GostCryptography.Gost_28147_89
         public override byte[] Key
         {
             [SecuritySafeCritical]
-            get { throw ExceptionUtility.NotSupported(Resources.SymmetryExportBulkKeyNotSupported); }
+            get { throw ExceptionUtility.NotSupported(Resource.SymmetryExportBulkKeyNotSupported); }
             [SecuritySafeCritical]
-            set { throw ExceptionUtility.NotSupported(Resources.SymmetryImportBulkKeyNotSupported); }
+            set { throw ExceptionUtility.NotSupported(Resource.SymmetryImportBulkKeyNotSupported); }
         }
 
         /// <inheritdoc />
@@ -233,7 +233,7 @@ namespace GostCryptography.Gost_28147_89
         {
             if (!(hash is ISafeHandleProvider<SafeHashHandleImpl> hashHandleProvider))
             {
-                throw ExceptionUtility.Argument(nameof(hash), Resources.RequiredGostHash);
+                throw ExceptionUtility.Argument(nameof(hash), Resource.RequiredGostHash);
             }
 
             var hashHandle = hashHandleProvider.SafeHandle;
@@ -276,7 +276,7 @@ namespace GostCryptography.Gost_28147_89
         [SecuritySafeCritical]
         public override ICryptoTransform CreateEncryptor(byte[] key, byte[] iv)
         {
-            throw ExceptionUtility.NotSupported(Resources.Gost28147UnsafeCreateDecryptorNotSupported);
+            throw ExceptionUtility.NotSupported(Resource.Gost28147UnsafeCreateDecryptorNotSupported);
         }
 
 
@@ -293,7 +293,7 @@ namespace GostCryptography.Gost_28147_89
         [SecuritySafeCritical]
         public override ICryptoTransform CreateDecryptor(byte[] key, byte[] iv)
         {
-            throw ExceptionUtility.NotSupported(Resources.Gost28147UnsafeCreateDecryptorNotSupported);
+            throw ExceptionUtility.NotSupported(Resource.Gost28147UnsafeCreateDecryptorNotSupported);
         }
 
 
@@ -312,12 +312,12 @@ namespace GostCryptography.Gost_28147_89
 
             if (ModeValue == CipherMode.CTS)
             {
-                throw ExceptionUtility.CryptographicException(Resources.CipherTextSteamingNotSupported);
+                throw ExceptionUtility.CryptographicException(Resource.CipherTextSteamingNotSupported);
             }
 
             if ((Padding != PaddingMode.None) && ((ModeValue == CipherMode.OFB) || (ModeValue == CipherMode.CFB)))
             {
-                throw ExceptionUtility.CryptographicException(Resources.InvalidPaddingMode);
+                throw ExceptionUtility.CryptographicException(Resource.InvalidPaddingMode);
             }
 
             // Установка KP_MODE
@@ -328,7 +328,7 @@ namespace GostCryptography.Gost_28147_89
 
             if ((ModeValue == CipherMode.CFB) && (FeedbackSizeValue != DefaultFeedbackSize))
             {
-                throw ExceptionUtility.CryptographicException(Resources.IncorrectFeedbackSize);
+                throw ExceptionUtility.CryptographicException(Resource.IncorrectFeedbackSize);
             }
 
             // Установка KP_IV
@@ -342,7 +342,7 @@ namespace GostCryptography.Gost_28147_89
 
                 if (iv.Length < DefaultIvSize)
                 {
-                    throw ExceptionUtility.CryptographicException(Resources.InvalidIvSize);
+                    throw ExceptionUtility.CryptographicException(Resource.InvalidIvSize);
                 }
 
                 keyParameters.Add(Constants.KP_IV, iv);

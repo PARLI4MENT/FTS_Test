@@ -61,7 +61,7 @@ namespace GostCryptography.Asn1.Ber
 			{
 				if (value < 0)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidYearValue, YearValue);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidYearValue, YearValue);
 				}
 
 				if (value < 100)
@@ -190,7 +190,7 @@ namespace GostCryptography.Asn1.Ber
 
 				if (YearValue < 0)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidYearValue, YearValue);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidYearValue, YearValue);
 				}
 
 				if (YearValue < 100)
@@ -207,7 +207,7 @@ namespace GostCryptography.Asn1.Ber
 
 				if ((MonthValue < 1) || (MonthValue > 12))
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidMonthValue, MonthValue);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidMonthValue, MonthValue);
 				}
 
 				var num = DaysInMonth[MonthValue];
@@ -219,14 +219,14 @@ namespace GostCryptography.Asn1.Ber
 
 				if ((DayValue < 1) || (DayValue > num))
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidDayValue, DayValue);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidDayValue, DayValue);
 				}
 
 				var num2 = 0;
 
 				if (!char.IsDigit(CharAt(data, off.Value)))
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1HoursExpected);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1HoursExpected);
 				}
 
 				HourValue = ParseInt(data, off, 2);
@@ -234,7 +234,7 @@ namespace GostCryptography.Asn1.Ber
 
 				if (!char.IsDigit(CharAt(data, off.Value)))
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1MinutesExpected);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1MinutesExpected);
 				}
 
 				MinuteValue = ParseInt(data, off, 2);
@@ -248,17 +248,17 @@ namespace GostCryptography.Asn1.Ber
 
 				if ((num2 >= 2) && ((HourValue < 0) || (HourValue > UtcTimeTypeCode)))
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidHourValue, HourValue);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidHourValue, HourValue);
 				}
 
 				if ((num2 >= 2) && ((MinuteValue < 0) || (MinuteValue > 0x3b)))
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidMinuteValue, MinuteValue);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidMinuteValue, MinuteValue);
 				}
 
 				if ((num2 == 3) && ((SecondValue < 0) || (SecondValue > 0x3b)))
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidSecondValue, SecondValue);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidSecondValue, SecondValue);
 				}
 
 				CharAt(data, off.Value);
@@ -270,14 +270,14 @@ namespace GostCryptography.Asn1.Ber
 
 					if (off.Value != data.Length)
 					{
-						throw ExceptionUtility.CryptographicException(Resources.Asn1UnexpectedValuesAtEndOfString);
+						throw ExceptionUtility.CryptographicException(Resource.Asn1UnexpectedValuesAtEndOfString);
 					}
 				}
 				else
 				{
 					if (DerRules)
 					{
-						throw ExceptionUtility.CryptographicException(Resources.Asn1UnexpectedZoneOffset);
+						throw ExceptionUtility.CryptographicException(Resource.Asn1UnexpectedZoneOffset);
 					}
 
 					UtcFlag = false;
@@ -291,26 +291,26 @@ namespace GostCryptography.Asn1.Ber
 
 							if (!char.IsDigit(CharAt(data, off.Value)))
 							{
-								throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidDiffHour);
+								throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidDiffHour);
 							}
 
 							DiffHourValue = ParseInt(data, off, 2);
 
 							if (!char.IsDigit(CharAt(data, off.Value)))
 							{
-								throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidDiffMinute);
+								throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidDiffMinute);
 							}
 
 							DiffMinValue = ParseInt(data, off, 2);
 
 							if ((DiffHourValue < 0) || (DiffHourValue > 12))
 							{
-								throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidDiffHourValue, DiffHourValue);
+								throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidDiffHourValue, DiffHourValue);
 							}
 
 							if ((DiffMinValue < 0) || (DiffMinValue > 0x3b))
 							{
-								throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidDiffMinuteValue, DiffMinValue);
+								throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidDiffMinuteValue, DiffMinValue);
 							}
 
 							if (ch == '-')
@@ -331,15 +331,15 @@ namespace GostCryptography.Asn1.Ber
 			}
 			catch (IndexOutOfRangeException)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidDateFormat);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidDateFormat);
 			}
 			catch (FormatException)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidNumberFormat);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidNumberFormat);
 			}
 			catch (ArgumentException)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidDateFormat);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidDateFormat);
 			}
 		}
 

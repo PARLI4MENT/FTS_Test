@@ -73,13 +73,13 @@ namespace GostCryptography.Gost_R3410
 		/// <inheritdoc />
 		public override byte[] CreateSignature(byte[] hash)
 		{
-			throw ExceptionUtility.NotSupported(Resources.EphemKeyOperationNotSupported);
+			throw ExceptionUtility.NotSupported(Resource.EphemKeyOperationNotSupported);
 		}
 
 		/// <inheritdoc />
 		public override bool VerifySignature(byte[] hash, byte[] signature)
 		{
-			throw ExceptionUtility.NotSupported(Resources.EphemKeyOperationNotSupported);
+			throw ExceptionUtility.NotSupported(Resource.EphemKeyOperationNotSupported);
 		}
 
 
@@ -97,7 +97,7 @@ namespace GostCryptography.Gost_R3410
 		{
 			if (includePrivateKey)
 			{
-				throw ExceptionUtility.NotSupported(Resources.EphemKeyOperationNotSupported);
+				throw ExceptionUtility.NotSupported(Resource.EphemKeyOperationNotSupported);
 			}
 
 			return CryptoApiHelper.ExportPublicKey(_keyHandle, CreateKeyExchangeParams(), KeySizeValue);
@@ -106,7 +106,7 @@ namespace GostCryptography.Gost_R3410
 		/// <inheritdoc />
 		public override void ImportParameters(TKeyParams keyParameters)
 		{
-			throw ExceptionUtility.NotSupported(Resources.EphemKeyOperationNotSupported);
+			throw ExceptionUtility.NotSupported(Resource.EphemKeyOperationNotSupported);
 		}
 
 

@@ -44,7 +44,7 @@ namespace GostCryptography.Asn1.Ber
 
 					if (num3 <= 0)
 					{
-						throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidFormatOfConstructedValue, buffer.ByteCount);
+						throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidFormatOfConstructedValue, buffer.ByteCount);
 					}
 
 					capacity += num3;
@@ -95,7 +95,7 @@ namespace GostCryptography.Asn1.Ber
 		{
 			if ((len % 2) != 0)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidLengthException);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidLengthException);
 			}
 
 			while (len > 0)
@@ -104,7 +104,7 @@ namespace GostCryptography.Asn1.Ber
 
 				if (num == -1)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1EndOfBufferException, buffer.ByteCount);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1EndOfBufferException, buffer.ByteCount);
 				}
 
 				var num2 = num * 0x100;
@@ -113,7 +113,7 @@ namespace GostCryptography.Asn1.Ber
 
 				if (num == -1)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1EndOfBufferException, buffer.ByteCount);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1EndOfBufferException, buffer.ByteCount);
 				}
 
 				num2 += num;

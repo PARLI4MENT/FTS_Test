@@ -50,7 +50,7 @@ namespace GostCryptography.Asn1.Gost.Gost_R3410
 			}
 			catch (Exception exception)
 			{
-				throw ExceptionUtility.CryptographicException(exception, Resources.Asn1DecodeError, nameof(Gost_R3410_KeyTransport));
+				throw ExceptionUtility.CryptographicException(exception, Resource.Asn1DecodeError, nameof(Gost_R3410_KeyTransport));
 			}
 		}
 
@@ -72,21 +72,21 @@ namespace GostCryptography.Asn1.Gost.Gost_R3410
 
 			if (!publicKeyAlgOid.Equals(KeyAlgorithm.Value))
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1DecodeAlg, publicKeyAlgOid);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1DecodeAlg, publicKeyAlgOid);
 			}
 
 			var choice = publicKeyInfo.Algorithm.Parameters as Asn1Choice;
 
 			if (choice == null)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1DecodeAlgorithmParameters);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1DecodeAlgorithmParameters);
 			}
 
 			var publicKeyParams = choice.GetElement() as Gost_R3410_PublicKeyParams;
 
 			if (publicKeyParams == null)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1DecodeAlgorithmParameters);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1DecodeAlgorithmParameters);
 			}
 
 			var asnDecoder = new Asn1BerDecodeBuffer(publicKeyInfo.SubjectPublicKey.Value);
@@ -129,7 +129,7 @@ namespace GostCryptography.Asn1.Gost.Gost_R3410
 			}
 			catch (Exception exception)
 			{
-				throw ExceptionUtility.CryptographicException(exception, Resources.Asn1EncodeError, nameof(Gost_R3410_KeyTransport));
+				throw ExceptionUtility.CryptographicException(exception, Resource.Asn1EncodeError, nameof(Gost_R3410_KeyTransport));
 			}
 
 			return asnEncoder.MsgCopy;

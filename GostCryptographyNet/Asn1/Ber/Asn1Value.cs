@@ -118,7 +118,7 @@ namespace GostCryptography.Asn1.Ber
 							}
 							if (ch != '0')
 							{
-								ExceptionUtility.CryptographicException(Resources.Asn1ValueParseException, data, num);
+								ExceptionUtility.CryptographicException(Resource.Asn1ValueParseException, data, num);
 							}
 						}
 

@@ -25,7 +25,7 @@ namespace GostCryptography.Asn1.Gost.Gost_28147_89
 
 			if (!context.MatchElemTag(0, 0, OctetStringTypeCode, parsedLen, false))
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1MissingRequiredException, buffer.ByteCount);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1MissingRequiredException, buffer.ByteCount);
 			}
 
 			EncryptedKey = new Gost_28147_89_Key();
@@ -39,7 +39,7 @@ namespace GostCryptography.Asn1.Gost.Gost_28147_89
 
 			if (!context.MatchElemTag(0, 0, OctetStringTypeCode, parsedLen, false))
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1MissingRequiredException, buffer.ByteCount);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1MissingRequiredException, buffer.ByteCount);
 			}
 
 			MacKey = new Gost_28147_89_Mac();
@@ -47,7 +47,7 @@ namespace GostCryptography.Asn1.Gost.Gost_28147_89
 
 			if (MacKey.Length != 4)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1ConsVioException, nameof(MacKey.Length), MacKey.Length);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1ConsVioException, nameof(MacKey.Length), MacKey.Length);
 			}
 		}
 
@@ -57,7 +57,7 @@ namespace GostCryptography.Asn1.Gost.Gost_28147_89
 
 			if (MacKey.Length != 4)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1ConsVioException, nameof(MacKey.Length), MacKey.Length);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1ConsVioException, nameof(MacKey.Length), MacKey.Length);
 			}
 
 			len += MacKey.Encode(buffer, true);

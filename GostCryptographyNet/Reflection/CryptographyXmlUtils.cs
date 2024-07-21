@@ -56,7 +56,7 @@ namespace GostCryptography.Reflection
 
 				if (_buildBagOfCertsMethod == null)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.XmlCannotFindPrivateMember, $"{CryptographyXmlUtilsType.FullName}.BuildBagOfCerts()");
+					throw ExceptionUtility.CryptographicException(Resource.XmlCannotFindPrivateMember, $"{CryptographyXmlUtilsType.FullName}.BuildBagOfCerts()");
 				}
 
 				return _buildBagOfCertsMethod;
@@ -101,7 +101,7 @@ namespace GostCryptography.Reflection
 
 				if (_extractIdFromLocalUriMethod == null)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.XmlCannotFindPrivateMember, $"{CryptographyXmlUtilsType.FullName}.ExtractIdFromLocalUri()");
+					throw ExceptionUtility.CryptographicException(Resource.XmlCannotFindPrivateMember, $"{CryptographyXmlUtilsType.FullName}.ExtractIdFromLocalUri()");
 				}
 
 				return _extractIdFromLocalUriMethod;
@@ -129,7 +129,7 @@ namespace GostCryptography.Reflection
 
 				if (_cryptographyXmlUtilsType == null)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.XmlCannotFindPrivateMember, "System.Security.Cryptography.Xml.Utils");
+					throw ExceptionUtility.CryptographicException(Resource.XmlCannotFindPrivateMember, "System.Security.Cryptography.Xml.Utils");
 				}
 
 				return _cryptographyXmlUtilsType;

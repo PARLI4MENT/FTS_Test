@@ -37,7 +37,7 @@ namespace GostCryptography.Asn1.Ber
 
 			if (num < 0)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1ConsVioException, "Character index", charValue);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1ConsVioException, "Character index", charValue);
 			}
 
 			return num;

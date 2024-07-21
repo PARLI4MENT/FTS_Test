@@ -57,7 +57,7 @@ namespace GostCryptography.Asn1.Ber
 
 				if ((parsedLen.Value < 0) || (parsedLen.Value > (_elemLength - num)))
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidLengthException);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidLengthException);
 				}
 			}
 

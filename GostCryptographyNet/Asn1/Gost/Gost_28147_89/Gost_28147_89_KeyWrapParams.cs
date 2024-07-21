@@ -22,7 +22,7 @@ namespace GostCryptography.Asn1.Gost.Gost_28147_89
 
 			if (!context.MatchElemTag(0, 0, ObjectIdentifierTypeCode, parsedLen, false))
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1MissingRequiredException, buffer.ByteCount);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1MissingRequiredException, buffer.ByteCount);
 			}
 
 			EncryptionParamSet = new Asn1ObjectIdentifier();
@@ -35,7 +35,7 @@ namespace GostCryptography.Asn1.Gost.Gost_28147_89
 
 				if (Ukm.Length != 8)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1ConsVioException, nameof(Ukm.Length), Ukm.Length);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1ConsVioException, nameof(Ukm.Length), Ukm.Length);
 				}
 			}
 		}
@@ -48,7 +48,7 @@ namespace GostCryptography.Asn1.Gost.Gost_28147_89
 			{
 				if (Ukm.Length != 8)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1ConsVioException, nameof(Ukm.Length), Ukm.Length);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1ConsVioException, nameof(Ukm.Length), Ukm.Length);
 				}
 
 				len += Ukm.Encode(buffer, true);

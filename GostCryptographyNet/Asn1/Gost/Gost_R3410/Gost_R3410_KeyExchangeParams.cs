@@ -79,7 +79,7 @@ namespace GostCryptography.Asn1.Gost.Gost_R3410
 			}
 			catch (Exception exception)
 			{
-				throw ExceptionUtility.CryptographicException(exception, Resources.Asn1DecodeError, nameof(Gost_R3410_PublicKeyParams));
+				throw ExceptionUtility.CryptographicException(exception, Resource.Asn1DecodeError, nameof(Gost_R3410_PublicKeyParams));
 			}
 		}
 
@@ -103,7 +103,7 @@ namespace GostCryptography.Asn1.Gost.Gost_R3410
 			}
 			catch (Exception exception)
 			{
-				throw ExceptionUtility.CryptographicException(exception, Resources.Asn1EncodeError, nameof(Gost_R3410_PublicKeyParams));
+				throw ExceptionUtility.CryptographicException(exception, Resource.Asn1EncodeError, nameof(Gost_R3410_PublicKeyParams));
 			}
 
 			return data;
@@ -130,7 +130,7 @@ namespace GostCryptography.Asn1.Gost.Gost_R3410
 			}
 			catch (Exception exception)
 			{
-				throw ExceptionUtility.CryptographicException(exception, Resources.Asn1DecodeError, nameof(Gost_R3410_PublicKey));
+				throw ExceptionUtility.CryptographicException(exception, Resource.Asn1DecodeError, nameof(Gost_R3410_PublicKey));
 			}
 		}
 
@@ -152,7 +152,7 @@ namespace GostCryptography.Asn1.Gost.Gost_R3410
 			}
 			catch (Exception exception)
 			{
-				throw ExceptionUtility.CryptographicException(exception, Resources.Asn1EncodeError, nameof(Gost_R3410_PublicKeyParams));
+				throw ExceptionUtility.CryptographicException(exception, Resource.Asn1EncodeError, nameof(Gost_R3410_PublicKeyParams));
 			}
 
 			return data;

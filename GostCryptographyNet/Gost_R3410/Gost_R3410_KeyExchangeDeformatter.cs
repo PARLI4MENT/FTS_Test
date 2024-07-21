@@ -63,7 +63,7 @@ namespace GostCryptography.Gost_R3410
 
 			if (!(privateKey is Gost_R3410_AsymmetricAlgorithmBase<TKeyParams, TKeyAlgorithm> gostPublicKey))
 			{
-				throw ExceptionUtility.ArgumentOutOfRange(nameof(privateKey), Resources.ShouldSupportGost3410);
+				throw ExceptionUtility.ArgumentOutOfRange(nameof(privateKey), Resource.ShouldSupportGost3410);
 			}
 
 			_privateKey = gostPublicKey;

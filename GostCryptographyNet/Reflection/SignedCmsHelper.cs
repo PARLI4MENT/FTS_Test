@@ -18,7 +18,7 @@ namespace GostCryptography.Reflection
         private static readonly Lazy<FieldInfo> MessageHandleField = new Lazy<FieldInfo>(() =>
         {
             var field = typeof(SignedCms).GetField(MessageHandleFieldName, BindingFlags.Instance | BindingFlags.NonPublic);
-            return field ?? throw ExceptionUtility.CryptographicException(Resources.SignedCmsCannotFindPrivateMember, MessageHandleFieldName);
+            return field ?? throw ExceptionUtility.CryptographicException(Resource.SignedCmsCannotFindPrivateMember, MessageHandleFieldName);
         });
 
         [SecuritySafeCritical]

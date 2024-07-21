@@ -230,7 +230,7 @@ namespace GostCryptography.Native
 				}
 				else
 				{
-					throw ExceptionUtility.NotSupported(Resources.KeyAlgorithmNotSupported);
+					throw ExceptionUtility.NotSupported(Resource.KeyAlgorithmNotSupported);
 				}
 			}
 
@@ -420,7 +420,7 @@ namespace GostCryptography.Native
 
 				if (errorCode == Constants.NTE_BAD_ALGID)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.AlgorithmNotAvailable);
+					throw ExceptionUtility.CryptographicException(Resource.AlgorithmNotAvailable);
 				}
 
 				throw ExceptionUtility.CryptographicException(errorCode);
@@ -511,7 +511,7 @@ namespace GostCryptography.Native
 
 			if (dataOffset > data.Length)
 			{
-				throw ExceptionUtility.ArgumentOutOfRange(nameof(dataOffset), Resources.InvalidDataOffset);
+				throw ExceptionUtility.ArgumentOutOfRange(nameof(dataOffset), Resource.InvalidDataOffset);
 			}
 
 			var length = dataLength;
@@ -694,7 +694,7 @@ namespace GostCryptography.Native
 				}
 				else if ((paddingMode != PaddingMode.None) && (paddingMode != PaddingMode.Zeros))
 				{
-					throw ExceptionUtility.Argument(nameof(paddingMode), Resources.InvalidPaddingMode);
+					throw ExceptionUtility.Argument(nameof(paddingMode), Resource.InvalidPaddingMode);
 				}
 
 				length -= dataPaddingSize;
@@ -715,7 +715,7 @@ namespace GostCryptography.Native
 
 				if ((decryptedData.Length < length) || ((decryptedData.Length - length) < decryptedDataOffset))
 				{
-					throw ExceptionUtility.ArgumentOutOfRange(nameof(decryptedData), Resources.InvalidDataOffset);
+					throw ExceptionUtility.ArgumentOutOfRange(nameof(decryptedData), Resource.InvalidDataOffset);
 				}
 
 				Array.Copy(dataAlign, 0, decryptedData, decryptedDataOffset, length);

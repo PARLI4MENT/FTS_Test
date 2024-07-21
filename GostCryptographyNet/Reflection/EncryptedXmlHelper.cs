@@ -27,7 +27,7 @@ namespace GostCryptography.Reflection
 
 			if (_documentField == null)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.XmlCannotFindPrivateMember, "m_document");
+				throw ExceptionUtility.CryptographicException(Resource.XmlCannotFindPrivateMember, "m_document");
 			}
 
 			return (XmlDocument)_documentField.GetValue(encryptedXml);
@@ -52,7 +52,7 @@ namespace GostCryptography.Reflection
 
 			if (_keyNameMappingField == null)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.XmlCannotFindPrivateMember, "m_keyNameMapping");
+				throw ExceptionUtility.CryptographicException(Resource.XmlCannotFindPrivateMember, "m_keyNameMapping");
 			}
 
 			return (Hashtable)_keyNameMappingField.GetValue(encryptedXml);
@@ -77,7 +77,7 @@ namespace GostCryptography.Reflection
 
 			if (_getCipherValueMethod == null)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.XmlCannotFindPrivateMember, "GetCipherValue()");
+				throw ExceptionUtility.CryptographicException(Resource.XmlCannotFindPrivateMember, "GetCipherValue()");
 			}
 
 			return (byte[])_getCipherValueMethod.Invoke(encryptedXml, new object[] { cipherData });

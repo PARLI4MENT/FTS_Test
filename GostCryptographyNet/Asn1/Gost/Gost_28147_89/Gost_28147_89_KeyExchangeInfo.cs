@@ -54,7 +54,7 @@ namespace GostCryptography.Asn1.Gost.Gost_28147_89
 			}
 			catch (Exception exception)
 			{
-				throw ExceptionUtility.CryptographicException(exception, Resources.Asn1DecodeError, nameof(Gost_28147_89_KeyWrap));
+				throw ExceptionUtility.CryptographicException(exception, Resource.Asn1DecodeError, nameof(Gost_28147_89_KeyWrap));
 			}
 		}
 
@@ -87,7 +87,7 @@ namespace GostCryptography.Asn1.Gost.Gost_28147_89
 			}
 			catch (Exception exception)
 			{
-				throw ExceptionUtility.CryptographicException(exception, Resources.Asn1DecodeError, nameof(Gost_28147_89_KeyWrap));
+				throw ExceptionUtility.CryptographicException(exception, Resource.Asn1DecodeError, nameof(Gost_28147_89_KeyWrap));
 			}
 
 			return data;
@@ -116,7 +116,7 @@ namespace GostCryptography.Asn1.Gost.Gost_28147_89
 			}
 			catch (Exception exception)
 			{
-				throw ExceptionUtility.CryptographicException(exception, Resources.Asn1DecodeError, typeof(Gost_28147_89_BlobParams).FullName);
+				throw ExceptionUtility.CryptographicException(exception, Resource.Asn1DecodeError, typeof(Gost_28147_89_BlobParams).FullName);
 			}
 
 			return encryptionParamSet;
@@ -144,7 +144,7 @@ namespace GostCryptography.Asn1.Gost.Gost_28147_89
 			}
 			catch (Exception exception)
 			{
-				throw ExceptionUtility.CryptographicException(exception, Resources.Asn1EncodeError, nameof(Gost_28147_89_BlobParams));
+				throw ExceptionUtility.CryptographicException(exception, Resource.Asn1EncodeError, nameof(Gost_28147_89_BlobParams));
 			}
 
 			return data;

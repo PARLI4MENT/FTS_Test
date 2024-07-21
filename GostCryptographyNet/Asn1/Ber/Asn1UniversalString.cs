@@ -64,7 +64,7 @@ namespace GostCryptography.Asn1.Ber
 
 					if (num2 <= 0)
 					{
-						throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidFormatOfConstructedValue, buffer.ByteCount);
+						throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidFormatOfConstructedValue, buffer.ByteCount);
 					}
 
 					ReadSegment(buffer, num2, idx);
@@ -183,7 +183,7 @@ namespace GostCryptography.Asn1.Ber
 
 					if (num == -1)
 					{
-						throw ExceptionUtility.CryptographicException(Resources.Asn1EndOfBufferException, buffer.ByteCount);
+						throw ExceptionUtility.CryptographicException(Resource.Asn1EndOfBufferException, buffer.ByteCount);
 					}
 
 					_value[value] = (_value[value] * 0x100) + num;

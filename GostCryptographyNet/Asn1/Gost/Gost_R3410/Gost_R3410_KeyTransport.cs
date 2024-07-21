@@ -23,7 +23,7 @@ namespace GostCryptography.Asn1.Gost.Gost_R3410
 
 			if (!context.MatchElemTag(0, 0x20, SequenceTypeCode, parsedLen, false))
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1MissingRequiredException, buffer.ByteCount);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1MissingRequiredException, buffer.ByteCount);
 			}
 
 			SessionEncryptedKey = new Gost_28147_89_EncryptedKey();

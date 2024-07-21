@@ -92,7 +92,7 @@ namespace GostCryptography.Asn1.Ber
 
 			if (num2 < 0)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1EndOfBufferException, ByteCount);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1EndOfBufferException, ByteCount);
 			}
 
 			if (num2 <= 0x80)
@@ -109,7 +109,7 @@ namespace GostCryptography.Asn1.Ber
 
 			if (num > 4)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidLengthException);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidLengthException);
 			}
 
 			while (num > 0)
@@ -118,7 +118,7 @@ namespace GostCryptography.Asn1.Ber
 
 				if (num2 < 0)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1EndOfBufferException, ByteCount);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1EndOfBufferException, ByteCount);
 				}
 
 				num3 = (num3 * 0x100) + num2;
@@ -192,7 +192,7 @@ namespace GostCryptography.Asn1.Ber
 
 			if (num < 0)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1EndOfBufferException, ByteCount);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1EndOfBufferException, ByteCount);
 			}
 
 			tag.Class = (short)(num & 0xc0);
@@ -210,14 +210,14 @@ namespace GostCryptography.Asn1.Ber
 
 					if (num < 0)
 					{
-						throw ExceptionUtility.CryptographicException(Resources.Asn1EndOfBufferException, ByteCount);
+						throw ExceptionUtility.CryptographicException(Resource.Asn1EndOfBufferException, ByteCount);
 					}
 
 					num2 = (num2 * 0x80L) + (num & 0x7f);
 
 					if ((num2 > 0x7fffffffL) || (num3++ > 8))
 					{
-						throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidTagValue);
+						throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidTagValue);
 					}
 
 				}

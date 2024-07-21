@@ -30,7 +30,7 @@ namespace GostCryptography.Asn1.Gost.Gost_R3410
 			}
 			else
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1MissingRequiredException, buffer.ByteCount);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1MissingRequiredException, buffer.ByteCount);
 			}
 
 			if (context.MatchElemTag(0, 0, ObjectIdentifierTypeCode, parsedLen, false))
@@ -51,7 +51,7 @@ namespace GostCryptography.Asn1.Gost.Gost_R3410
 
 				if (lastTag.Equals(0, 0, ObjectIdentifierTypeCode))
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1SeqOrderException);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1SeqOrderException);
 				}
 			}
 		}

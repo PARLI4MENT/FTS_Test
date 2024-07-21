@@ -159,7 +159,7 @@ namespace GostCryptography.Asn1.Ber
 		{
 			if (!buffer.MatchTag(tagClass, tagForm, tagIdCode, _parsedTag, _parsedLen))
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1TagMatchFailedException, new Asn1Tag(tagClass, tagForm, tagIdCode), _parsedTag, buffer.ByteCount);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1TagMatchFailedException, new Asn1Tag(tagClass, tagForm, tagIdCode), _parsedTag, buffer.ByteCount);
 			}
 
 			return _parsedLen.Value;

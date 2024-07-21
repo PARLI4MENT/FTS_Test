@@ -35,7 +35,7 @@ namespace GostCryptography.Asn1.Gost.PublicKey
 
 			if (!context.MatchElemTag(0, 0, ObjectIdentifierTypeCode, parsedLen, false))
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1MissingRequiredException, buffer.ByteCount);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1MissingRequiredException, buffer.ByteCount);
 			}
 
 			Algorithm = new Asn1ObjectIdentifier();
@@ -96,7 +96,7 @@ namespace GostCryptography.Asn1.Gost.PublicKey
 				catch (Exception exception)
 				{
 					Asn1Util.WriteStackTrace(exception, Console.Error);
-					throw ExceptionUtility.CryptographicException(Resources.Asn1TableConstraint);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1TableConstraint);
 				}
 			}
 		}

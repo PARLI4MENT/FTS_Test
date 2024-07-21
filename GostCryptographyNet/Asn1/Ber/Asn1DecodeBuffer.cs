@@ -100,7 +100,7 @@ namespace GostCryptography.Asn1.Ber
 
 				if (index >= 0x80)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidObjectIdException);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidObjectIdException);
 				}
 
 				_oidBuffer[index] = 0;
@@ -130,7 +130,7 @@ namespace GostCryptography.Asn1.Ber
 
 			if (llen != 0)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidLengthException);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidLengthException);
 			}
 
 			var destinationArray = new int[index];
@@ -153,7 +153,7 @@ namespace GostCryptography.Asn1.Ber
 
 				if (index >= 0x80)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidObjectIdException);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidObjectIdException);
 				}
 
 				_oidBuffer[index] = 0;
@@ -171,7 +171,7 @@ namespace GostCryptography.Asn1.Ber
 
 			if (llen != 0)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidLengthException);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidLengthException);
 			}
 
 			var destinationArray = new int[index];
@@ -238,7 +238,7 @@ namespace GostCryptography.Asn1.Ber
 
 			if (num == -1)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1EndOfBufferException, ByteCount);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1EndOfBufferException, ByteCount);
 			}
 
 			foreach (MemoryStream s in _captureBufferList)
@@ -267,7 +267,7 @@ namespace GostCryptography.Asn1.Ber
 
 				if (num <= 0)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1EndOfBufferException, ByteCount);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1EndOfBufferException, ByteCount);
 				}
 
 				num3 += num;

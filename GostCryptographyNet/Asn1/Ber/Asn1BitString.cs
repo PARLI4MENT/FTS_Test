@@ -141,18 +141,18 @@ namespace GostCryptography.Asn1.Ber
 
 					if (num7 < 0)
 					{
-						throw ExceptionUtility.CryptographicException(Resources.Asn1EndOfBufferException, buffer.ByteCount);
+						throw ExceptionUtility.CryptographicException(Resource.Asn1EndOfBufferException, buffer.ByteCount);
 					}
 
 					if ((num7 < 0) || (num7 > 7))
 					{
-						throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidFormatOfBitString, num7);
+						throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidFormatOfBitString, num7);
 					}
 
 					if ((num8 == 0) && (num7 != 0))
 					{
-						throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidLengthException);
-					}
+						throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidLengthException);
+					}	
 
 					NumBits = (num8 * 8) - num7;
 					Value = new byte[num8];
@@ -179,7 +179,7 @@ namespace GostCryptography.Asn1.Ber
 
 					if (nbytes <= 0)
 					{
-						throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidFormatOfConstructedValue, buffer.ByteCount);
+						throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidFormatOfConstructedValue, buffer.ByteCount);
 					}
 
 					num3 += nbytes;
@@ -212,7 +212,7 @@ namespace GostCryptography.Asn1.Ber
 
 				if ((num6 < 0) || (num6 > 7))
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidFormatOfBitString, num6);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidFormatOfBitString, num6);
 				}
 
 				ReallocBitArray((num3 * 8) - num6);

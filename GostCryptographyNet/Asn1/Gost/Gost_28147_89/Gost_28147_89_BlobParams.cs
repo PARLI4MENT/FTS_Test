@@ -22,7 +22,7 @@ namespace GostCryptography.Asn1.Gost.Gost_28147_89
 
 			if (!context.MatchElemTag(0, 0, ObjectIdentifierTypeCode, parsedLen, false))
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1MissingRequiredException, buffer.ByteCount);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1MissingRequiredException, buffer.ByteCount);
 			}
 
 			EncryptionParamSet = new Asn1ObjectIdentifier();
@@ -32,7 +32,7 @@ namespace GostCryptography.Asn1.Gost.Gost_28147_89
 			{
 				if (buffer.PeekTag().Equals(0, 0, ObjectIdentifierTypeCode))
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1SeqOrderException);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1SeqOrderException);
 				}
 
 				ExtElement = new Asn1OpenExt();

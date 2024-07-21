@@ -49,7 +49,7 @@ namespace GostCryptography.Asn1.Ber
 
 			if (index >= _charSet.Length)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1ConsVioException, "Character index", charValue);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1ConsVioException, "Character index", charValue);
 			}
 
 			return index;

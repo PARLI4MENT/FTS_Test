@@ -81,7 +81,7 @@ namespace GostCryptography.Gost_R3410
 
 			if (keyValue == null)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.InvalidFromXmlString, _keyValueTag);
+				throw ExceptionUtility.CryptographicException(Resource.InvalidFromXmlString, _keyValueTag);
 			}
 
 			keyValue = SelectChildElement(keyValue, _keyValueTag) ?? keyValue;
@@ -94,7 +94,7 @@ namespace GostCryptography.Gost_R3410
 
 				if (!publicKeyParamSet.StartsWith(OidPrefix, StringComparison.OrdinalIgnoreCase))
 				{
-					throw ExceptionUtility.CryptographicException(Resources.InvalidFromXmlString, PublicKeyParamSetTag);
+					throw ExceptionUtility.CryptographicException(Resource.InvalidFromXmlString, PublicKeyParamSetTag);
 				}
 
 				parameters.PublicKeyParamSet = publicKeyParamSet.Substring(OidPrefix.Length);
@@ -103,7 +103,7 @@ namespace GostCryptography.Gost_R3410
 
 				if (!digestParamSet.StartsWith(OidPrefix, StringComparison.OrdinalIgnoreCase))
 				{
-					throw ExceptionUtility.CryptographicException(Resources.InvalidFromXmlString, DigestParamSetTag);
+					throw ExceptionUtility.CryptographicException(Resource.InvalidFromXmlString, DigestParamSetTag);
 				}
 
 				parameters.DigestParamSet = digestParamSet.Substring(OidPrefix.Length);
@@ -116,7 +116,7 @@ namespace GostCryptography.Gost_R3410
 
 					if (!encryptionParamSet.StartsWith(OidPrefix, StringComparison.OrdinalIgnoreCase))
 					{
-						throw ExceptionUtility.CryptographicException(Resources.InvalidFromXmlString, EncryptionParamSetTag);
+						throw ExceptionUtility.CryptographicException(Resource.InvalidFromXmlString, EncryptionParamSetTag);
 					}
 
 					parameters.EncryptionParamSet = encryptionParamSet.Substring(OidPrefix.Length);
@@ -150,7 +150,7 @@ namespace GostCryptography.Gost_R3410
 
 			if (string.IsNullOrEmpty(text) && !canNull)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.InvalidFromXmlString, childName);
+				throw ExceptionUtility.CryptographicException(Resource.InvalidFromXmlString, childName);
 			}
 
 			return text;

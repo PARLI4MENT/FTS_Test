@@ -24,7 +24,7 @@ namespace GostCryptography.Asn1.Ber
 
 				if (num2 < 0)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1EndOfBufferException, buffer.ByteCount);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1EndOfBufferException, buffer.ByteCount);
 				}
 
 				if ((i == 0) && signExtend)
