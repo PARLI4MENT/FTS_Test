@@ -1,88 +1,76 @@
-﻿#define TEST
-
-using GostCryptography.Base;
-using GostCryptography.Xml;
-
-using System;
+﻿using System;
 using System.IO;
-using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography.Xml;
-using System.Threading.Tasks;
 using System.Xml;
-using System.Diagnostics;
-using System.Linq;
-using Npgsql;
-using SQLTestNs;
-using Microsoft.Extensions.Configuration;
-using System.Linq.Expressions;
-using System.Dynamic;
 
-namespace XMLSigner
+namespace XmlNs
 {
-    internal class Program
+    class ImplementateToXml
     {
-        static void Main(string[] args)
+        public static string FileInFolder { get; private set; } = "C:\\_test\\intermidateFiles";
+        public static string FileOutFolder { get; private set; } = "C:\\_test\\implementFiles";
+        public static string FileTemplate { get; private set; } = "C:\\_test\\create_doc_in_arch.xml";
+
+        public static string ExtractId(string pathToXML)
         {
+            using (StreamReader sr = new StreamReader(pathToXML, true))
+            {
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.Load(sr);
 
-            PgSql pgSql = new PgSql("192.168.0.142", "5438", "postgres", "passwd0105");
-
-            // Setting cert to variable
-            var certificate = FindGostCertificate();
-
-            Console.WriteLine("Start process...");
-
-            // Rename and move to intermidateFiles XML files
-            string[] rowFiles = Directory.GetDirectories("C:\\_test\\rawFiles");
-            FileNs.RenamerXML.RenameMoveParallel("C:\\_test\\rawFiles");
-
-            var sw = new Stopwatch();
-            var swTotal = new Stopwatch();
-            sw.Start();
-            swTotal.Start();
-
-            // Inplement to XML, signing and sending request to BD
-            Console.WriteLine("Start inplement...");
-            string[] implementFiles = Directory.GetFiles("C:\\_test\\intermidateFiles");
-            Parallel.ForEach(implementFiles,
-                new ParallelOptions { MaxDegreeOfParallelism = -1 },
-                implementFile =>
+                foreach (XmlNode xmlNode in xmlDoc.DocumentElement)
                 {
-                    XmlNs.ImplementateToXml.DataImplementation(implementFile);
-                });
-            sw.Stop();
-            Console.WriteLine($"Time inplement => {sw.ElapsedMilliseconds / 1000},{sw.ElapsedMilliseconds % 1000} sec");
-            Console.WriteLine($"Total destination files => {Directory.GetFiles("C:\\_test\\implementFiles").Count()} units");
-            Console.WriteLine($"AVG => {(Directory.GetFiles("C:\\_test\\intermidateFiles").Count()) / ((int)sw.ElapsedMilliseconds / 1000)}");
-
-            sw.Restart();
-            Console.WriteLine("\nStart signing XML...");
-            string[] singingFiles = Directory.GetFiles("C:\\_test\\implementFiles");
-            Parallel.ForEach(singingFiles,
-                new ParallelOptions { MaxDegreeOfParallelism = -1 },
-                singFile =>
-                {
-                    var signedXml = SignXmlDocument(singFile, ref certificate);
-                    signedXml.Save(Path.Combine("C:\\_test\\signedFiles", ("Signed." + Path.GetFileName(singFile))));
-                });
-
-            //sw.Stop();
-            //swTotal.Stop();
-            //Console.WriteLine($"Time signed => {sw.ElapsedMilliseconds/1000},{sw.ElapsedMilliseconds%1000} sec");
-            //Console.WriteLine($"Total destination files => {Directory.GetFiles("C:\\_test\\signedFiles").Count()} units");
-            //Console.WriteLine($"AVG => {(Directory.GetFiles("C:\\_test\\implementFiles").Count())/((int)sw.ElapsedMilliseconds/1000)}");
-
-
-            //Console.WriteLine($"\nTotal time => {swTotal.ElapsedMilliseconds/1000},{swTotal.ElapsedMilliseconds%1000} sec");
-            //Console.WriteLine("DONE !");
-            //Console.ReadKey();
+                    if (xmlNode.Name == "DocumentID")
+                    {
+#if DEBUG
+                        Console.WriteLine($"Node Name => {xmlNode.Name}");
+                        Console.WriteLine($"Node InnerText => {xmlNode.InnerText}");
+                        Console.WriteLine();
+#endif
+                        return xmlNode.InnerText;
+                    }
+                }
+                return string.Empty;
+            }
         }
 
-        private static void DataImplementation(string FileName, bool deletedInputFile = false)
+        public static void ExtractId(string pathToXML, out string id, out string fileName)
+        {
+            if (String.IsNullOrEmpty(pathToXML))
+            {
+                Console.WriteLine("IS NULL OR EMPTY");
+                id = null;
+                fileName = null;
+                return;
+            }
+
+            using (StreamReader sr = new StreamReader(pathToXML, true))
+            {
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.Load(sr);
+
+                foreach (XmlNode xmlNode in xmlDoc.DocumentElement)
+                {
+                    if (xmlNode.Name == "DocumentID")
+                    {
+#if DEBUG
+                        Console.WriteLine($"Node Name => {xmlNode.Name}");
+                        Console.WriteLine($"Node InnerText => {xmlNode.InnerText}");
+                        Console.WriteLine();
+#endif
+                        id = xmlNode.InnerText;
+                        fileName = Path.GetFileName(pathToXML);
+                        return;
+                    }
+                }
+                id = null;
+                fileName = null;
+
+            }
+        }
+
+        public static void DataImplementation(string FileName, bool deletedInputFile = false)
         {
 
-            string FileInFolder = "C:\\_test\\intermidateFiles";
-            string FileOutFolder = "C:\\_test\\implementFiles";
-            const string FileTemplate = "C:\\_test\\create_doc_in_arch.xml";
 
             const int Company_key_id = 1;
 
@@ -255,134 +243,11 @@ namespace XMLSigner
 
             //File.AppendAllText("C:\\_test\\Arch_docs.log", "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
 
-            //Send to PostgresSQL DB
-            //string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;" +
-            //    $"Connection Idle Lifetime=20;Maximum Pool Size=150;";
-
-            string[] strArr = new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName };
-
-            string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
-            using (var sqlConn = new NpgsqlConnection(_strConnMain))
-            {
-                sqlConn.Open();
-                using (var sqlComm = new Npgsql.NpgsqlCommand())
-                {
-                    sqlComm.CommandText = $@"INSERT INTO ""public"".""ExchED""
-                                (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
-                                ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
-                                VALUES ('{NameArray}', 'CMN.00202', '{EnvelopeID}', {Company_key_id}, '{DocumentID}',
-                                '{PrDocumentName}', '{PrDocumentNumber}', '{DocCode}', '{Path.GetFileName(NewDocToArchName)}');";
-                    sqlComm.Connection = sqlConn;
-                    sqlComm.ExecuteNonQuery();
-                    // ArchivePathDoc ???
-                }
-                sqlConn.Close();
-            }
-
-            #region
-            //await using (var sqlConn = new NpgsqlConnection(_strConnMain))
-            //{
-            //    await sqlConn.OpenAsync();
-            //    await using (var comm = new Npgsql.NpgsqlCommand($@"INSERT INTO ""public"".""ExchED""
-            //                (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
-            //                ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
-            //                VALUES ('{NameArray}', 'CMN.00202', '{EnvelopeID}', {Company_key_id}, '{DocumentID}',
-            //                '{PrDocumentName}', '{PrDocumentNumber}', '{DocCode}', '{Path.GetFileName(NewDocToArchName)}');", sqlConn))
-            //    //(""InnerID"", ""Status"", ""DocsSended"") VALUES ('{NameArray}', 'Отправка в архив', 1)", sqlConn))
-            //    {
-            //        await comm.ExecuteNonQueryAsync();
-            //        // ArchivePathDoc ???
-            //    }
-            //}
-            #endregion
-
             if (deletedInputFile)
             {
                 File.Delete(FileName);
                 File.Delete(NewDocToArchName);
             }
-        }
-
-        /// <summary>
-        /// Подписание XML-документа
-        /// </summary>
-        /// <param name="pathToXmlFile">Абсолютный путь до XML-файла</param>
-        /// <param name="certificate"></param>
-        /// <returns></returns>
-        public static XmlDocument SignXmlDocument(string pathToXmlFile, ref X509Certificate2 certificate)
-        {
-            var xmlDocument = new XmlDocument();
-            xmlDocument.Load(new StringReader(File.ReadAllText(pathToXmlFile)));
-
-            var signedXml = new GostSignedXml(xmlDocument);
-            signedXml.SetSigningCertificate(certificate);
-            
-            var dataReference = new Reference { Uri = "", DigestMethod = GetDigestMethod(certificate) };
-            dataReference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
-            
-
-            signedXml.AddReference(dataReference); ;
-
-            var keyInfo = new KeyInfo();
-            keyInfo.AddClause(new KeyInfoX509Data(certificate));
-            signedXml.KeyInfo = keyInfo;
-
-            signedXml.ComputeSignature();
-
-            var signatureXml = signedXml.GetXml();
-
-            xmlDocument.DocumentElement.AppendChild(xmlDocument.ImportNode(signatureXml, true));
-            return xmlDocument;
-        }
-
-        /// <summary>
-        /// Получение объекта сертификата из хранилища
-        /// </summary>
-        /// <param name="filter"></param>
-        /// <returns></returns>
-        private static X509Certificate2 FindGostCertificate(Predicate<X509Certificate2> filter = null)
-        {
-            var store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
-            store.Open(OpenFlags.OpenExistingOnly | OpenFlags.ReadOnly);
-
-            try
-            {
-                foreach (var certificate in store.Certificates)
-                {
-                    if (certificate.HasPrivateKey && certificate.IsGost() && (filter == null || filter(certificate)))
-                    {
-                        return certificate;
-                    }
-                }
-            }
-            finally
-            {
-                store.Close();
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="certificate"></param>
-        /// <returns></returns>
-        private static string GetDigestMethod(X509Certificate2 certificate)
-        {
-            using(var publicKey = (GostAsymmetricAlgorithm)certificate.GetPrivateKeyAlgorithm())
-            {
-                using (var hasAlgorithm = publicKey.CreateHashAlgorithm())
-                {
-                    return hasAlgorithm.AlgorithmName;
-                }
-            }
-        }
-
-
-        public void ImplementationToXML()
-        { 
-        
         }
     }
 }

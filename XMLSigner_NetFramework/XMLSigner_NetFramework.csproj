@@ -109,7 +109,7 @@
     <Compile Include="Fields\ECD_list.cs" />
     <Compile Include="OutClass\Initializer.cs" />
     <Compile Include="OutClass\PgSql.cs" />
-    <Compile Include="OutClass\Exctract_XML.cs" />
+    <Compile Include="OutClass\ImplementateToXml.cs" />
     <Compile Include="OutClass\SerilizeJsonConfig.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

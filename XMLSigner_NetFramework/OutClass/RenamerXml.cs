@@ -20,9 +20,48 @@ namespace FileNs
 
         private static string _dirDestination = Path.Combine(_rootDir, "inputFiles");
 
-		private static long _elapsedMilliseconds { get; set; }
+        private static long _elapsedMilliseconds { get; set; }
         private static int _countRawFiles { get; set; }
         private static int _subFolder { get; set; }
+
+        public static void RenameMoveParallel(string[] rawFiles)
+        {
+            Parallel.ForEach(rawFiles, rawFile =>
+            {
+                string[] subDir = Directory.GetDirectories(Path.Combine(rawFile, "files"));
+
+                string[] filesSubfolder = (Directory.GetFiles(Path.Combine(subDir[0], "xml")));
+
+                foreach (string file in filesSubfolder)
+                {
+                    Task.Run(() =>
+                    {
+                        // Combine Xml
+                        string tmpPathCombine = Path.Combine("C:\\_test\\intermidateFiles", string.Concat(Path.GetFileName(rawFile), ".", Path.GetFileName(file)));
+                        File.Copy(file, tmpPathCombine);
+                    });
+                }
+            });
+        }
+        public static void RenameMoveParallel(string pathRawFiles)
+        {
+            Parallel.ForEach(Directory.GetFiles(pathRawFiles), rawFile =>
+            {
+                string[] subDir = Directory.GetDirectories(Path.Combine(rawFile, "files"));
+
+                string[] filesSubfolder = (Directory.GetFiles(Path.Combine(subDir[0], "xml")));
+
+                foreach (string file in filesSubfolder)
+                {
+                    Task.Run(() =>
+                    {
+                        // Combine Xml
+                        string tmpPathCombine = Path.Combine("C:\\_test\\intermidateFiles", string.Concat(Path.GetFileName(rawFile), ".", Path.GetFileName(file)));
+                        File.Copy(file, tmpPathCombine);
+                    });
+                }
+            });
+        }
 
         /// <summary>
         /// Перемещение и переименование Xml-файлов по маске
@@ -169,7 +208,6 @@ namespace FileNs
                 Directory.Delete(item);
             }
         }
-
 
         /// <summary>
         /// Для личных нужд

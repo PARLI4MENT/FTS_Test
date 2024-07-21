@@ -2,6 +2,8 @@
 using System;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 
 namespace SQLTestNs
@@ -44,28 +46,54 @@ namespace SQLTestNs
 
         }
 
+        public void ExecuteToDB(string[] args, int Company_key_id)
+        {
+            string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
+            using (var sqlConn = new NpgsqlConnection(_strConnMain))
+            {
+                sqlConn.Open();
+                using (var sqlComm = new NpgsqlCommand())
+                {
+                    sqlComm.CommandText = $@"INSERT INTO ""public"".""ExchED""
+                                (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
+                                ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
+                                VALUES ('{args[0]}', 'CMN.00202', '{args[1]}', {Company_key_id}, '{args[2]}',
+                                '{args[3]}', '{args[4]}', '{args[5]}', '{Path.GetFileName(args[6])}');";
+                    sqlComm.Connection = sqlConn;
+                    sqlComm.ExecuteNonQuery();
+                    // ArchivePathDoc ???
+                }
+                sqlConn.Close();
+            }
+        }
+
         public delegate void PgDataOut(string tableName, int iteration = 100);
 
         private static bool PgSqlCheckConnection()
         {
             string _strConnMain = $"Server={_Server};Port={_Port};Uid={_Uid};Pwd={_Password};";
-
-            using (var sqlConnection = new NpgsqlConnection(_strConnMain))
+            try
             {
-                if (sqlConnection.State == ConnectionState.Open)
-                {
-                    Console.WriteLine("Connection state => is Open");
-                    return true;
-                }
-                else
-                    Console.WriteLine("Connection state => wasn`t Open");
 
-                Console.WriteLine($"\nServer => {_Server}");
-                Console.WriteLine($"Port => {_Port}");
-                Console.WriteLine($"Uid => {_Uid}");
-                Console.WriteLine($"Password => {_Password}");
-                return false;
+                using (var sqlConnection = new NpgsqlConnection(_strConnMain))
+                {
+                    sqlConnection.Open();
+                    if (sqlConnection.State == ConnectionState.Open)
+                    {
+                        Console.WriteLine("Connection state => is Open");
+                        return true;
+                    }
+                    else
+                        Console.WriteLine("Connection state => wasn`t Open");
+
+                    Debug.WriteLine($"\nServer => {_Server}");
+                    Debug.WriteLine($"Port => {_Port}");
+                    Debug.WriteLine($"Uid => {_Uid}");
+                    Console.WriteLine($"Password => {_Password}");
+                    return false;
+                }
             }
+            catch (Exception) { return false; }
         }
 
         public bool CheckDatabaseExist()
@@ -83,7 +111,7 @@ namespace SQLTestNs
             return false;
         }
 
-    public void PgSqlCreateDatabase(bool CreateTable = false)
+        public void PgSqlCreateDatabase(bool CreateTable = false)
         {
             string strComm = $@"CREATE DATABASE {_Database} WITH OWNER postgres ENCODING = 'UTF8' CONNECTION LIMIT = -1;";
 
@@ -91,14 +119,14 @@ namespace SQLTestNs
             {
                 Debug.WriteLine(sqlConn.State.ToString());
                 sqlConn.Open();
-                
+
                 Debug.WriteLine(sqlConn.State.ToString());
                 var sqlComm = new NpgsqlCommand(strComm, sqlConn);
                 sqlComm.ExecuteNonQuery();
-                
+
                 Debug.WriteLine("Query is Done!");
                 sqlConn.Close();
-                
+
                 Debug.WriteLine(sqlConn.State.ToString());
 
                 if (CreateTable)
@@ -139,7 +167,7 @@ namespace SQLTestNs
         }
 
         /// <summary>
-        /// NOT A DONE
+        /// NOT A FINISHTED
         /// </summary>
         /// <param name="sqlConnection"></param>
         /// <param name="tableName"></param>
