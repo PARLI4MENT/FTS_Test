@@ -68,7 +68,7 @@ namespace GostCryptography.Asn1.Ber
 
 				if (num == -1)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1EndOfBufferException, ByteCount);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1EndOfBufferException, ByteCount);
 				}
 
 				foreach (MemoryStream s in _captureBufferList)

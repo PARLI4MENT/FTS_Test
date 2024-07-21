@@ -38,7 +38,7 @@ namespace GostCryptography.Asn1.Ber
 
 				if (yearValue < 0)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidYearValue, yearValue);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidYearValue, yearValue);
 				}
 
 				return (yearValue / 100);

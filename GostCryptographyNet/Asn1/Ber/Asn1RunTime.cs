@@ -15,7 +15,7 @@ namespace GostCryptography.Asn1.Ber
 
 			if (length > 8)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1IntegerValueIsTooLarge);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1IntegerValueIsTooLarge);
 			}
 
 			for (var i = 0; i < length; i++)

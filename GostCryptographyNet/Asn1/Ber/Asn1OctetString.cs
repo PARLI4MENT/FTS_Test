@@ -95,7 +95,7 @@ namespace GostCryptography.Asn1.Ber
 			{
 				if (elemLength < 0)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidLengthException);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidLengthException);
 				}
 
 				Value = new byte[elemLength];

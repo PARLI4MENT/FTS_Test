@@ -157,7 +157,7 @@ namespace GostCryptography.Asn1.Ber
 		{
 			if ((llen < 0) || ((llen % 4) != 0))
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidLengthException);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidLengthException);
 			}
 
 			var num4 = llen / 4;

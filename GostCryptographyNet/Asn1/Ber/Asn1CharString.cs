@@ -54,7 +54,7 @@ namespace GostCryptography.Asn1.Ber
 			{
 				if (num3 < 0)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidLengthException);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidLengthException);
 				}
 
 				StringBuffer.Length = num3;

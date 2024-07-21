@@ -51,7 +51,7 @@ namespace GostCryptography.Asn1.Ber
 
 		public override int Read(byte[] buffer, int offset, int count)
 		{
-			throw ExceptionUtility.NotSupported(Resources.Asn1ReadOutputStreamNotSupported);
+			throw ExceptionUtility.NotSupported(Resource.Asn1ReadOutputStreamNotSupported);
 		}
 
 		public override long Seek(long offset, SeekOrigin origin)

@@ -42,7 +42,7 @@ namespace GostCryptography.Asn1.Ber
 			{
 				SecFraction = "";
 
-				throw ExceptionUtility.CryptographicException(Resources.Asn1FractionNotSupportedForUtcTime);
+				throw ExceptionUtility.CryptographicException(Resource.Asn1FractionNotSupportedForUtcTime);
 			}
 		}
 

@@ -62,7 +62,7 @@ namespace GostCryptography.Asn1.Ber
 
 			if ((4 * num) != srcArray.Length)
 			{
-				throw ExceptionUtility.Argument("srcArray", Resources.Asn1InvalidEncodedDataLength);
+				throw ExceptionUtility.Argument("srcArray", Resource.Asn1InvalidEncodedDataLength);
 			}
 
 			var num2 = 0;

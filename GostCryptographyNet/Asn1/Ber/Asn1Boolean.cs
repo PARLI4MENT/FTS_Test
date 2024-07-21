@@ -35,7 +35,7 @@ namespace GostCryptography.Asn1.Ber
 
 			if (num < 0)
 			{
-				throw ExceptionUtility.CryptographicException(Resources.Asn1EndOfBufferException, buffer.ByteCount);
+				throw ExceptionUtility.CryptographicException(	Resource.Asn1EndOfBufferException, buffer.ByteCount);
 			}
 
 			buffer.TypeCode = BooleanTypeCode;

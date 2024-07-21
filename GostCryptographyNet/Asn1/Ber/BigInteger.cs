@@ -412,12 +412,12 @@ namespace GostCryptography.Asn1.Ber
 
 			if (((radix != 2) && (radix != 0x10)) && ((radix != 10) && (radix != 8)))
 			{
-				throw new FormatException(Resources.Asn1InvalidFormatForBigIntegerValue);
+				throw new FormatException(Resource.Asn1InvalidFormatForBigIntegerValue);
 			}
 
 			if (val.Length == 0)
 			{
-				throw new FormatException(Resources.Asn1ZeroLengthBigInteger);
+				throw new FormatException(Resource.Asn1ZeroLengthBigInteger);
 			}
 
 			_sign = 1;

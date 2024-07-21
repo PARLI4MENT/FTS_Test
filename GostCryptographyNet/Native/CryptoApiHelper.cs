@@ -55,7 +55,7 @@ namespace GostCryptography.Native
 				return ProviderType.CryptoPro;
 			}
 
-			throw ExceptionUtility.CryptographicException(Resources.Provider_2001_IsNotInstalled);
+			throw ExceptionUtility.CryptographicException(Resource.Provider_2001_IsNotInstalled);
 		}
 
 		/// <summary>
@@ -75,7 +75,7 @@ namespace GostCryptography.Native
 				return ProviderType.CryptoPro_2012_512;
 			}
 
-			throw ExceptionUtility.CryptographicException(Resources.Provider_2012_512_IsNotInstalled);
+			throw ExceptionUtility.CryptographicException(Resource.Provider_2012_512_IsNotInstalled);
 		}
 
 		/// <summary>
@@ -95,7 +95,7 @@ namespace GostCryptography.Native
 				return ProviderType.CryptoPro_2012_1024;
 			}
 
-			throw ExceptionUtility.CryptographicException(Resources.Provider_2012_1024_IsNotInstalled);
+			throw ExceptionUtility.CryptographicException(Resource.Provider_2012_1024_IsNotInstalled);
 		}
 
 
@@ -538,7 +538,7 @@ namespace GostCryptography.Native
 					case PaddingMode.None:
 						if ((dataPadding != 0) && !isStream)
 						{
-							throw ExceptionUtility.CryptographicException(Resources.EncryptInvalidDataSize);
+							throw ExceptionUtility.CryptographicException(Resource.EncryptInvalidDataSize);
 						}
 
 						break;
@@ -584,7 +584,7 @@ namespace GostCryptography.Native
 						}
 						break;
 					default:
-						throw ExceptionUtility.Argument(nameof(paddingMode), Resources.InvalidPaddingMode);
+						throw ExceptionUtility.Argument(nameof(paddingMode), Resource.InvalidPaddingMode);
 				}
 			}
 
@@ -611,7 +611,7 @@ namespace GostCryptography.Native
 
 				if ((encryptedData.Length < dataAlignLength) || ((encryptedData.Length - dataAlignLength) < encryptedDataOffset))
 				{
-					throw ExceptionUtility.ArgumentOutOfRange(nameof(encryptedDataOffset), Resources.InvalidDataOffset);
+					throw ExceptionUtility.ArgumentOutOfRange(nameof(encryptedDataOffset), Resource.InvalidDataOffset);
 				}
 
 				Array.Copy(dataAlignArray, 0L, encryptedData, encryptedDataOffset, dataAlignLength);
@@ -634,7 +634,7 @@ namespace GostCryptography.Native
 
 			if ((dataOffset > data.Length) || ((dataOffset + dataLength) > data.Length))
 			{
-				throw ExceptionUtility.ArgumentOutOfRange(nameof(dataOffset), Resources.InvalidDataOffset);
+				throw ExceptionUtility.ArgumentOutOfRange(nameof(dataOffset), Resource.InvalidDataOffset);
 			}
 
 			// Выровненные данные
@@ -900,14 +900,14 @@ namespace GostCryptography.Native
 
 				if (length == valueString.Length)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.InvalidString);
+					throw ExceptionUtility.CryptographicException(Resource.InvalidString);
 				}
 
 				valueString = valueString.Substring(0, length);
 			}
 			catch (DecoderFallbackException exception)
 			{
-				throw ExceptionUtility.CryptographicException(exception, Resources.InvalidString);
+				throw ExceptionUtility.CryptographicException(exception, Resource.InvalidString);
 			}
 
 			return valueString;

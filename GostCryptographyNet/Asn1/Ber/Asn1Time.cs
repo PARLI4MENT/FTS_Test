@@ -129,7 +129,7 @@ namespace GostCryptography.Asn1.Ber
 			{
 				if (value < 0)
 				{
-					throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidYearValue, value);
+					throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidYearValue, value);
 				}
 
 				if (!CheckDate(DayValue, MonthValue, value))

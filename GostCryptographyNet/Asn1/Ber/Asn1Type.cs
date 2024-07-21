@@ -45,7 +45,7 @@ namespace GostCryptography.Asn1.Ber
 
 		public virtual int Length
 		{
-			get { throw ExceptionUtility.CryptographicException(Resources.Asn1InvalidLengthException); }
+			get { throw ExceptionUtility.CryptographicException(Resource.Asn1InvalidLengthException); }
 		}
 
 		public virtual void Decode(Asn1BerDecodeBuffer buffer, bool explicitTagging, int implicitLength)

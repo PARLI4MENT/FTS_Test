@@ -71,7 +71,7 @@ namespace GostCryptography.Asn1.Ber
 						{
 							if (data[data.Length - 1] != ch2)
 							{
-								throw ExceptionUtility.CryptographicException(Resources.Asn1ValueParseException, data, data.Length - 1);
+								throw ExceptionUtility.CryptographicException(Resource.Asn1ValueParseException, data, data.Length - 1);
 							}
 
 							num3 = (data.Length - 2) * 8;
