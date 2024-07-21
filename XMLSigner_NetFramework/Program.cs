@@ -33,67 +33,68 @@ namespace XMLSigner
             //PgSql pgSql = new PgSql("192.168.0.142", "5438", "postgres", "passwd0105");
 
             // Setting cert to variable
-            //var certificate = FindGostCertificate();
+            var certificate = FindGostCertificate();
 
             Console.WriteLine("Start process...");
 
             // Rename and move to intermidateFiles XML files
-            //string[] rowFiles = Directory.GetDirectories("C:\\_test\\rawFiles");
-            //Parallel.ForEach(rowFiles, rowFile =>
-            //{
-            //    string[] subDir = Directory.GetDirectories(Path.Combine(rowFile, "files"));
+            string[] rowFiles = Directory.GetDirectories("C:\\_test\\rawFiles");
+            Parallel.ForEach(rowFiles, rowFile =>
+            {
+                string[] subDir = Directory.GetDirectories(Path.Combine(rowFile, "files"));
 
-            //    string[] filesSubfolder = (Directory.GetFiles(Path.Combine(subDir[0], "xml")));
+                string[] filesSubfolder = (Directory.GetFiles(Path.Combine(subDir[0], "xml")));
 
-            //    foreach (string file in filesSubfolder)
-            //    {
-            //        Task.Run(() =>
-            //        {
-            //            // Combine Xml
-            //            string tmpPathCombine = Path.Combine("C:\\_test\\intermidateFiles", string.Concat(Path.GetFileName(rowFile), ".", Path.GetFileName(file)));
-            //            File.Copy(file, tmpPathCombine);
-            //        });
-            //    }
-            //});
+                foreach (string file in filesSubfolder)
+                {
+                    Task.Run(() =>
+                    {
+                        // Combine Xml
+                        string tmpPathCombine = Path.Combine("C:\\_test\\intermidateFiles", string.Concat(Path.GetFileName(rowFile), ".", Path.GetFileName(file)));
+                        File.Copy(file, tmpPathCombine);
+                    });
+                }
+            });
 
-            //var sw = new Stopwatch();
-            //var swTotal = new Stopwatch();
-            //sw.Start();
-            //swTotal.Start();
+            var sw = new Stopwatch();
+            var swTotal = new Stopwatch();
+            sw.Start();
+            swTotal.Start();
 
-            //// Inplement to XML, signing and sending request to BD
-            //Console.WriteLine("Start inplement...");
-            //string[] implementFiles = Directory.GetFiles("C:\\_test\\intermidateFiles");
-            //Parallel.ForEach(implementFiles,
-            //    new ParallelOptions { MaxDegreeOfParallelism = -1 },
-            //    implementFile =>
-            //    {
-            //        DataImplementation(implementFile);
-            //    });
+            // Inplement to XML, signing and sending request to BD
+            Console.WriteLine("Start inplement...");
+            string[] implementFiles = Directory.GetFiles("C:\\_test\\intermidateFiles");
+            Parallel.ForEach(implementFiles,
+                new ParallelOptions { MaxDegreeOfParallelism = -1 },
+                implementFile =>
+                {
+                    DataImplementation(implementFile);
+                });
+            sw.Stop();
+            Console.WriteLine($"Time inplement => {sw.ElapsedMilliseconds / 1000},{sw.ElapsedMilliseconds % 1000} sec");
+            Console.WriteLine($"Total destination files => {Directory.GetFiles("C:\\_test\\implementFiles").Count()} units");
+            Console.WriteLine($"AVG => {(Directory.GetFiles("C:\\_test\\intermidateFiles").Count()) / ((int)sw.ElapsedMilliseconds / 1000)}");
+
+            sw.Restart();
+            Console.WriteLine("\nStart signing XML...");
+            string[] singingFiles = Directory.GetFiles("C:\\_test\\implementFiles");
+            Parallel.ForEach(singingFiles,
+                new ParallelOptions { MaxDegreeOfParallelism = -1 },
+                singFile =>
+                {
+                    var signedXml = SignXmlDocument(singFile, ref certificate);
+                    signedXml.Save(Path.Combine("C:\\_test\\signedFiles", ("Signed." + Path.GetFileName(singFile))));
+                });
+
             //sw.Stop();
-            //Console.WriteLine($"Time inplement => {sw.ElapsedMilliseconds / 1000},{sw.ElapsedMilliseconds % 1000} sec");
-            //Console.WriteLine($"Total destination files => {Directory.GetFiles("C:\\_test\\implementFiles").Count()} units");
-            //Console.WriteLine($"AVG => {(Directory.GetFiles("C:\\_test\\intermidateFiles").Count()) / ((int)sw.ElapsedMilliseconds / 1000)}");
-
-            //sw.Restart();
-            //Console.WriteLine("\nStart signing XML...");
-            //string[] singingFiles = Directory.GetFiles("C:\\_test\\implementFiles");
-            //Parallel.ForEach(singingFiles,
-            //    new ParallelOptions { MaxDegreeOfParallelism = -1},
-            //    singFile => {
-            //    var signedXml = SignXmlDocument(singFile, ref certificate);
-            //    signedXml.Save(Path.Combine("C:\\_test\\signedFiles", ("Signed." + Path.GetFileName(singFile))));
-            //});
-
-            ////sw.Stop();
-            ////swTotal.Stop();
-            ////Console.WriteLine($"Time signed => {sw.ElapsedMilliseconds/1000},{sw.ElapsedMilliseconds%1000} sec");
-            ////Console.WriteLine($"Total destination files => {Directory.GetFiles("C:\\_test\\signedFiles").Count()} units");
-            ////Console.WriteLine($"AVG => {(Directory.GetFiles("C:\\_test\\implementFiles").Count())/((int)sw.ElapsedMilliseconds/1000)}");
+            //swTotal.Stop();
+            //Console.WriteLine($"Time signed => {sw.ElapsedMilliseconds/1000},{sw.ElapsedMilliseconds%1000} sec");
+            //Console.WriteLine($"Total destination files => {Directory.GetFiles("C:\\_test\\signedFiles").Count()} units");
+            //Console.WriteLine($"AVG => {(Directory.GetFiles("C:\\_test\\implementFiles").Count())/((int)sw.ElapsedMilliseconds/1000)}");
 
 
-            ////Console.WriteLine($"\nTotal time => {swTotal.ElapsedMilliseconds/1000},{swTotal.ElapsedMilliseconds%1000} sec");
-            ////Console.WriteLine("DONE !");
+            //Console.WriteLine($"\nTotal time => {swTotal.ElapsedMilliseconds/1000},{swTotal.ElapsedMilliseconds%1000} sec");
+            //Console.WriteLine("DONE !");
             //Console.ReadKey();
         }
 

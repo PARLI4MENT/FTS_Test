@@ -1,7 +1,7 @@
 ﻿#define Test
 
 using System.Security.Cryptography.X509Certificates;
-using GostCryptography.Config;
+//using GostCryptography.Config;
 
 namespace SqlTest
 {
@@ -21,7 +21,7 @@ namespace SqlTest
 
 
             //GostCryptoConfig.ProviderType = (GostCryptography.Base.ProviderType)certTmp.GetPrivateKeyInfo().ProviderType;
-            Console.WriteLine($"{GostCryptoConfig.ProviderType.ToString()}");
+            //Console.WriteLine($"{GostCryptoConfig.ProviderType.ToString()}");
 
             //var certTmp = X509Certificate2UI.SelectFromCollection(collection, "Select", "Select sertificate to sign", X509SelectionFlag.SingleSelection);
 

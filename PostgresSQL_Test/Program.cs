@@ -4,10 +4,8 @@ using Npgsql;
 
 using System.Xml;
 using System.Security.Cryptography.X509Certificates;
-using GostCryptography.Xml;
-using GostCryptography.Base;
-using GostCryptography.Config;
-using System.Diagnostics;
+using System.Security.Cryptography.Xml;
+using OpenGost.Security.Cryptography;
 
 namespace XMLSigner
 { 
@@ -74,53 +72,40 @@ namespace XMLSigner
 
             #region Implementation Aria Test
             {
-                Console.WriteLine("Start...");
-                var swInplement = new Stopwatch();
-                swInplement.Start();
+                //Console.WriteLine("Start...");
+                //var swInplement = new Stopwatch();
+                //swInplement.Start();
 
-                string[] allFiles = Directory.GetFiles("C:\\_test\\intermidateFiles");
+                //string[] allFiles = Directory.GetFiles("C:\\_test\\intermidateFiles");
 
-                Parallel.ForEach(allFiles, new ParallelOptions { MaxDegreeOfParallelism = -1 },
-                    file => { DataExtraction(file, true); });
+                //Parallel.ForEach(allFiles, new ParallelOptions { MaxDegreeOfParallelism = -1 },
+                //    file => { DataImplementation(file, true); });
 
-                swInplement.Stop();
-                Console.WriteLine($"\nTotal time: {swInplement.ElapsedMilliseconds / 1000},{swInplement.ElapsedMilliseconds % 1000} sec");
-                Console.WriteLine($"Total files ({Directory.GetFiles("C:\\_test\\implementFiles").Count()} " +
-                    $"/ {Directory.GetFiles("C:\\_test\\intermidateFiles").Count()})");
-                Console.WriteLine($"AVG time: {allFiles.Count() / (int)(swInplement.ElapsedMilliseconds / 1000)}," +
-                    $"{(allFiles.Count() / (int)swInplement.ElapsedMilliseconds) % 1000} units");
+                //swInplement.Stop();
+                //Console.WriteLine($"\nTotal time: {swInplement.ElapsedMilliseconds / 1000},{swInplement.ElapsedMilliseconds % 1000} sec");
+                //Console.WriteLine($"Total files ({Directory.GetFiles("C:\\_test\\implementFiles").Count()} " +
+                //    $"/ {Directory.GetFiles("C:\\_test\\intermidateFiles").Count()})");
+                //Console.WriteLine($"AVG time: {allFiles.Count() / (int)(swInplement.ElapsedMilliseconds / 1000)}," +
+                //    $"{(allFiles.Count() / (int)swInplement.ElapsedMilliseconds) % 1000} units");
             }
             #endregion
 
             #region Encrypt xml
+            {
+                OpenGostCryptoConfig.ConfigureCryptographicServices();
+                var certificate = FindGostCertificate();
 
-            //string[] listSignFiles = Directory.GetFiles("C:\\_test\\signingFiles");
-            //foreach (string signFile in listSignFiles)
-            //    File.Delete(signFile);
+                //if (Directory.GetFiles("C:\\_test\\signedFiles").Count() > 0)
+                //{
+                //    string[] listSignFiles = Directory.GetFiles("C:\\_test\\signingFiles");
+                //    foreach (string signFile in listSignFiles)
+                //        File.Delete(signFile);
+                //}
 
-            //string pathToFile = @"C:\_test\EncryptedXmlExample.xml";
-
-            //var certificate = FindGostCertificate();
-
-            //var xmlDocument = new XmlDocument();
-            //xmlDocument.Load(new StringReader(File.ReadAllText(pathToFile)));
-
-            //var encryptedXml = new GostEncryptedXml(GostCryptoConfig.ProviderType_2012_1024);
-            //var elements = xmlDocument.SelectNodes("//SomeElement[@Encrypt='true']");
-
-
-            //if (elements != null)
-            //{
-            //    foreach (XmlElement element in elements)
-            //    {
-            //        // Шифрация элемента
-            //        var elementEncryptedData = encryptedXml.Encrypt(element, certificate);
-
-            //        // Замена элемента его зашифрованным представлением
-            //        GostEncryptedXml.ReplaceElement(element, elementEncryptedData, false);
-            //    }
-            //}
-
+                //string pathToFile = "C:\\_test\\EncryptedXmlExample.xml";
+                //var signedXml = SignXmlDocument(pathToFile, ref certificate);
+                //signedXml.Save(Path.Combine("C:\\_test\\signedFiles", "Signed." + Path.GetFileName(pathToFile)));
+            }
             #endregion
 
             Console.ReadKey();
@@ -133,20 +118,12 @@ namespace XMLSigner
 
             try
             {
-                foreach (var certificate in store.Certificates)
-                {
-                    if (certificate.HasPrivateKey && certificate.IsGost() && (filter == null || filter(certificate)))
-                    {
-                        return certificate;
-                    }
-                }
+                return store.Certificates[0];
             }
             finally
             {
                 store.Close();
             }
-
-            return null;
         }
 
         /// <summary>
@@ -154,7 +131,7 @@ namespace XMLSigner
         /// </summary>
         /// <param name="FileName"></param>
         /// <param name="deletedInputFile"></param>
-        private static void DataExtraction(string FileName, bool deletedInputFile = false)
+        private static void DataImplementation(string FileName, bool deletedInputFile = false)
         {
 
             string FileInFolder = "C:\\_test\\intermidateFiles";
@@ -383,19 +360,45 @@ namespace XMLSigner
                 File.Delete(NewDocToArchName);
             }
         }
+        
+        //public static XmlDocument SignXmlDocument(string pathToXmlFile, ref X509Certificate2 certificate)
+        //{
+        //    var xmlDocument = new XmlDocument();
+        //    xmlDocument.Load(new StringReader(File.ReadAllText(pathToXmlFile)));
 
-        /// <summary>
-        /// Подписание XML-документа
-        /// </summary>
-        /// <param name="newDocToArchName"></param>
-        /// <param name="newDocToArchName2"></param>
-        /// <param name="company_key_id"></param>
-        private static void SignerXMLFile(string newDocToArchName, string newDocToArchName2, int company_key_id) { }
+        //    //var signedXml = new GostSignedXml(xmlDocument);
+        //    var signedXml = new XmlDocument();
+        //    signedXml.SetSigningCertificate(certificate);
 
-        /// <summary>
-        /// Подписание XML-документа
-        /// </summary>
-        private static void SignerXMLFile() { }
+        //    var dataReference = new Reference { Uri = "", DigestMethod = GetDigestMethod(certificate) };
+        //    dataReference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
+
+
+        //    signedXml.AddReference(dataReference); ;
+
+        //    var keyInfo = new KeyInfo();
+        //    keyInfo.AddClause(new KeyInfoX509Data(certificate));
+        //    signedXml.KeyInfo = keyInfo;
+
+        //    signedXml.ComputeSignature();
+
+        //    var signatureXml = signedXml.GetXml();
+
+        //    xmlDocument.DocumentElement.AppendChild(xmlDocument.ImportNode(signatureXml, true));
+        //    return xmlDocument;
+        //}
+
+        private static string GetDigestMethod(X509Certificate2 certificate)
+        {
+            //using (var publicKey = (GostAsymmetricAlgorithm)certificate.GetPrivateKeyAlgorithm())
+            //{
+            //    using (var hasAlgorithm = publicKey.CreateHashAlgorithm())
+            //    {
+            //        return hasAlgorithm.AlgorithmName;
+            //    }
+            //}
+            return string.Empty;
+        }
 
         /// <summary>
         /// Для внутренего использования

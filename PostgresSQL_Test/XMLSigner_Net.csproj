@@ -10,19 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CryptoPro.Net.Security" Version="2024.7.10" />
-    <PackageReference Include="CryptoPro.Security.Cryptography" Version="2024.7.10" />
-    <PackageReference Include="CryptoPro.Security.Cryptography.Pkcs" Version="2024.7.10" />
-    <PackageReference Include="CryptoPro.Security.Cryptography.Xml" Version="2024.7.10" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Npgsql" Version="8.0.3" />
+    <PackageReference Include="OpenGost.Security.Cryptography" Version="0.2.1" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\GostCryptographyNet\GostCryptographyNet.csproj" />
   </ItemGroup>
 
 </Project>
