@@ -7,6 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using GostCryptography.Xml;
 using GostCryptography.Base;
 using GostCryptography.Config;
+using System.Diagnostics;
 
 namespace XMLSigner
 { 
@@ -46,9 +47,9 @@ namespace XMLSigner
             #endregion
 
             #region Renaming rawFiles
-            Console.WriteLine("Start process...");
-            SqlTest.RenamerXML renamerXML = new SqlTest.RenamerXML();
-            renamerXML.RenameAndMoveParallel();
+            //Console.WriteLine("Start process...");
+            //SqlTest.RenamerXML renamerXML = new SqlTest.RenamerXML();
+            //renamerXML.RenameAndMoveParallel();
             #endregion
 
             #region MSSQL Test
@@ -71,23 +72,24 @@ namespace XMLSigner
             //}
             #endregion
 
-            #region PostgresSql Aria Test
-            //{
-            //    Console.WriteLine("Start...");
+            #region Implementation Aria Test
+            {
+                Console.WriteLine("Start...");
+                var swInplement = new Stopwatch();
+                swInplement.Start();
 
-            //    string[] allFiles = Directory.GetFiles("C:\\_test\\inputFiles");
+                string[] allFiles = Directory.GetFiles("C:\\_test\\intermidateFiles");
 
-            //    Parallel.ForEach(allFiles, new ParallelOptions { MaxDegreeOfParallelism = 30 },
-            //        file => { DataExtraction(file, true); });
+                Parallel.ForEach(allFiles, new ParallelOptions { MaxDegreeOfParallelism = -1 },
+                    file => { DataExtraction(file, true); });
 
-            //    //DataExtraction(Path.Combine("C:\\_test\\inputFiles", "00251779 -b785-4cc1-92f9-8690174f14fa.00cc6f90-d1e8-4332-b65c-85894d8c5a76.WayBillExpressIndividual"));
-
-            //    Console.WriteLine($"\nTotal time: {swExtraction.ElapsedMilliseconds / 1000},{swExtraction.ElapsedMilliseconds % 1000} sec");
-            //    Console.WriteLine($"Total files ({Directory.GetFiles("C:\\_test\\outputFiles").Count()} " +
-            //        $"/ {Directory.GetFiles("C:\\_test\\inputFiles").Count()})");
-            //    Console.WriteLine($"AVG time: {allFiles.Count() / (int)(swExtraction.ElapsedMilliseconds / 1000)}," +
-            //        $"{swExtraction.ElapsedMilliseconds % 1000} units");
-            //}
+                swInplement.Stop();
+                Console.WriteLine($"\nTotal time: {swInplement.ElapsedMilliseconds / 1000},{swInplement.ElapsedMilliseconds % 1000} sec");
+                Console.WriteLine($"Total files ({Directory.GetFiles("C:\\_test\\implementFiles").Count()} " +
+                    $"/ {Directory.GetFiles("C:\\_test\\intermidateFiles").Count()})");
+                Console.WriteLine($"AVG time: {allFiles.Count() / (int)(swInplement.ElapsedMilliseconds / 1000)}," +
+                    $"{(allFiles.Count() / (int)swInplement.ElapsedMilliseconds) % 1000} units");
+            }
             #endregion
 
             #region Encrypt xml
@@ -102,7 +104,7 @@ namespace XMLSigner
 
             //var xmlDocument = new XmlDocument();
             //xmlDocument.Load(new StringReader(File.ReadAllText(pathToFile)));
-            
+
             //var encryptedXml = new GostEncryptedXml(GostCryptoConfig.ProviderType_2012_1024);
             //var elements = xmlDocument.SelectNodes("//SomeElement[@Encrypt='true']");
 
@@ -155,8 +157,8 @@ namespace XMLSigner
         private static void DataExtraction(string FileName, bool deletedInputFile = false)
         {
 
-            string FileInFolder = "C:\\_test\\inputFiles";
-            string FileOutFolder = "C:\\_test\\outputFiles";
+            string FileInFolder = "C:\\_test\\intermidateFiles";
+            string FileOutFolder = "C:\\_test\\implementFiles";
             const string FileTemplate = "C:\\_test\\create_doc_in_arch.xml";
 
             const int Company_key_id = 1;

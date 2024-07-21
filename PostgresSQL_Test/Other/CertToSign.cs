@@ -1,18 +1,7 @@
 ﻿#define Test
 
-using System.Net.WebSockets;
-using System.Runtime.ConstrainedExecution;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-
-using GostCryptography.Base;
-using GostCryptography.Xml;
 using GostCryptography.Config;
-using CryptoPro.Security.Cryptography;
-using GostCryptography.Gost_R3410;
-using Microsoft.IdentityModel.Tokens;
-using Windows.Security.Cryptography.Certificates;
-using CryptoPro.Security.Cryptography.Xml;
 
 namespace SqlTest
 {
