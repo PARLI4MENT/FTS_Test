@@ -24,9 +24,14 @@ namespace FileNs
         private static int _countRawFiles { get; set; }
         private static int _subFolder { get; set; }
 
-        public static void RenameMoveParallel(string[] rawFiles)
+        public static void RenameMoveParallel(string[] rawFiles, int _MaxDegreeOfParallelism = -1)
         {
-            Parallel.ForEach(rawFiles, rawFile =>
+            if (_MaxDegreeOfParallelism < -1)
+                _MaxDegreeOfParallelism = -1;
+
+            Parallel.ForEach(rawFiles,
+                new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
+                rawFile =>
             {
                 string[] subDir = Directory.GetDirectories(Path.Combine(rawFile, "files"));
 
@@ -43,9 +48,14 @@ namespace FileNs
                 }
             });
         }
-        public static void RenameMoveParallel(string pathRawFiles)
+        public static void RenameMoveParallel(string pathRawFiles, int _MaxDegreeOfParallelism = -1)
         {
-            Parallel.ForEach(Directory.GetFiles(pathRawFiles), rawFile =>
+            if (_MaxDegreeOfParallelism < -1)
+                _MaxDegreeOfParallelism = -1;
+
+            Parallel.ForEach(Directory.GetFiles(pathRawFiles),
+                new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
+                rawFile =>
             {
                 string[] subDir = Directory.GetDirectories(Path.Combine(rawFile, "files"));
 
