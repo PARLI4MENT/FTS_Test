@@ -12,10 +12,17 @@ namespace Fields
         {
             get
             {
-                return @"CREATE TABLE ""public"".""ExchED"" (""InnerID"" varchar NOT NULL,
-                ""MessageType"" varchar(255), ""EnvelopeID"" varchar, ""CompanySet_key_id"" int4,
-                ""DocumentID"" varchar, ""DocName"" varchar(255), ""DocNum"" varchar(255),
-                ""DocCode"" varchar(255), ""ArchFileName"" varchar(255), PRIMARY KEY(""InnerID""));";
+                return @"DROP TABLE IF EXISTS ""public"".""ExchED"";
+                    CREATE TABLE ""public"".""ExchED"" (
+                    ""InnerID"" varchar COLLATE ""pg_catalog"".""default"" NOT NULL,
+                    ""MessageType"" varchar(255) COLLATE ""pg_catalog"".""default"",
+                    ""EnvelopeID"" varchar COLLATE ""pg_catalog"".""default"" NOT NULL,
+                    ""CompanySet_key_id"" int4,
+                    ""DocumentID"" varchar COLLATE ""pg_catalog"".""default"",
+                    ""DocName"" varchar(255) COLLATE ""pg_catalog"".""default"",
+                    ""DocNum"" varchar(255) COLLATE ""pg_catalog"".""default"",
+                    ""DocCode"" varchar(255) COLLATE ""pg_catalog"".""default"",
+                    ""ArchFileName"" varchar(255) COLLATE ""pg_catalog"".""default"");";
             }
         }
 
@@ -52,6 +59,5 @@ namespace Fields
         public string DocNum { get; set; }
         public string DocCode { get; set; }
         public string ArchFileName { get; set; }
-
     }
 }

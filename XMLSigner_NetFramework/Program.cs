@@ -1,14 +1,10 @@
 ﻿#define TEST
 
-using GostCryptography.Xml;
+using SQLTestNs;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography.Xml;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace XMLSigner
 {
@@ -19,34 +15,48 @@ namespace XMLSigner
             Console.WriteLine("Start process...");
 
             /// Rename and move to intermidateFiles XML files
-            FileNs.RenamerXML.RenameMoveParallel("C:\\_test\\rawFiles");
+            //FileNs.RenamerXML.RenameMoveParallel("C:\\_test\\rawFiles");
 
-            var sw = new Stopwatch();
-            var swTotal = new Stopwatch();
-            sw.Start();
-            swTotal.Start();
+            //var sw = new Stopwatch();
+            //var swTotal = new Stopwatch();
+            //sw.Start();
+            //swTotal.Start();
 
             // Inplement to XML, signing and sending request to BD
-            Console.WriteLine("\nStart implement...");
-            XmlNs.ImplementateToXml.ImplementParallel(Directory.GetFiles("C:\\_test\\intermidateFiles"));
-            sw.Stop();
-            Console.WriteLine($"Time implement => {sw.ElapsedMilliseconds / 1000},{sw.ElapsedMilliseconds % 1000} sec");
-            Console.WriteLine($"Total destination files => {Directory.GetFiles("C:\\_test\\implementFiles").Count()} units");
-            Console.WriteLine($"AVG => {Directory.GetFiles("C:\\_test\\intermidateFiles").Count() / ((int)sw.ElapsedMilliseconds / 1000)}");
+            //Console.WriteLine("\nStart implement...");
+            //XmlNs.ImplementateToXml.ImplementParallel(Directory.GetFiles("C:\\_test\\intermidateFiles"));
+            //sw.Stop();
+            //Console.WriteLine($"Time implement => {sw.ElapsedMilliseconds / 1000},{sw.ElapsedMilliseconds % 1000} sec");
+            //Console.WriteLine($"Total destination files => {Directory.GetFiles("C:\\_test\\implementFiles").Count()} units");
+            //Console.WriteLine($"AVG => {Directory.GetFiles("C:\\_test\\intermidateFiles").Count() / ((int)sw.ElapsedMilliseconds / 1000)}");
 
-            sw.Restart();
-            Console.WriteLine("\nStart signing XML...");
-            SignXMLGost.SignXmlFiles(Directory.GetFiles("C:\\_test\\implementFiles"), SignXMLGost.cert);
-            sw.Stop();
-            swTotal.Stop();
-            Console.WriteLine($"Time signed => {sw.ElapsedMilliseconds / 1000},{sw.ElapsedMilliseconds % 1000} sec");
-            Console.WriteLine($"Total destination files => {Directory.GetFiles("C:\\_test\\signedFiles").Count()} units");
-            Console.WriteLine($"AVG => {(Directory.GetFiles("C:\\_test\\implementFiles").Count()) / ((int)sw.ElapsedMilliseconds / 1000)}");
+            //sw.Restart();
+            //Console.WriteLine("\nStart signing XML...");
+            //SignXMLGost.SignXmlFiles(Directory.GetFiles("C:\\_test\\implementFiles"), SignXMLGost.Certificate);
+            //sw.Stop();
+            //swTotal.Stop();
+            //Console.WriteLine($"Time signed => {sw.ElapsedMilliseconds / 1000},{sw.ElapsedMilliseconds % 1000} sec");
+            //Console.WriteLine($"Total destination files => {Directory.GetFiles("C:\\_test\\signedFiles").Count()} units");
+            //Console.WriteLine($"AVG => {(Directory.GetFiles("C:\\_test\\implementFiles").Count()) / ((int)sw.ElapsedMilliseconds / 1000)}");
 
-            Console.WriteLine($"\nTotal time => {swTotal.ElapsedMilliseconds / 1000},{swTotal.ElapsedMilliseconds % 1000} sec");
-            Console.WriteLine("DONE !");
+            //Console.WriteLine($"\nTotal time => {swTotal.ElapsedMilliseconds / 1000},{swTotal.ElapsedMilliseconds % 1000} sec");
+            //Console.WriteLine("DONE !");
 
-            Console.WriteLine("\nPress any key...");
+            //Console.WriteLine("\nPress any key...");
+            //SignXMLGost.SignXmlFiles("C:\\_test\\implementFiles\\test.xml", SignXMLGost.Certificate);
+
+            // Test to Access DB
+            {
+                AccessDB.PathToACCDB = "C:\\testACCDB.accdb";
+                AccessDB.PathToMDB = "C:\\testMDB.mdb";
+
+                AccessDB.ConnectToAccessWithJet(AccessDB.PathToMDB);
+
+                //'Unrecognized database format 'C:\testACCDB.accdb'.' 
+                AccessDB.ConnectToAccessWithAce(AccessDB.PathToACCDB);
+            }
+            
+            
             Console.ReadKey();
         }
 

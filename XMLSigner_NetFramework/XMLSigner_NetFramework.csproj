@@ -35,6 +35,15 @@
   <PropertyGroup>
     <StartupObject>XMLSigner.Program</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>false</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="GostCryptography, Version=2.0.11.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GostCryptography.2.0.11\lib\net452\GostCryptography.dll</HintPath>
@@ -107,7 +116,9 @@
   <ItemGroup>
     <Compile Include="Fields\ExchED.cs" />
     <Compile Include="Fields\ECD_list.cs" />
+    <Compile Include="OutClass\AccessDB.cs" />
     <Compile Include="OutClass\Initializer.cs" />
+    <Compile Include="OutClass\Mssql.cs" />
     <Compile Include="OutClass\PgSql.cs" />
     <Compile Include="OutClass\ImplementateToXml.cs" />
     <Compile Include="OutClass\SerilizeJsonConfig.cs" />
@@ -124,6 +135,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
