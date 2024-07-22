@@ -1,5 +1,6 @@
 ﻿using SQLTestNs;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Xml;
@@ -70,29 +71,31 @@ namespace XmlNs
             }
         }
 
-        public static void ImplementParallel(string[] implementFiles, bool deletedInputFile = false, int _MaxDegreeOfParallelism = -1)
+        //public static void ImplementParallel(string[] intermidateFiles, int _MaxDegreeOfParallelism = -1, bool deletedInputFile = false)
+        public static List<string[]> ImplementParallel(string[] intermidateFiles, int _MaxDegreeOfParallelism = -1, bool deletedInputFile = false)
         {
-            Parallel.ForEach(implementFiles,
+            List<string[]> doneData = new List<string[]>();
+            Parallel.ForEach(intermidateFiles,
                 new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
-                implementFile =>
+                intermidateFile =>
                 {
                     const int Company_key_id = 1;
 
-                    string DateStr = implementFile + ";";
+                    string DateStr = intermidateFile + ";";
 
                     //File.AppendAllText("C:\\_test\\Arch_docs.log", Environment.NewLine + "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
 
-                    string NameArray = (string)Path.GetFileName(implementFile).Split('.')[0]; // Можно упростить
+                    string NameArray = (string)Path.GetFileName(intermidateFile).Split('.')[0]; // Можно упростить
                     var file_xml = new XmlDocument();
                     var doc_to_arch = new XmlDocument();
 
                     string PrDocumentName = "", PrDocumentNumber = "", PrDocumentDate = "", DocCode = "", DocName = "";
 
-                    string NewDocToArchName = Path.Combine(FileInFolder, Path.GetFileName(implementFile));
+                    string NewDocToArchName = Path.Combine(FileInFolder, Path.GetFileName(intermidateFile));
                     File.Copy(FileTemplate, NewDocToArchName, true);
 
 
-                    file_xml.Load(new StringReader(File.ReadAllText(implementFile)));
+                    file_xml.Load(new StringReader(File.ReadAllText(intermidateFile)));
                     switch (file_xml.DocumentElement.GetAttribute("DocumentModeID"))
                     {
                         //Договор ТамПред
@@ -243,19 +246,24 @@ namespace XmlNs
 
                     doc_to_arch.Save(NewDocToArchName);
 
-                    File.Copy(NewDocToArchName, Path.Combine(FileOutFolder, Path.GetFileName(implementFile)), true);
+                    File.Copy(NewDocToArchName, Path.Combine(FileOutFolder, Path.GetFileName(intermidateFile)), true);
 
                     //File.AppendAllText("C:\\_test\\Arch_docs.log", "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
 
-                    // Send to DB
-                    new PgSql().ExecuteToDB(new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName }, Company_key_id);
+                    // Query to PostgresSql DB
+                    //new PgSql().ExecuteToDB(new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName }, Company_key_id);
+
+                    doneData.Add(new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName });
 
                     if (deletedInputFile)
                     {
-                        File.Delete(implementFile);
+                        File.Delete(intermidateFile);
                         File.Delete(NewDocToArchName);
                     }
                 });
+
+            Console.WriteLine("PAUSE");
+            return doneData;
         }
 
         private void DataImplementation(string FileName, bool deletedInputFile = false)
