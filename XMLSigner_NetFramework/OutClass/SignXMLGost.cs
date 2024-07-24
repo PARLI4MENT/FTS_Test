@@ -9,7 +9,7 @@ using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Linq;
+using System.Xml.Serialization;
 
 namespace XMLSigner
 {
@@ -19,9 +19,15 @@ namespace XMLSigner
 
         public static void SignedCmsXml(string pathToXml, X509Certificate2 certificate)
         {
+            var xmlDoc = new XmlDocument();
+            xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
+            XmlElement xRoot = xmlDoc.DocumentElement;
 
+            XmlNode xNodesBody = xRoot.LastChild;
+            XmlNodeList xNodesSubBody = xNodesBody.SelectNodes("Signature");
 
-            return;
+            Console.WriteLine(xNodesSubBody.Count);
+
         }
 
         public static byte[] SignMessage(X509Certificate2 certificate, byte[] message)

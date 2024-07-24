@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GostSignerService", "GostSi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XML_test_netframework", "XML_test_netframework\XML_test_netframework.csproj", "{E6D73FA7-4365-4DD6-9ACB-90D94E0CEB89}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnvelopeSerilize", "EnvelopeSerilize\EnvelopeSerilize.csproj", "{3631635D-8CA0-4700-AF46-80AD211B5B62}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{E6D73FA7-4365-4DD6-9ACB-90D94E0CEB89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6D73FA7-4365-4DD6-9ACB-90D94E0CEB89}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6D73FA7-4365-4DD6-9ACB-90D94E0CEB89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3631635D-8CA0-4700-AF46-80AD211B5B62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3631635D-8CA0-4700-AF46-80AD211B5B62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3631635D-8CA0-4700-AF46-80AD211B5B62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3631635D-8CA0-4700-AF46-80AD211B5B62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -92,6 +98,7 @@ Global
 		{926E7238-048A-4B37-AAF2-81A2A3C278AC} = {54B7577E-DCA1-4504-B507-487676BD3B3C}
 		{DD75F69A-26EE-42D4-96A0-855A8728115C} = {54B7577E-DCA1-4504-B507-487676BD3B3C}
 		{E6D73FA7-4365-4DD6-9ACB-90D94E0CEB89} = {BD923331-910F-4784-BF14-6CBEEB48809D}
+		{3631635D-8CA0-4700-AF46-80AD211B5B62} = {BD923331-910F-4784-BF14-6CBEEB48809D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC034BBC-14CD-404E-946C-0EFA12833581}

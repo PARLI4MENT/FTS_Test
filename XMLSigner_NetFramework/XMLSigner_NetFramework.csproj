@@ -142,5 +142,11 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EnvelopeSerilize\EnvelopeSerilize.csproj">
+      <Project>{3631635d-8ca0-4700-af46-80ad211b5b62}</Project>
+      <Name>EnvelopeSerilize</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

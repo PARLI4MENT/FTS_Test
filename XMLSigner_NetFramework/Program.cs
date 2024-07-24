@@ -17,6 +17,9 @@ namespace XMLSigner
             
             Console.WriteLine("Start process...");
 
+            //XmlNs.ImplementateToXml.ImplementLinear("C:\\_test\\rawFiles\\0be68d4a-444d-4abb-a09f-ce07c9256e30\\files\\05fcc4ca-cfc1-4b59-a67c-d9a1c909b4cb\\xml\\1f2aa4ac-e439-45f6-b4ce-0a21b4f9fcb9.FreeBinaryDoc.xml");
+            SignXMLGost.SignedCmsXml("C:\\_test\\_test\\TEST.xml", SignXMLGost.Certificate);
+
             /// Rename and move to intermidateFiles XML files
             //FileNs.RenamerXML.RenameMoveParallel("C:\\_test\\rawFiles");
 
@@ -37,10 +40,9 @@ namespace XMLSigner
 
             //sw.Restart();
             //Console.WriteLine("\nStart signing XML...");
-            
-            SignXMLGost.SignedCmsXml("C:\\_test\\_test\\TEST.xml", SignXMLGost.Certificate);
+
             //SignXMLGost.SignFullXml(Directory.GetFiles("C:\\_test\\implementFiles"), SignXMLGost.Certificate);
-            
+
             //sw.Stop();
             //swTotal.Stop();
             //Console.WriteLine($"Time signed => {sw.ElapsedMilliseconds / 1000},{sw.ElapsedMilliseconds % 1000} sec");
