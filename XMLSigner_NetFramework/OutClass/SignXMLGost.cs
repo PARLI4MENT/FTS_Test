@@ -17,9 +17,11 @@ namespace XMLSigner
     {
         public static X509Certificate2 Certificate = FindGostCertificate();
 
-        public void SignedCmsXml(string pathToXml)
+        public void SignedCmsXml(string pathToXml, X509Certificate2 certificate)
         {
 
+
+            return;
         }
 
         public static byte[] SignMessage(X509Certificate2 certificate, byte[] message)
@@ -32,7 +34,6 @@ namespace XMLSigner
 
             // Включение информации только о конечном сертификате (только для теста)
             signer.IncludeOption = X509IncludeOption.EndCertOnly;
-
             // Создание подписи для сообщения CMS/PKCS#7
             signedCms.ComputeSignature(signer);
 

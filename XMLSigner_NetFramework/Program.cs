@@ -38,7 +38,7 @@ namespace XMLSigner
             //sw.Restart();
             //Console.WriteLine("\nStart signing XML...");
             
-            SignXMLGost.SignCurrentPartXml("C:\\_test\\_test\\TEST.xml", SignXMLGost.Certificate);
+            SignXMLGost.SignedCmsXml("C:\\_test\\_test\\TEST.xml", SignXMLGost.Certificate);
             //SignXMLGost.SignFullXml(Directory.GetFiles("C:\\_test\\implementFiles"), SignXMLGost.Certificate);
             
             //sw.Stop();
