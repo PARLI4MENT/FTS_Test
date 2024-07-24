@@ -17,7 +17,7 @@ namespace XMLSigner
     {
         public static X509Certificate2 Certificate = FindGostCertificate();
 
-        public void SignedCmsXml(string pathToXml, X509Certificate2 certificate)
+        public static void SignedCmsXml(string pathToXml, X509Certificate2 certificate)
         {
 
 
