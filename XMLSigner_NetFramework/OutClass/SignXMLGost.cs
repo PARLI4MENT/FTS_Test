@@ -1,12 +1,15 @@
-﻿using GostCryptography.Asn1.Gost.Gost_R3410_2012_512;
-using GostCryptography.Base;
+﻿using GostCryptography.Base;
+using GostCryptography.Pkcs;
 using GostCryptography.Xml;
 using System;
 using System.IO;
+using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
+using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace XMLSigner
 {
@@ -14,19 +17,31 @@ namespace XMLSigner
     {
         public static X509Certificate2 Certificate = FindGostCertificate();
 
-
-        /// <summary>
-        /// ДОДЕЛАТЬ
-        /// </summary>
-        /// <param name="xmlFile"></param>
-        /// <param name="certificate"></param>
-        public static void SignCurrentPartXml(string xmlFile, X509Certificate2 certificate)
+        public void SignedCmsXml(string pathToXml)
         {
-            var xmlDoc = new XmlDocument();
-            xmlDoc.Load(new StringReader(File.ReadAllText(xmlFile)));
-            
-            var xmlSigned = new GostSignedXml(xmlDoc);
-             
+
+        }
+
+        public static byte[] SignMessage(X509Certificate2 certificate, byte[] message)
+        {
+            // Создание объекта для подписи сообщения
+            var signedCms = new GostSignedCms(new ContentInfo(message));
+
+            // Создание объект с информацией о подписчике
+            var signer = new CmsSigner(certificate);
+
+            // Включение информации только о конечном сертификате (только для теста)
+            signer.IncludeOption = X509IncludeOption.EndCertOnly;
+
+            // Создание подписи для сообщения CMS/PKCS#7
+            signedCms.ComputeSignature(signer);
+
+            // Создание сообщения CMS/PKCS#7
+            return signedCms.Encode();
+        }
+        private static byte[] CreateMessage()
+        {
+            return Encoding.UTF8.GetBytes("Some message to sign...");
         }
 
         public static void SignFullXml(string xmlFile, X509Certificate2 certificate, bool deleteSourceFile = false)
