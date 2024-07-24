@@ -20,14 +20,34 @@ namespace XMLSigner
         public static void SignedCmsXml(string pathToXml, X509Certificate2 certificate)
         {
             var xmlDoc = new XmlDocument();
-            xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
-            XmlElement xRoot = xmlDoc.DocumentElement;
+            xmlDoc.Load(pathToXml);
+            //XmlElement xRoot = xmlDoc.DocumentElement;
 
-            XmlNode xNodesBody = xRoot.LastChild;
-            XmlNodeList xNodesSubBody = xNodesBody.SelectNodes("Signature");
+            //XmlNodeList xmlElement = xRoot.SelectNodes("/Header");
 
-            Console.WriteLine(xNodesSubBody.Count);
+            XmlNode rootList = xmlDoc.DocumentElement.LastChild;
 
+            foreach (XmlNode node1 in rootList)
+            {
+                if (node1.Name == "Signature")
+                {
+                    foreach (XmlNode node2 in node1.ChildNodes)
+                    {
+                        if (node2.Name == "SignedInfo")
+                        {
+                            foreach (XmlNode node3 in node2)
+                            {
+                                if (node3.Name == "Reference")
+                                {
+                                    Console.WriteLine(node3.Attributes.ToString());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Console.WriteLine();
         }
 
         public static byte[] SignMessage(X509Certificate2 certificate, byte[] message)
