@@ -2,14 +2,19 @@
 using GostCryptography.Pkcs;
 using GostCryptography.Xml;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Serialization;
+using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace XMLSigner
 {
@@ -17,34 +22,47 @@ namespace XMLSigner
     {
         public static X509Certificate2 Certificate = FindGostCertificate();
 
-        public static void SignedCmsXml(string pathToXml, X509Certificate2 certificate)
+        public static void SignedCmsXml(X509Certificate2 certificate)
         {
-            var xmlDoc = new XmlDocument();
-            xmlDoc.Load(pathToXml);
+            string pathToXml = @"C:\\_test\\_test\\TEST.xml";
             //XmlElement xRoot = xmlDoc.DocumentElement;
 
             //XmlNodeList xmlElement = xRoot.SelectNodes("/Header");
 
-            XmlNode rootList = xmlDoc.DocumentElement.LastChild;
-
-            foreach (XmlNode node1 in rootList)
+            /*
             {
-                if (node1.Name == "Signature")
+                XmlNode rootList = xmlDoc.DocumentElement.LastChild;
+
+                foreach (XmlNode node1 in rootList)
                 {
-                    foreach (XmlNode node2 in node1.ChildNodes)
+                    if (node1.Name == "Signature")
                     {
-                        if (node2.Name == "SignedInfo")
+                        foreach (XmlNode node2 in node1.ChildNodes)
                         {
-                            foreach (XmlNode node3 in node2)
+                            if (node2.Name == "SignedInfo")
                             {
-                                if (node3.Name == "Reference")
+                                foreach (XmlNode node3 in node2)
                                 {
-                                    Console.WriteLine(node3.Attributes.ToString());
+                                    if (node3.Name == "Reference")
+                                    {
+                                        Console.WriteLine(node3.Attributes[0].Value);
+                                    }
                                 }
                             }
                         }
                     }
                 }
+            }
+            */
+
+            {
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.Load(pathToXml);
+                XmlNode xmlNodeRoot = xmlDoc.DocumentElement;
+
+                var xmlNodesListObject = (XmlElement)xmlDoc.GetElementsByTagName("Object", "*")[2];
+                Console.WriteLine(xmlNodesListObject.OuterXml);
+                Console.WriteLine(SignMessage(Certificate, Encoding.UTF8.GetBytes(xmlNodesListObject.OuterXml)));
             }
 
             Console.WriteLine();
@@ -60,6 +78,7 @@ namespace XMLSigner
 
             // Включение информации только о конечном сертификате (только для теста)
             signer.IncludeOption = X509IncludeOption.EndCertOnly;
+
             // Создание подписи для сообщения CMS/PKCS#7
             signedCms.ComputeSignature(signer);
 
@@ -117,7 +136,7 @@ namespace XMLSigner
 
                     signedXml.AddReference(dataReference); ;
 
-                    var keyInfo = new KeyInfo();
+                    var keyInfo = new KeyInfo(); 
                     keyInfo.AddClause(new KeyInfoX509Data(Certificate));
                     signedXml.KeyInfo = keyInfo;
 
@@ -139,7 +158,7 @@ namespace XMLSigner
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        private static X509Certificate2 FindGostCertificate(StoreLocation storeLocation = StoreLocation.CurrentUser, Predicate<X509Certificate2> filter = null)
+        public static X509Certificate2 FindGostCertificate(StoreLocation storeLocation = StoreLocation.CurrentUser, Predicate<X509Certificate2> filter = null)
         {
             var store = new X509Store(StoreName.My, storeLocation);
             store.Open(OpenFlags.OpenExistingOnly | OpenFlags.ReadOnly);
