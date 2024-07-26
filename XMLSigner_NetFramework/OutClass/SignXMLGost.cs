@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
@@ -56,15 +57,31 @@ namespace XMLSigner
             */
 
             {
+                string pathDest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Int.xml");
+
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(pathToXml);
-                XmlNode xmlNodeRoot = xmlDoc.DocumentElement;
 
-                var xmlNodesListObject = (XmlElement)xmlDoc.GetElementsByTagName("Object", "*")[2];
+                XmlNode xmlNodeRoot = xmlDoc.DocumentElement;
+                var xmlNodesListObject = (XmlNode)xmlDoc.GetElementsByTagName("Object", "*")[2];
+
+                //(XmlNode)xmlDoc.GetElementsByTagName("Object", "*")[2]
+                //var xmlNodeTemp = xmlDoc.GetElementsByTagName("Object", "*")[2];
+
+                /// COPY TO ANOTHER XMLNODE
+                XmlDocument xmlDocTemp = new XmlDocument();
+                XmlNode xmlNodeTemp = xmlNodesListObject.OuterXml
+                _ = xmlNodeTemp.AppendChild(xmlNodeTemp.OwnerDocument.ImportNode(xmlNodesListObject, true));
+
+
+                xmlDocTemp.AppendChild(xmlNodesListObject);
+                xmlDocTemp.Save(pathDest);
+
+                /// Вычисление HASH byte[]
                 var tmp = SignCmsMessage(Certificate, Encoding.UTF8.GetBytes(xmlNodesListObject.OuterXml));
 
+                /// Перевод byte[] в string
                 var tmpBase64 = Convert.ToBase64String(tmp);
-
                 Console.WriteLine(tmpBase64);
                 
                 Console.WriteLine();
