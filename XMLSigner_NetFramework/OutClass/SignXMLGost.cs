@@ -61,14 +61,19 @@ namespace XMLSigner
                 XmlNode xmlNodeRoot = xmlDoc.DocumentElement;
 
                 var xmlNodesListObject = (XmlElement)xmlDoc.GetElementsByTagName("Object", "*")[2];
-                Console.WriteLine(xmlNodesListObject.OuterXml);
-                Console.WriteLine(SignMessage(Certificate, Encoding.UTF8.GetBytes(xmlNodesListObject.OuterXml)));
+                var tmp = SignCmsMessage(Certificate, Encoding.UTF8.GetBytes(xmlNodesListObject.OuterXml));
+
+                var tmpBase64 = Convert.ToBase64String(tmp);
+
+                Console.WriteLine(tmpBase64);
+                
+                Console.WriteLine();
             }
 
             Console.WriteLine();
         }
 
-        public static byte[] SignMessage(X509Certificate2 certificate, byte[] message)
+        public static byte[] SignCmsMessage(X509Certificate2 certificate, byte[] message)
         {
             // Создание объекта для подписи сообщения
             var signedCms = new GostSignedCms(new ContentInfo(message));
@@ -85,6 +90,7 @@ namespace XMLSigner
             // Создание сообщения CMS/PKCS#7
             return signedCms.Encode();
         }
+
         private static byte[] CreateMessage()
         {
             return Encoding.UTF8.GetBytes("Some message to sign...");
