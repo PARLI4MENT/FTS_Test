@@ -63,27 +63,33 @@ namespace XMLSigner
                 xmlDoc.Load(pathToXml);
 
                 XmlNode xmlNodeRoot = xmlDoc.DocumentElement;
-                var xmlNodesListObject = (XmlNode)xmlDoc.GetElementsByTagName("Object", "*")[2];
+                var xmlNodesListObject = (XmlNode)xmlDoc.GetElementsByTagName("Object", "*")[3];
+                Console.WriteLine();
 
                 //(XmlNode)xmlDoc.GetElementsByTagName("Object", "*")[2]
-                //var xmlNodeTemp = xmlDoc.GetElementsByTagName("Object", "*")[2];
+                var xmlNodeTemp = xmlDoc.GetElementsByTagName("Object", "*")[2];
 
                 /// COPY TO ANOTHER XMLNODE
                 XmlDocument xmlDocTemp = new XmlDocument();
-                XmlNode xmlNodeTemp = xmlNodesListObject.OuterXml
-                _ = xmlNodeTemp.AppendChild(xmlNodeTemp.OwnerDocument.ImportNode(xmlNodesListObject, true));
+                var nodeCreator = xmlDocTemp.CreateElement("Temp_object");
+                xmlDocTemp.CreateTextNode(xmlNodesListObject.OuterXml);
+                xmlDocTemp.AppendChild(nodeCreator);
+                nodeCreator.AppendChild(xmlDocTemp.ImportNode(xmlNodesListObject, true));
+                var tmpXml = xmlDocTemp.DocumentElement;
+
+                tmpXml.SelectNodes("Object");
+                Console.WriteLine(tmpXml.InnerText);
 
 
-                xmlDocTemp.AppendChild(xmlNodesListObject);
                 xmlDocTemp.Save(pathDest);
 
-                /// Вычисление HASH byte[]
-                var tmp = SignCmsMessage(Certificate, Encoding.UTF8.GetBytes(xmlNodesListObject.OuterXml));
+                //// Вычисление HASH byte[]
+                //var tmp = SignCmsMessage(Certificate, Encoding.UTF8.GetBytes(xmlNodesListObject.OuterXml));
 
-                /// Перевод byte[] в string
-                var tmpBase64 = Convert.ToBase64String(tmp);
-                Console.WriteLine(tmpBase64);
-                
+                //// Перевод byte[] в string
+                //var tmpBase64 = Convert.ToBase64String(tmp);
+                //Console.WriteLine(tmpBase64);
+
                 Console.WriteLine();
             }
 
