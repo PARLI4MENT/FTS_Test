@@ -32,64 +32,62 @@ namespace XMLSigner
 
             //XmlNodeList xmlElement = xRoot.SelectNodes("/Header");
 
-            /*
-            {
-                XmlNode rootList = xmlDoc.DocumentElement.LastChild;
-
-                foreach (XmlNode node1 in rootList)
-                {
-                    if (node1.Name == "Signature")
-                    {
-                        foreach (XmlNode node2 in node1.ChildNodes)
-                        {
-                            if (node2.Name == "SignedInfo")
-                            {
-                                foreach (XmlNode node3 in node2)
-                                {
-                                    if (node3.Name == "Reference")
-                                    {
-                                        Console.WriteLine(node3.Attributes[0].Value);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            */
-
-            //{            var dataObject =
-            //                new XElement("Object",
-            //                new XAttribute("Id", "Object"),
-            //                new XAttribute("xmlns", "http://www.w3.org/2000/09/xmldsig#"),
-            //                new XAttribute("",""),
-            //                    new XElement("ArchAddDocRequest",
-            //                    new XAttribute("xmlns", (XNamespace)"urn:customs.ru:Information:EArchDocuments:ArchAddDocRequest:5.13.1"),
-            //                    new XAttribute("{xmlns:}ct", "urn:customs.ru:Information:EArchDocuments:EADCommonTypes:5.13.1"),
-            //                    new XAttribute("{xmlns:}xsi", "http://www.w3.org/2001/XMLSchema-instance"),
-            //                    new XAttribute("DocumentModeID", "1005001E"),
-            //                        new XElement("{ct:}DocumentID", "6BCC7C9D-9BAE-4FEA-B199-DB2513B0DC05"),
-            //                        new XElement("{ct:}ArchDeclID", XElement.EmptySequence)
-
-            //                        ));
-
-            //            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "TEST.xml");
-            //            XDocument xmlDocument = new XDocument();
-            //            xmlDocument.Add(dataObject);
-            //                xmlDocument.Save(path);
-            //            }
-
-            string path_ObjectWithHash = "C:\\_test\\_test\\_Object_With_hash.xml";
-            string path_ObjectWithoutHash = "C:\\_test\\_test\\_Object_Non_hash.xml";
-
+            ///
             {
                 XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.Load(new StringReader(File.ReadAllText(path_ObjectWithHash)));
+                xmlDoc.Load(new StringReader(File.ReadAllText("C:\\_test\\_test\\TEST.xml")));
 
-                var xDoc = XDocument.Parse(xmlDoc.OuterXml);
+                var xmlNodesListObject = xmlDoc.GetElementsByTagName("Object", "*")[2];
+
+                
+                var tmpBase64 = Convert.ToBase64String(SignCmsMessage(Certificate, Encoding.UTF8.GetBytes(xmlNodesListObject.OuterXml)));
+                Console.WriteLine(tmpBase64);
+
 
             }
 
+            // Ручное создание Элементов
+            {
+                //    /// Base xml 
+                //    // Потом заменить на XmlElement из другого базового XML файла
+                //    string pathBaseXml = "C:\\_test\\_test\\_Object_Non_hash.xml";
+                //    string pathDesXml = $@"Dest_{Path.GetFileName(pathBaseXml)}";
+
+                //    XmlDocument xmlDocBase = new XmlDocument();
+                //    xmlDocBase.Load(new StringReader(File.ReadAllText(pathBaseXml)));
+
+                //    var dataObject =
+                //        new XElement("Object",
+                //        new XAttribute("Id", "Object"),
+                //        new XAttribute("", ""),
+                //        new XElement("ArchAddDocRequest",
+                //        new XAttribute("xmlns", (XNamespace)"urn:customs.ru:Information:EArchDocuments:ArchAddDocRequest:5.13.1"),
+                //        new XAttribute("{xmlns:}ct", "urn:customs.ru:Information:EArchDocuments:EADCommonTypes:5.13.1"),
+                //        new XAttribute("{xmlns:}xsi", "http://www.w3.org/2001/XMLSchema-instance"),
+                //        new XAttribute("DocumentModeID", "1005001E"),
+                //        new XElement("{ct:}DocumentID", "6BCC7C9D-9BAE-4FEA-B199-DB2513B0DC05"),
+                //        new XElement("{ct:}ArchDeclID", XElement.EmptySequence)
+
+                //        ));
+
+                //    string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "TEST.xml");
+                //    XDocument xmlDocument = new XDocument();
+                //    xmlDocument.Add(dataObject);
+                //    xmlDocument.Save(path);
+            }
+
+            /// Парсинг
+            /*
+            //{
+            //    XmlDocument xmlDoc = new XmlDocument();
+            //    xmlDoc.Load(new StringReader(File.ReadAllText(path_ObjectWithHash)));
+
+            //    var xDoc = XDocument.Parse(xmlDoc.OuterXml);
+
+            //}
+            */
+
+            /*
             //{
             //    string pathDest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Int.xml");
 
@@ -126,6 +124,7 @@ namespace XMLSigner
 
             //    Console.WriteLine();
             //}
+            */
 
             Console.WriteLine();
         }
