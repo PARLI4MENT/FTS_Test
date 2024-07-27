@@ -15,7 +15,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using System.Xml.Resolvers;
 using System.Xml.XPath;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace XMLSigner
 {
@@ -77,7 +79,14 @@ namespace XMLSigner
             //                xmlDocument.Save(path);
             //            }
 
+            string path_ObjectWithHash = "C:\\_test\\_test\\_Object_With_hash.xml";
+            string path_ObjectWithoutHash = "C:\\_test\\_test\\_Object_Non_hash.xml";
+
             {
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.Load(new StringReader(File.ReadAllText(path_ObjectWithHash)));
+
+                var xDoc = XDocument.Parse(xmlDoc.OuterXml);
 
             }
 
