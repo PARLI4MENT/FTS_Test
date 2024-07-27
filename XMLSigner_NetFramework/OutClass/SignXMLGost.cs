@@ -56,42 +56,67 @@ namespace XMLSigner
             }
             */
 
+            //{            var dataObject =
+            //                new XElement("Object",
+            //                new XAttribute("Id", "Object"),
+            //                new XAttribute("xmlns", "http://www.w3.org/2000/09/xmldsig#"),
+            //                new XAttribute("",""),
+            //                    new XElement("ArchAddDocRequest",
+            //                    new XAttribute("xmlns", (XNamespace)"urn:customs.ru:Information:EArchDocuments:ArchAddDocRequest:5.13.1"),
+            //                    new XAttribute("{xmlns:}ct", "urn:customs.ru:Information:EArchDocuments:EADCommonTypes:5.13.1"),
+            //                    new XAttribute("{xmlns:}xsi", "http://www.w3.org/2001/XMLSchema-instance"),
+            //                    new XAttribute("DocumentModeID", "1005001E"),
+            //                        new XElement("{ct:}DocumentID", "6BCC7C9D-9BAE-4FEA-B199-DB2513B0DC05"),
+            //                        new XElement("{ct:}ArchDeclID", XElement.EmptySequence)
+
+            //                        ));
+
+            //            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "TEST.xml");
+            //            XDocument xmlDocument = new XDocument();
+            //            xmlDocument.Add(dataObject);
+            //                xmlDocument.Save(path);
+            //            }
+
             {
-                string pathDest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Int.xml");
 
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.Load(pathToXml);
-
-                XmlNode xmlNodeRoot = xmlDoc.DocumentElement;
-                var xmlNodesListObject = (XmlNode)xmlDoc.GetElementsByTagName("Object", "*")[3];
-                Console.WriteLine();
-
-                //(XmlNode)xmlDoc.GetElementsByTagName("Object", "*")[2]
-                var xmlNodeTemp = xmlDoc.GetElementsByTagName("Object", "*")[2];
-
-                /// COPY TO ANOTHER XMLNODE
-                XmlDocument xmlDocTemp = new XmlDocument();
-                var nodeCreator = xmlDocTemp.CreateElement("Temp_object");
-                xmlDocTemp.CreateTextNode(xmlNodesListObject.OuterXml);
-                xmlDocTemp.AppendChild(nodeCreator);
-                nodeCreator.AppendChild(xmlDocTemp.ImportNode(xmlNodesListObject, true));
-                var tmpXml = xmlDocTemp.DocumentElement;
-
-                tmpXml.SelectNodes("Object");
-                Console.WriteLine(tmpXml.InnerText);
-
-
-                xmlDocTemp.Save(pathDest);
-
-                //// Вычисление HASH byte[]
-                //var tmp = SignCmsMessage(Certificate, Encoding.UTF8.GetBytes(xmlNodesListObject.OuterXml));
-
-                //// Перевод byte[] в string
-                //var tmpBase64 = Convert.ToBase64String(tmp);
-                //Console.WriteLine(tmpBase64);
-
-                Console.WriteLine();
             }
+
+            //{
+            //    string pathDest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Int.xml");
+
+            //    XmlDocument xmlDoc = new XmlDocument();
+            //    xmlDoc.Load(pathToXml);
+
+            //    XmlNode xmlNodeRoot = xmlDoc.DocumentElement;
+            //    var xmlNodesListObject = (XmlNode)xmlDoc.GetElementsByTagName("Object", "*")[3];
+            //    Console.WriteLine();
+
+            //    //(XmlNode)xmlDoc.GetElementsByTagName("Object", "*")[2]
+            //    var xmlNodeTemp = xmlDoc.GetElementsByTagName("Object", "*")[2];
+
+            //    /// COPY TO ANOTHER XMLNODE
+            //    XmlDocument xmlDocTemp = new XmlDocument();
+            //    var nodeCreator = xmlDocTemp.CreateElement("Temp_object");
+            //    xmlDocTemp.CreateTextNode(xmlNodesListObject.OuterXml);
+            //    xmlDocTemp.AppendChild(nodeCreator);
+            //    nodeCreator.AppendChild(xmlDocTemp.ImportNode(xmlNodesListObject, true));
+            //    var tmpXml = xmlDocTemp.DocumentElement;
+
+            //    tmpXml.SelectNodes("Object");
+            //    Console.WriteLine(tmpXml.InnerText);
+
+
+            //    xmlDocTemp.Save(pathDest);
+
+            //    //// Вычисление HASH byte[]
+            //    //var tmp = SignCmsMessage(Certificate, Encoding.UTF8.GetBytes(xmlNodesListObject.OuterXml));
+
+            //    //// Перевод byte[] в string
+            //    //var tmpBase64 = Convert.ToBase64String(tmp);
+            //    //Console.WriteLine(tmpBase64);
+
+            //    Console.WriteLine();
+            //}
 
             Console.WriteLine();
         }
