@@ -1,4 +1,6 @@
 ﻿using GostCryptography.Base;
+using GostCryptography.Config;
+using GostCryptography.Gost_R3411;
 using GostCryptography.Pkcs;
 using GostCryptography.Xml;
 using System;
@@ -33,18 +35,26 @@ namespace XMLSigner
             //XmlNodeList xmlElement = xRoot.SelectNodes("/Header");
 
             ///
-            {
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.Load(new StringReader(File.ReadAllText("C:\\_test\\_test\\TEST.xml")));
+            //{
+            //    {
+            //        var tmp = Convert.ToBase64String(SignCmsMessage(Certificate, Encoding.UTF8.GetBytes("<DigestMethod Algorithm=\"urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34112012-256\" />")));
+            //        Console.WriteLine(tmp);
 
-                var xmlNodesListObject = xmlDoc.GetElementsByTagName("Object", "*")[2];
+            //        Console.WriteLine();
+
+            //        var tmp2 = Convert.ToBase64String(SignCmsMessage(Certificate, Encoding.UTF8.GetBytes("urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34112012-256")));
+            //        Console.WriteLine(tmp2);
+            //    }
+
+            //    XmlDocument xmlDoc = new XmlDocument();
+            //    xmlDoc.Load(new StringReader(File.ReadAllText("C:\\_test\\_test\\TEST.xml")));
+
+            //    var xmlNodesListObject = xmlDoc.GetElementsByTagName("Object", "*")[2];
 
                 
-                var tmpBase64 = Convert.ToBase64String(SignCmsMessage(Certificate, Encoding.UTF8.GetBytes(xmlNodesListObject.OuterXml)));
-                Console.WriteLine(tmpBase64);
-
-
-            }
+            //    var tmpBase64 = Convert.ToBase64String(SignCmsMessage(Certificate, Encoding.UTF8.GetBytes(xmlNodesListObject.OuterXml)));
+            //    Console.WriteLine(tmpBase64);
+            //}
 
             // Ручное создание Элементов
             {
@@ -87,46 +97,76 @@ namespace XMLSigner
             //}
             */
 
-            /*
-            //{
-            //    string pathDest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Int.xml");
+            {
+                string pathDest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Int.xml");
 
-            //    XmlDocument xmlDoc = new XmlDocument();
-            //    xmlDoc.Load(pathToXml);
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.Load(pathToXml);
 
-            //    XmlNode xmlNodeRoot = xmlDoc.DocumentElement;
-            //    var xmlNodesListObject = (XmlNode)xmlDoc.GetElementsByTagName("Object", "*")[3];
-            //    Console.WriteLine();
+                XmlNode xmlNodeRoot = xmlDoc.DocumentElement;
+                var xmlNodesListObject = (XmlNode)xmlDoc.GetElementsByTagName("Object", "*")[3];
+                Console.WriteLine();
 
-            //    //(XmlNode)xmlDoc.GetElementsByTagName("Object", "*")[2]
-            //    var xmlNodeTemp = xmlDoc.GetElementsByTagName("Object", "*")[2];
+                //(XmlNode)xmlDoc.GetElementsByTagName("Object", "*")[2]
+                var xmlNodeTemp = xmlDoc.GetElementsByTagName("Object", "*")[2];
 
-            //    /// COPY TO ANOTHER XMLNODE
-            //    XmlDocument xmlDocTemp = new XmlDocument();
-            //    var nodeCreator = xmlDocTemp.CreateElement("Temp_object");
-            //    xmlDocTemp.CreateTextNode(xmlNodesListObject.OuterXml);
-            //    xmlDocTemp.AppendChild(nodeCreator);
-            //    nodeCreator.AppendChild(xmlDocTemp.ImportNode(xmlNodesListObject, true));
-            //    var tmpXml = xmlDocTemp.DocumentElement;
+                HashGostR3411_2012_256(xmlNodeTemp.OuterXml);
 
-            //    tmpXml.SelectNodes("Object");
-            //    Console.WriteLine(tmpXml.InnerText);
+                /// COPY TO ANOTHER XMLNODE
+                //XmlDocument xmlDocTemp = new XmlDocument();
+                //var nodeCreator = xmlDocTemp.CreateElement("Temp_object");
+                //xmlDocTemp.CreateTextNode(xmlNodesListObject.OuterXml);
+                //xmlDocTemp.AppendChild(nodeCreator);
+                //nodeCreator.AppendChild(xmlDocTemp.ImportNode(xmlNodesListObject, true));
+                //var tmpXml = xmlDocTemp.DocumentElement;
+
+                //tmpXml.SelectNodes("Object");
+                //Console.WriteLine(tmpXml.InnerText);
 
 
-            //    xmlDocTemp.Save(pathDest);
+                //xmlDocTemp.Save(pathDest);
 
-            //    //// Вычисление HASH byte[]
-            //    //var tmp = SignCmsMessage(Certificate, Encoding.UTF8.GetBytes(xmlNodesListObject.OuterXml));
+                //// Вычисление HASH byte[]
+                //var tmp = SignCmsMessage(Certificate, Encoding.UTF8.GetBytes(xmlNodesListObject.OuterXml));
 
-            //    //// Перевод byte[] в string
-            //    //var tmpBase64 = Convert.ToBase64String(tmp);
-            //    //Console.WriteLine(tmpBase64);
+                //// Перевод byte[] в string
+                //var tmpBase64 = Convert.ToBase64String(SignCmsMessage(Certificate, Encoding.UTF8.GetBytes(xmlNodesListObject.OuterXml)));
+                //Console.WriteLine(tmpBase64);
 
-            //    Console.WriteLine();
-            //}
-            */
+                Console.WriteLine();
+            }
 
             Console.WriteLine();
+        }
+
+
+        public static string HashGostR3411_2012_256(byte[] DataForHash)
+        {
+            var dataStream = new MemoryStream(DataForHash);
+
+            byte[] hashValue;
+
+            using (var hash = new Gost_R3411_2012_256_HashAlgorithm(ProviderType.CryptoPro))
+                hashValue = hash.ComputeHash(dataStream);
+
+            return Convert.ToBase64String(hashValue);
+        }
+
+
+        /// <summary>
+        /// Вычисление хэша ГОСТ Р 34.11-2012/256
+        /// </summary>
+        /// <param name="DataForHash"></param>
+        public static string HashGostR3411_2012_256(string DataForHash)
+        {
+            var dataStream = new MemoryStream(Encoding.UTF8.GetBytes(DataForHash));
+
+            byte[] hashValue;
+
+            using (var hash = new Gost_R3411_2012_256_HashAlgorithm(ProviderType.CryptoPro))
+                hashValue = hash.ComputeHash(dataStream);
+
+            return Convert.ToBase64String(hashValue);
         }
 
         public static byte[] SignCmsMessage(X509Certificate2 certificate, byte[] message)
@@ -138,7 +178,7 @@ namespace XMLSigner
             var signer = new CmsSigner(certificate);
 
             // Включение информации только о конечном сертификате (только для теста)
-            signer.IncludeOption = X509IncludeOption.EndCertOnly;
+            signer.IncludeOption = X509IncludeOption.None;
 
             // Создание подписи для сообщения CMS/PKCS#7
             signedCms.ComputeSignature(signer);
