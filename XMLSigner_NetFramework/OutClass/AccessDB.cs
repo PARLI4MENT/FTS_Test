@@ -48,10 +48,7 @@ namespace SQLTestNs
         }
 
 
-        public AccessDB()
-        {
-
-        }
+        public AccessDB() { }
 
         public static void BaseInitialize(string connectionString)
         {
@@ -111,10 +108,7 @@ namespace SQLTestNs
             try
             {
                 string commandString = "";
-                using (var dbCommand = new OleDbCommand(commandString, connection))
-                {
-
-                }
+                using (var dbCommand = new OleDbCommand(commandString, connection)) { }
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); }
         }

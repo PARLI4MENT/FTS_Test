@@ -17,19 +17,25 @@ namespace XMLSigner
     {
         static void Main(string[] args)
         {
-            string str4 = @"<X509Data>
+            {
+                string strs = @"KeyInfo Id=""KeyInfo"">
+                                <X509Data>
                                   <X509Certificate />
-                                </X509Data>";
+                                </X509Data>
+                              </KeyInfo>";
 
-            Console.WriteLine(SignXMLGost.HashGostR3411_2012_256(str4));
+                Console.WriteLine(SignXMLGost.HashGostR3411_2012_256(strs));
 
-            /// replace
-            str4 = str4.Replace("\r\n", "");
-            str4 = str4.Replace(" ", "");
-            foreach (char str in str4)
-                Console.Write(str);
-            Console.WriteLine();
-            Console.WriteLine(SignXMLGost.HashGostR3411_2012_256(str4));
+                /// replace
+                strs = strs.Replace("\r\n", "");
+                strs = strs.Replace(" ", "");
+                foreach (char str in strs)
+                    Console.Write(str);
+                Console.WriteLine();
+                Console.WriteLine(SignXMLGost.HashGostR3411_2012_256(strs));
+                Console.WriteLine();
+            }
+
 
             {
 
