@@ -30,12 +30,8 @@ namespace XMLSigner
         public static void SignedCmsXml(X509Certificate2 certificate)
         {
             string pathToXml = @"C:\\_test\\_test\\TEST.xml";
-            //XmlElement xRoot = xmlDoc.DocumentElement;
-
-            //XmlNodeList xmlElement = xRoot.SelectNodes("/Header");
-
-            ///
-            //{
+            
+            {
             //    {
             //        var tmp = Convert.ToBase64String(SignCmsMessage(Certificate, Encoding.UTF8.GetBytes("<DigestMethod Algorithm=\"urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34112012-256\" />")));
             //        Console.WriteLine(tmp);
@@ -54,7 +50,7 @@ namespace XMLSigner
                 
             //    var tmpBase64 = Convert.ToBase64String(SignCmsMessage(Certificate, Encoding.UTF8.GetBytes(xmlNodesListObject.OuterXml)));
             //    Console.WriteLine(tmpBase64);
-            //}
+            }
 
             // Ручное создание Элементов
             {
@@ -97,66 +93,39 @@ namespace XMLSigner
             //}
             */
 
-            {
-                string pathDest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Int.xml");
+            //{
+            //    //string pathDest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Int.xml");
 
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.Load(pathToXml);
+            //    XmlDocument xmlDoc = new XmlDocument();
+            //    xmlDoc.Load(pathToXml);
 
-                XmlNode xmlNodeRoot = xmlDoc.DocumentElement;
-                var xmlNodesListObject = (XmlNode)xmlDoc.GetElementsByTagName("Object", "*")[3];
-                Console.WriteLine();
+            //    XmlNode xmlNodeRoot = xmlDoc.DocumentElement;
+            //    var xmlNodesListObject = (XmlNode)xmlDoc.GetElementsByTagName("Object", "*")[3];
 
-                //(XmlNode)xmlDoc.GetElementsByTagName("Object", "*")[2]
-                var xmlNodeTemp = xmlDoc.GetElementsByTagName("Object", "*")[2];
-
-                HashGostR3411_2012_256(xmlNodeTemp.OuterXml);
-
-                /// COPY TO ANOTHER XMLNODE
-                //XmlDocument xmlDocTemp = new XmlDocument();
-                //var nodeCreator = xmlDocTemp.CreateElement("Temp_object");
-                //xmlDocTemp.CreateTextNode(xmlNodesListObject.OuterXml);
-                //xmlDocTemp.AppendChild(nodeCreator);
-                //nodeCreator.AppendChild(xmlDocTemp.ImportNode(xmlNodesListObject, true));
-                //var tmpXml = xmlDocTemp.DocumentElement;
-
-                //tmpXml.SelectNodes("Object");
-                //Console.WriteLine(tmpXml.InnerText);
+            //    //(XmlNode)xmlDoc.GetElementsByTagName("Object", "*")[2]
+            //    var xmlNodeTemp = xmlDoc.GetElementsByTagName("Object", "*")[2];
+            //    xmlNodeTemp.SelectSingleNode("//Object");
 
 
-                //xmlDocTemp.Save(pathDest);
+            //    Console.WriteLine(HashGostR3411_2012_256(xmlNodeTemp.OuterXml));
 
-                //// Вычисление HASH byte[]
-                //var tmp = SignCmsMessage(Certificate, Encoding.UTF8.GetBytes(xmlNodesListObject.OuterXml));
-
-                //// Перевод byte[] в string
-                //var tmpBase64 = Convert.ToBase64String(SignCmsMessage(Certificate, Encoding.UTF8.GetBytes(xmlNodesListObject.OuterXml)));
-                //Console.WriteLine(tmpBase64);
-
-                Console.WriteLine();
-            }
+            //        Console.WriteLine();
+            //}
 
             Console.WriteLine();
         }
-
-
-        public static string HashGostR3411_2012_256(byte[] DataForHash)
-        {
-            var dataStream = new MemoryStream(DataForHash);
-
-            byte[] hashValue;
-
-            using (var hash = new Gost_R3411_2012_256_HashAlgorithm(ProviderType.CryptoPro))
-                hashValue = hash.ComputeHash(dataStream);
-
-            return Convert.ToBase64String(hashValue);
-        }
-
 
         /// <summary>
         /// Вычисление хэша ГОСТ Р 34.11-2012/256
         /// </summary>
         /// <param name="DataForHash"></param>
+
+        /// <summary>
+        /// Вычисление хэша ГОСТ Р 34.11-2012/256
+        /// </summary>
+        /// <param name="DataForHash"></param>
+
+
         public static string HashGostR3411_2012_256(string DataForHash)
         {
             var dataStream = new MemoryStream(Encoding.UTF8.GetBytes(DataForHash));

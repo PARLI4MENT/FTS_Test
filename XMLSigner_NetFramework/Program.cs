@@ -7,6 +7,9 @@ using System.IO;
 using System.Linq;
 using static System.Net.WebRequestMethods;
 using System.Security.Cryptography.X509Certificates;
+using System.Xml;
+using System.Xml.Linq;
+using System.Net.Http.Headers;
 
 namespace XMLSigner
 {
@@ -14,52 +17,66 @@ namespace XMLSigner
     {
         static void Main(string[] args)
         {
-            
-            Console.WriteLine("Start process...");
+            string str4 = @"<X509Data>
+                                  <X509Certificate />
+                                </X509Data>";
 
-            //XmlNs.ImplementateToXml.ImplementLinear("C:\\_test\\rawFiles\\0be68d4a-444d-4abb-a09f-ce07c9256e30\\files\\05fcc4ca-cfc1-4b59-a67c-d9a1c909b4cb\\xml\\1f2aa4ac-e439-45f6-b4ce-0a21b4f9fcb9.FreeBinaryDoc.xml");
-            SignXMLGost.SignedCmsXml(SignXMLGost.Certificate);
+            Console.WriteLine(SignXMLGost.HashGostR3411_2012_256(str4));
 
-            /// Rename and move to intermidateFiles XML files
-            //FileNs.RenamerXML.RenameMoveParallel("C:\\_test\\rawFiles");
+            /// replace
+            str4 = str4.Replace("\r\n", "");
+            str4 = str4.Replace(" ", "");
+            foreach (char str in str4)
+                Console.Write(str);
+            Console.WriteLine();
+            Console.WriteLine(SignXMLGost.HashGostR3411_2012_256(str4));
 
-            //AccessDB.PathToMDB = "C:\\_test\\testMDB.mdb";
+            {
 
-            //var sw = new Stopwatch();
-            //var swTotal = new Stopwatch();
-            //sw.Start();
-            //swTotal.Start();
+                //XmlNs.ImplementateToXml.ImplementLinear("C:\\_test\\rawFiles\\0be68d4a-444d-4abb-a09f-ce07c9256e30\\files\\05fcc4ca-cfc1-4b59-a67c-d9a1c909b4cb\\xml\\1f2aa4ac-e439-45f6-b4ce-0a21b4f9fcb9.FreeBinaryDoc.xml");
+                //SignXMLGost.SignedCmsXml(SignXMLGost.Certificate);
 
-            //Inplement to XML, signing and sending request to BD
-            //Console.WriteLine("\nStart implement...");
-            //XmlNs.ImplementateToXml.ImplementParallel(Directory.GetFiles("C:\\_test\\intermidateFiles"));
-            //sw.Stop();
-            //Console.WriteLine($"Time implement => {sw.ElapsedMilliseconds / 1000},{sw.ElapsedMilliseconds % 1000} sec");
-            //Console.WriteLine($"Total destination files => {Directory.GetFiles("C:\\_test\\implementFiles").Count()} units");
-            //Console.WriteLine($"AVG => {Directory.GetFiles("C:\\_test\\intermidateFiles").Count() / ((int)sw.ElapsedMilliseconds / 1000)}");
+                /// Rename and move to intermidateFiles XML files
+                //FileNs.RenamerXML.RenameMoveParallel("C:\\_test\\rawFiles");
 
-            //sw.Restart();
-            //Console.WriteLine("\nStart signing XML...");
+                //AccessDB.PathToMDB = "C:\\_test\\testMDB.mdb";
 
-            //SignXMLGost.SignFullXml(Directory.GetFiles("C:\\_test\\implementFiles"), SignXMLGost.Certificate);
+                //var sw = new Stopwatch();
+                //var swTotal = new Stopwatch();
+                //sw.Start();
+                //swTotal.Start();
 
-            //sw.Stop();
-            //swTotal.Stop();
-            //Console.WriteLine($"Time signed => {sw.ElapsedMilliseconds / 1000},{sw.ElapsedMilliseconds % 1000} sec");
-            //Console.WriteLine($"Total destination files => {Directory.GetFiles("C:\\_test\\signedFiles").Count()} units");
-            //Console.WriteLine($"AVG => {(Directory.GetFiles("C:\\_test\\implementFiles").Count()) / ((int)sw.ElapsedMilliseconds / 1000)}");
+                //Inplement to XML, signing and sending request to BD
+                //Console.WriteLine("\nStart implement...");
+                //XmlNs.ImplementateToXml.ImplementParallel(Directory.GetFiles("C:\\_test\\intermidateFiles"));
+                //sw.Stop();
+                //Console.WriteLine($"Time implement => {sw.ElapsedMilliseconds / 1000},{sw.ElapsedMilliseconds % 1000} sec");
+                //Console.WriteLine($"Total destination files => {Directory.GetFiles("C:\\_test\\implementFiles").Count()} units");
+                //Console.WriteLine($"AVG => {Directory.GetFiles("C:\\_test\\intermidateFiles").Count() / ((int)sw.ElapsedMilliseconds / 1000)}");
 
-            //Console.WriteLine($"\nTotal time => {swTotal.ElapsedMilliseconds / 1000},{swTotal.ElapsedMilliseconds % 1000} sec");
-            Console.WriteLine("DONE !");
+                //sw.Restart();
+                //Console.WriteLine("\nStart signing XML...");
 
-            Console.WriteLine("\nPress any key...");
+                //SignXMLGost.SignFullXml(Directory.GetFiles("C:\\_test\\implementFiles"), SignXMLGost.Certificate);
 
-            //// Test to Access DB
-            //{
-            //    //'Unrecognized database format 'C:\testACCDB.accdb'.' 
-            //    //AccessDB.ConnectToAccessWithAce(AccessDB.PathToACCDB);
-            //}
+                //sw.Stop();
+                //swTotal.Stop();
+                //Console.WriteLine($"Time signed => {sw.ElapsedMilliseconds / 1000},{sw.ElapsedMilliseconds % 1000} sec");
+                //Console.WriteLine($"Total destination files => {Directory.GetFiles("C:\\_test\\signedFiles").Count()} units");
+                //Console.WriteLine($"AVG => {(Directory.GetFiles("C:\\_test\\implementFiles").Count()) / ((int)sw.ElapsedMilliseconds / 1000)}");
 
+                //Console.WriteLine($"\nTotal time => {swTotal.ElapsedMilliseconds / 1000},{swTotal.ElapsedMilliseconds % 1000} sec");
+                Console.WriteLine("DONE !");
+
+                Console.WriteLine("\nPress any key...");
+
+                //// Test to Access DB
+                //{
+                //    //'Unrecognized database format 'C:\testACCDB.accdb'.' 
+                //    //AccessDB.ConnectToAccessWithAce(AccessDB.PathToACCDB);
+                //}
+
+            }
 
             Console.ReadKey();
         }
