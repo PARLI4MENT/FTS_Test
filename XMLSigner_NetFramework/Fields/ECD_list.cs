@@ -40,7 +40,6 @@ namespace Fields
             }
         }
 
-
         //public string GetSqlCommandUpdate
         //{
         //    get
@@ -50,7 +49,5 @@ namespace Fields
         //            DocsSended = DocsSended +1 WHERE InnerID = {}";
         //    }
         //}
-
-
     }
 }

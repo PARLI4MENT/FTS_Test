@@ -1,15 +1,6 @@
 ﻿#define TEST
 
-using SQLTestNs;
 using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using static System.Net.WebRequestMethods;
-using System.Security.Cryptography.X509Certificates;
-using System.Xml;
-using System.Xml.Linq;
-using System.Net.Http.Headers;
 
 namespace XMLSigner
 {
@@ -18,24 +9,12 @@ namespace XMLSigner
         static void Main(string[] args)
         {
             {
-                string strs = @"KeyInfo Id=""KeyInfo"">
-                                <X509Data>
-                                  <X509Certificate />
-                                </X509Data>
-                              </KeyInfo>";
+                /// Хэширование
+                //string strs = "<n1:KeyInfo xmlns:n1=\"http://www.w3.org/2000/09/xmldsig#\" Id=\"KeyInfo\"><n1:X509Data><n1:X509Certificate></n1:X509Certificate></n1:X509Data></n1:KeyInfo>";
+                //Console.WriteLine(SignXMLGost.HashGostR3411_2012_256(strs));
 
-                Console.WriteLine(SignXMLGost.HashGostR3411_2012_256(strs));
-
-                /// replace
-                strs = strs.Replace("\r\n", "");
-                strs = strs.Replace(" ", "");
-                foreach (char str in strs)
-                    Console.Write(str);
-                Console.WriteLine();
-                Console.WriteLine(SignXMLGost.HashGostR3411_2012_256(strs));
                 Console.WriteLine();
             }
-
 
             {
 
@@ -74,7 +53,6 @@ namespace XMLSigner
                 //Console.WriteLine($"\nTotal time => {swTotal.ElapsedMilliseconds / 1000},{swTotal.ElapsedMilliseconds % 1000} sec");
                 Console.WriteLine("DONE !");
 
-                Console.WriteLine("\nPress any key...");
 
                 //// Test to Access DB
                 //{
@@ -83,7 +61,8 @@ namespace XMLSigner
                 //}
 
             }
-
+            
+            Console.WriteLine("\nPress any key...");
             Console.ReadKey();
         }
 
