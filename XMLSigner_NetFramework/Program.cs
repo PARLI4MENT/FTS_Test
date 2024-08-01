@@ -1,6 +1,11 @@
 ﻿#define TEST
 
+using Npgsql.PostgresTypes;
 using System;
+using System.IO;
+using System.Linq;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace XMLSigner
 {
@@ -13,7 +18,7 @@ namespace XMLSigner
                 //string strs = "<n1:KeyInfo xmlns:n1=\"http://www.w3.org/2000/09/xmldsig#\" Id=\"KeyInfo\"><n1:X509Data><n1:X509Certificate></n1:X509Certificate></n1:X509Data></n1:KeyInfo>";
                 //Console.WriteLine(SignXMLGost.HashGostR3411_2012_256(strs));
 
-                Console.WriteLine();
+                //Console.WriteLine();
             }
 
             {
@@ -61,10 +66,96 @@ namespace XMLSigner
                 //}
 
             }
-            
+
+            /// XML
+            {
+                //string pathToXml = @"Resource\test.xml";
+
+                //XmlDocument xmlDoc = new XmlDocument();
+                //xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
+                //var xmlRootNode = xmlDoc.DocumentElement;
+
+                ///// [2]Object => [0]ArchAddDocRequest => [4]ArchDoc => [0]Signature => [2]KeyInfo
+                ////var xmlNodeKeyInfo = xmlRootNode.GetElementsByTagName("Object", "*")[2].ChildNodes[0].ChildNodes[4].ChildNodes[0].ChildNodes[2];
+
+                ///// Test Set => <KeyInfo><...></KeyInfo>>
+                //var xmlNodeKeyInfo = (XmlElement)xmlRootNode.GetElementsByTagName("Object", "*")[2];
+
+
+
+                //Console.WriteLine("Base XmlNode => ");
+                //Console.WriteLine(xmlNodeKeyInfo.OuterXml);
+                //Console.WriteLine();
+
+                //XmlNode xmlNodeTest = Normalization(xmlNodeKeyInfo, "n1", true);
+                //Console.WriteLine(xmlNodeTest.OuterXml);
+            }
+
+            /// X XML
+            //{
+            //    string pathToXml = @"Resource\test.xml";
+            //    XDocument xDoc = XDocument.Load(pathToXml);
+            //    var xNodeRoot = xDoc.Root;
+
+            //}
+
             Console.WriteLine("\nPress any key...");
             Console.ReadKey();
         }
 
+        public static XElement Normalization(XElement xElement, string prefix = "n1", bool rootElement = false)
+        {
+
+
+            return null;
+        }
+
+        public static XmlNode Normalization(XmlElement xmlNode, string prefix = "n1", bool rootNode = false)
+        {
+            /// Установка перфикса
+            xmlNode.Prefix = prefix;
+
+            if (rootNode)
+            {
+
+            }
+
+
+            ///// Нормализация
+            //if (xmlNode.HasChildNodes)
+            //{
+            //    var childsNodes = xmlNode.ChildNodes;
+            //    foreach (XmlNode childNode in childsNodes)
+            //    {
+            //        Normalization(childNode);
+            //    }
+            //}
+
+
+            return xmlNode;
+        }
+
+        /// <summary> Смена пространство имён и атрибута местами </summary>
+        /// <param name="xmlNode"></param>
+        private static void NormalizeSwapAttribute(XmlNode xmlNode)
+        {
+
+        }
+
+        private static XmlNode NormalizeAttribute(XmlElement xmlNode, XmlNode xmlNodeParent = null, bool rootNode = false)
+        {
+            // Если root элемент и кол-во
+            if (rootNode && xmlNode.NamespaceURI.Count() > 0)
+            {
+
+            }
+
+            /// Удаляем ненужные Namespace из ноды
+            if (xmlNode.NamespaceURI != String.Empty)
+                NormalizeSwapAttribute(xmlNode);
+
+
+            return xmlNode;
+        }
     }
 }

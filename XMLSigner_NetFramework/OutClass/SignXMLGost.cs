@@ -58,36 +58,6 @@ namespace XMLSigner
                 Console.ReadKey();
             }
 
-            // Ручное создание Элементов
-            {
-                //    /// Base xml 
-                //    // Потом заменить на XmlElement из другого базового XML файла
-                //    string pathBaseXml = "C:\\_test\\_test\\_Object_Non_hash.xml";
-                //    string pathDesXml = $@"Dest_{Path.GetFileName(pathBaseXml)}";
-
-                //    XmlDocument xmlDocBase = new XmlDocument();
-                //    xmlDocBase.Load(new StringReader(File.ReadAllText(pathBaseXml)));
-
-                //    var dataObject =
-                //        new XElement("Object",
-                //        new XAttribute("Id", "Object"),
-                //        new XAttribute("", ""),
-                //        new XElement("ArchAddDocRequest",
-                //        new XAttribute("xmlns", (XNamespace)"urn:customs.ru:Information:EArchDocuments:ArchAddDocRequest:5.13.1"),
-                //        new XAttribute("{xmlns:}ct", "urn:customs.ru:Information:EArchDocuments:EADCommonTypes:5.13.1"),
-                //        new XAttribute("{xmlns:}xsi", "http://www.w3.org/2001/XMLSchema-instance"),
-                //        new XAttribute("DocumentModeID", "1005001E"),
-                //        new XElement("{ct:}DocumentID", "6BCC7C9D-9BAE-4FEA-B199-DB2513B0DC05"),
-                //        new XElement("{ct:}ArchDeclID", XElement.EmptySequence)
-
-                //        ));
-
-                //    string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "TEST.xml");
-                //    XDocument xmlDocument = new XDocument();
-                //    xmlDocument.Add(dataObject);
-                //    xmlDocument.Save(path);
-            }
-
             /// Парсинг
             /*
             //{
@@ -134,6 +104,15 @@ namespace XMLSigner
                 hashValue = hash.ComputeHash(dataStream);
 
             return Convert.ToBase64String(hashValue);
+        }
+
+        public static string Normalization(string OuterXml)
+        {
+            string NormalString = string.Empty;
+
+
+
+            return NormalString;
         }
 
         /// <summary> Подписание потока байтов</summary>
