@@ -48,7 +48,6 @@ namespace XMLSigner
                 var xmlNodeRefKeyInfoDigVal = xmlRootNode.GetElementsByTagName("Object", "*")[2].ChildNodes[0].ChildNodes[4].ChildNodes[0].ChildNodes[0].ChildNodes[2].ChildNodes[2];
                 xmlNodeRefKeyInfoDigVal.InnerText = HashGostR3411_2012_256(xmlNodeKeyInfo.OuterXml);
 
-
                 Console.WriteLine(xmlNodeKeyInfo.OuterXml);
                 Console.WriteLine();
                 Console.WriteLine(HashGostR3411_2012_256(xmlNodeKeyInfo.OuterXml));
@@ -69,7 +68,8 @@ namespace XMLSigner
             //}
             */
 
-            {
+            /*
+            //{
             //    //string pathDest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Int.xml");
 
             //    XmlDocument xmlDoc = new XmlDocument();
@@ -86,7 +86,8 @@ namespace XMLSigner
             //    Console.WriteLine(HashGostR3411_2012_256(xmlNodeTemp.OuterXml));
 
             //        Console.WriteLine();
-            }
+            //}
+            */
 
             Console.WriteLine();
         }
