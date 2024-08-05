@@ -1,9 +1,13 @@
 ﻿#define TEST
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Reflection.Emit;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -11,7 +15,7 @@ using System.Xml.XPath;
 
 namespace XMLSigner
 {
-    internal class Program
+    internal static class Program
     {
         static void Main(string[] args)
         {
@@ -21,13 +25,25 @@ namespace XMLSigner
                 xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
 
                 XmlElement xmlRoot = xmlDoc.DocumentElement;
+                var sw = new Stopwatch();
+                sw.Start();
+                var lastObject = xmlRoot.GetElementsByTagName("Object", "*")[2];
 
-                /// Get Last "KeyInfo"
-                var lastKeyInfo = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("KeyInfo", "*")[0];
-                Console.WriteLine(lastKeyInfo.OuterXml);
-                //Normalization((XmlElement)lastKeyInfo);
+                sw.Stop();
+                Console.WriteLine();
+                Console.WriteLine(sw.Elapsed);
 
+                ///// Get Last "KeyInfo"
+                //var lastKeyInfo = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("KeyInfo", "*")[0];
+                //Console.WriteLine(lastKeyInfo.OuterXml);
+                //Console.WriteLine();
+                //Console.WriteLine();
+                //Normalization(lastKeyInfo);
+                //Console.WriteLine(lastKeyInfo.OuterXml);
+                //Console.WriteLine();
 
+                ///// Get Last ""
+                //Normalization(lastObject);
             }
 
             /*
@@ -35,7 +51,7 @@ namespace XMLSigner
                 //string strs = "<n1:KeyInfo xmlns:n1=\"http://www.w3.org/2000/09/xmldsig#\" Id=\"KeyInfo\"><n1:X509Data><n1:X509Certificate></n1:X509Certificate></n1:X509Data></n1:KeyInfo>";
                 //Console.WriteLine(SignXMLGost.HashGostR3411_2012_256(strs));
 
-                //Console.WriteLine();
+                //Console.WriteLine();1z
             */
 
             /*
@@ -84,56 +100,156 @@ namespace XMLSigner
             Console.ReadKey();
         }
         
-        public XmlElement SearchElementForHash(XmlElement rootDoc)
+        /// <summary>
+        /// ДОДЕЛАТЬ
+        /// </summary>
+        /// <param name="rootDoc"></param>
+        /// <returns></returns>
+        public static void SearchElementForHash(XmlElement rootDoc)
         {
+            string prefix = "n1";
 
+            foreach (var xmlElem in rootDoc)
+            {
+                if (xmlElem.GetType().Equals(typeof(XmlElement)))
+                {
+                    var xmlCurrentElem = (XmlElement)xmlElem;
 
-            return null;
+                    if (xmlCurrentElem.Name == "Reference")
+                    {
+                        string tmp = GetPathXMLElement(xmlCurrentElem);
+                        Console.WriteLine(tmp);
+                    }
+                    SearchElementForHash(xmlCurrentElem);
+                }
+            }
+        }
+
+        private static string GetXpathIter(this XmlElement xmlElement)
+        {
+            string path = "/" + xmlElement.Name;
+            XmlElement parentElement = xmlElement.ParentNode as XmlElement;
+
+            if (parentElement != null)
+            {
+                XmlNodeList xmlNodeList = parentElement.SelectNodes(xmlElement.Name);
+                if (xmlNodeList != null && xmlNodeList.Count > 1)
+                {
+                    int position = 1;
+                    foreach (XmlElement xmlElementSibling in xmlNodeList)
+                    {
+                        if (xmlElementSibling == xmlElement)
+                            break;
+
+                        position++;
+                    }
+
+                    path = path + $"[{position}]";
+                }
+                path = parentElement.GetXpathIter() + path;
+            }
+
+            return path;
+        }
+        private static string GetPathXMLElement(XmlNode node)
+        {
+            string path = node.Name;
+            XmlNode search = null;
+            while ((search = node.ParentNode).NodeType != XmlNodeType.Document)
+            {
+                path = search.Name + "/" + path; // Add to path
+                node = search;
+            }
+            return "//" + path;
         }
 
         /// <summary> </summary>
-        /// <param name="xElement"></param>
+        /// <param name="xmlElement"></param>
         /// <param name="prefix"></param>
         /// <param name="rootElement"></param>
         /// <returns></returns>
-        public static XElement Normalization(XElement xElement, string prefix = "n1", bool rootElement = false)
+        public static void Normalization(XmlNode xmlNode, string prefix = "n1", bool rootNode = false)
         {
 
-
-            return null;
-        }
-
-        public static XmlNode Normalization(XmlElement xmlNode, string prefix = "n1", bool rootNode = false)
-        {
-            /// Установка перфикса
-            xmlNode.Prefix = prefix;
-
-            if (rootNode)
+            if (xmlNode.HasChildNodes)
             {
-                NormalizeSwapAttribute(xmlNode);
+                var xmlElems = xmlNode.ChildNodes;
+                foreach (XmlNode node in xmlElems)
+                {
+                    /// Set prefix
+                    node.Prefix = prefix;
+
+                    Normalization(node);
+                }
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(xmlNode.Value))
+                {
+                    string tmpChildName = xmlNode.Name;
+                    XmlNode parentNode = xmlNode.ParentNode;
+                    parentNode.RemoveChild(xmlNode);
+                    var xmlTextChild = xmlNode.OwnerDocument.CreateElement(tmpChildName);
+                    parentNode.AppendChild(xmlTextChild);
+                    parentNode.FirstChild.InnerText = "";
+                    parentNode.FirstChild.Prefix = prefix;
+
+                    return;
+                }
             }
 
-
-            ///// Нормализация
-            //if (xmlNode.HasChildNodes)
-            //{
-            //    var childsNodes = xmlNode.ChildNodes;
-            //    foreach (XmlNode childNode in childsNodes)
-            //    {
-            //        Normalization(childNode);
-            //    }
-            //}
-
-
-            return xmlNode;
+            //if (xmlNode.NamespaceURI.Count() > 0 && (xmlNode.Attributes.Count > 0))
+            //    NormalizeAttribute((XmlElement)xmlNode);
         }
 
+        //public static XmlElement Normalization(XmlElement xmlElement, string prefix = "n1", bool rootElement = false)
+        //{
+        //    xmlElement.Prefix = prefix;
+
+        //    if (xmlElement.HasChildNodes)
+        //    {
+        //        var xmlElems = xmlElement.ChildNodes;
+        //        foreach (XmlElement elem in xmlElems)
+        //            Normalization(elem);
+        //    }
+        //    else
+        //    {
+        //        if (xmlElement.IsEmpty && string.IsNullOrEmpty(xmlElement.Value))
+        //        {
+
+        //            string tmpElemName = xmlElement.Name;
+        //            var tmpElem = (XmlElement)xmlElement.ParentNode;
+        //            tmpElem.RemoveChild(xmlElement);
+        //            tmpElem.AppendChild(tmpElem.OwnerDocument.CreateNode(XmlNodeType.Text, tmpElemName, ""));
+        //            var tmpNode = tmpElem.GetElementsByTagName(tmpElemName, "*")[0];
+        //            return (XmlElement)tmpNode;
+        //        }
+        //    }
+
+        //    return xmlElement;
+        //}
+
         /// <summary> Смена пространство имён и атрибута местами </summary>
-        /// <param name="xmlNode"></param>
-        private static void NormalizeSwapAttribute(XmlElement xmlNode)
+        /// <param name="xmlElem"></param>
+        //private static void NormalizeAttribute(XmlElement xmlElem)
+        //{
+        //    /// Save Attribute
+        //    XmlAttribute[] attrs = new XmlAttribute[] { };
+        //    foreach (XmlAttribute attr in xmlElem.Attributes)
+        //        attrs = new XmlAttribute[] {  attr };
+
+        //    /// Save Namespace
+        //    List<XmlNs> xmlNsList = new List<XmlNs>();
+        //    foreach  item in collection)
+        //    {
+
+        //    }
+        //}
+
+        private struct XmlNs
         {
-            var attr = xmlNode.Attributes;
-            string[] arrAttr;
+            public string NamespaceURI { get; set; }
+            public string Prefix { get; set; }
         }
 
         private static XmlNode NormalizeAttribute(XmlElement xmlNode, XmlNode xmlNodeParent = null, bool rootNode = false)
@@ -146,7 +262,7 @@ namespace XMLSigner
 
             /// Удаляем ненужные Namespace из ноды
             if (xmlNode.NamespaceURI != String.Empty)
-                NormalizeSwapAttribute(xmlNode);
+                NormalizeAttribute(xmlNode);
 
 
             return xmlNode;

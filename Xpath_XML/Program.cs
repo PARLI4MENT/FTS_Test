@@ -29,12 +29,7 @@ namespace std
             {
                 XPathDocument xDoc = new XPathDocument(pathToXml);
                 XPathNavigator xNavigator = xDoc.CreateNavigator();
-
-
             }
-
-
-
 
             Console.ReadKey();
         }
