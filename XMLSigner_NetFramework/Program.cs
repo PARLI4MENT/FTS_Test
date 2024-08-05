@@ -27,7 +27,7 @@ namespace XMLSigner
                 XmlElement xmlRoot = xmlDoc.DocumentElement;
 
                 var lastObject = xmlRoot.GetElementsByTagName("Object", "*")[2];
-                Console.WriteLine(lastObject.OuterXml);
+                //Console.WriteLine(lastObject.OuterXml);
                 Tree((XmlElement)lastObject);
 
                 Console.WriteLine();
@@ -99,17 +99,29 @@ namespace XMLSigner
             Console.ReadKey();
         }
 
+        /// <summary>
+        /// Create XML Tree
+        /// </summary>
+        /// <param name="element"></param>
         public static void Tree(XmlElement element)
         {
-            if (element.GetType().Equals(typeof(System.Xml.XmlElement)))  //Type check first
+            if (element.GetType().Equals(typeof(System.Xml.XmlElement)))
             {
-                XmlElement xElement = (XmlElement)element;
-                Console.WriteLine(xElement.Name);
-                if (xElement.HasChildNodes) 
-                    Tree(xElement);
+                foreach (var node in element.ChildNodes)
+                {
+                    if (node.GetType().Equals(typeof(System.Xml.XmlElement)))
+                    {
+                        var elem = (XmlElement)node;
+                        Console.WriteLine($"\t{elem.Name}");
+                        if (elem.HasChildNodes)
+                        {
+                            Tree(elem);
+                        }
+                    }
+                }
             }
         }
-        
+
         /// <summary>
         /// ДОДЕЛАТЬ
         /// </summary>
@@ -135,7 +147,7 @@ namespace XMLSigner
             }
         }
 
-        private static string GetXpathIter(this XmlElement xmlElement)
+        private static string GetXpathXMLIter(this XmlElement xmlElement)
         {
             string path = "/" + xmlElement.Name;
             XmlElement parentElement = xmlElement.ParentNode as XmlElement;
@@ -156,7 +168,7 @@ namespace XMLSigner
 
                     path = path + $"[{position}]";
                 }
-                path = parentElement.GetXpathIter() + path;
+                path = parentElement.GetXpathXMLIter() + path;
             }
 
             return path;
@@ -273,7 +285,6 @@ namespace XMLSigner
             /// Удаляем ненужные Namespace из ноды
             if (xmlNode.NamespaceURI != String.Empty)
                 NormalizeAttribute(xmlNode);
-
 
             return xmlNode;
         }
