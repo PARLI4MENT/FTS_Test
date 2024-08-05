@@ -32,7 +32,6 @@ namespace XMLSigner
 
                 Console.WriteLine();
                 Console.WriteLine(lastObject.OuterXml);
-
             }
 
             /*
@@ -103,18 +102,14 @@ namespace XMLSigner
                     {
                         var elem = (XmlElement)node;
                         Console.WriteLine($"\t{elem.Name}");
-                        if (elem.HasChildNodes)
-                        {
+                        if (elem.InnerText == "" && elem.InnerText == null)
                             GetTree(elem);
-                        }
                     }
                 }
             }
         }
 
-        /// <summary>
-        /// ДОДЕЛАТЬ
-        /// </summary>
+        /// <summary>ДОДЕЛАТЬ</summary>
         /// <param name="rootDoc"></param>
         /// <returns></returns>
         public static void SearchElementForHash(XmlElement rootDoc)
@@ -137,6 +132,9 @@ namespace XMLSigner
             }
         }
 
+        /// <summary></summary>
+        /// <param name="xmlElement"></param>
+        /// <returns></returns>
         private static string GetXpathXMLIter(this XmlElement xmlElement)
         {
             string path = "/" + xmlElement.Name;
@@ -163,6 +161,10 @@ namespace XMLSigner
 
             return path;
         }
+        
+        /// <summary></summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         private static string GetPathXMLElement(XmlNode node)
         {
             string path = node.Name;
@@ -175,84 +177,48 @@ namespace XMLSigner
             return "//" + path;
         }
 
-        /// <summary> </summary>
+        /// <summary></summary>
         /// <param name="xmlElement"></param>
         /// <param name="prefix"></param>
         /// <param name="rootElement"></param>
         /// <returns></returns>
         public static void Normalization(XmlNode xmlNode, string prefix = "n1", bool rootNode = false)
         {
-
-            if (xmlNode.GetType().Equals(typeof(System.Xml.XmlElement)))
+            if (xmlNode.GetType().Equals(typeof(XmlElement)))
             {
                 foreach (var node in xmlNode.ChildNodes)
                 {
-                    if (node.GetType().Equals(typeof(System.Xml.XmlElement)))
+                    if (node.GetType().Equals(typeof(XmlElement)))
                     {
                         var elem = (XmlElement)node;
 
-                        Console.WriteLine($"\t{elem.Name}");
-                        if (elem.HasChildNodes)
+                        /// Rename prefix
+                        if (elem.Prefix != "")
                         {
-                            Normalization(elem);
-                        }
-                        else
-                        {
-                            if(!elem.HasChildNodes && elem.InnerText == "")
-                            {
-                                elem.InnerText = "";
-                            }
+                            string _prefix = elem.Prefix;
                         }
 
-                        #region Normalization
-                        // Set prefix
-                        elem.Prefix = prefix;
-
-                        // Аттрибуты
                         if (elem.HasAttributes)
                         {
                             var attributes = elem.Attributes;
-                            //var xmlNamespace = elem.NamespaceURI;
                             elem.RemoveAllAttributes();
                             foreach (XmlAttribute attr in attributes)
+                            {
                                 elem.SetAttribute(attr.Name, attr.Value);
-
-                            //elem.SetAttributeNode("xmlns", xmlNamespace);
+                            }
                         }
-                        #endregion
+
+                        Console.WriteLine($"\t{elem.Name}");
+                        if (elem.HasChildNodes)
+                            Normalization(elem);
+                        else
+                            if(!elem.HasChildNodes && elem.InnerText == "")
+                                 elem.InnerText = "";
+
+                        elem.Prefix = prefix;
                     }
                 }
             }
-
-            //if (xmlNode.HasChildNodes)
-            //{
-            //    var xmlElems = xmlNode.ChildNodes;
-            //    foreach (XmlNode node in xmlElems)
-            //    {
-            //        /// Set prefix
-            //        node.Prefix = prefix;
-
-            //        Normalization(node);
-            //    }
-            //}
-            //else
-            //{
-            //    if (string.IsNullOrEmpty(xmlNode.Value))
-            //    {
-            //        string tmpChildName = xmlNode.Name;
-            //        XmlNode parentNode = xmlNode.ParentNode;
-            //        parentNode.RemoveChild(xmlNode);
-            //        var xmlTextChild = xmlNode.OwnerDocument.CreateElement(tmpChildName);
-            //        parentNode.AppendChild(xmlTextChild);
-            //        parentNode.FirstChild.InnerText = "";
-            //        parentNode.FirstChild.Prefix = prefix;
-
-            //        return;
-            //    }
-            //}
-
-            //if (xmlNode.NamespaceURI.Count() > 0 && (xmlNode.Attributes.Count > 0))
-            //    NormalizeAttribute((XmlElement)xmlNode);
         }
 
         //public static XmlElement Normalization(XmlElement xmlElement, string prefix = "n1", bool rootElement = false)
@@ -308,10 +274,7 @@ namespace XMLSigner
         private static XmlNode NormalizeAttribute(XmlElement xmlNode, XmlNode xmlNodeParent = null, bool rootNode = false)
         {
             // Если root элемент и кол-во
-            if (rootNode && xmlNode.NamespaceURI.Count() > 0)
-            {
-
-            }
+            if (rootNode && xmlNode.NamespaceURI.Count() > 0) { }
 
             /// Удаляем ненужные Namespace из ноды
             if (xmlNode.NamespaceURI != String.Empty)
