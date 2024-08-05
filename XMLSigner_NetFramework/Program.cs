@@ -33,16 +33,6 @@ namespace XMLSigner
                 Console.WriteLine();
                 Console.WriteLine(lastObject.OuterXml);
 
-                ///// Get Last "KeyInfo"
-                //var lastKeyInfo = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("KeyInfo", "*")[0];
-                //Console.WriteLine(lastKeyInfo.OuterXml);
-                //Console.WriteLine();
-                //Console.WriteLine();
-                //Console.WriteLine(lastKeyInfo.OuterXml);
-                //Console.WriteLine();
-
-                ///// Get Last ""
-                //Normalization(lastObject);
             }
 
             /*
@@ -103,7 +93,7 @@ namespace XMLSigner
         /// Create XML Tree
         /// </summary>
         /// <param name="element"></param>
-        public static void Tree(XmlElement element)
+        public static void GetTree(XmlElement element)
         {
             if (element.GetType().Equals(typeof(System.Xml.XmlElement)))
             {
@@ -115,7 +105,7 @@ namespace XMLSigner
                         Console.WriteLine($"\t{elem.Name}");
                         if (elem.HasChildNodes)
                         {
-                            Tree(elem);
+                            GetTree(elem);
                         }
                     }
                 }
@@ -206,27 +196,30 @@ namespace XMLSigner
                         {
                             Normalization(elem);
                         }
-
-                        // Normalization
+                        else
                         {
-                            // Set prefix
-                            elem.Prefix = prefix;
-
-                            // Аттрибуты
-                            if (elem.HasAttributes)
+                            if(!elem.HasChildNodes && elem.InnerText == "")
                             {
-                                var attributes = elem.Attributes;
-                                //var xmlNamespace = elem.NamespaceURI;
-                                elem.RemoveAllAttributes();
-                                foreach (XmlAttribute attr in attributes)
-                                    elem.SetAttribute(attr.Name, attr.Value);
-
-                                //elem.SetAttributeNode("xmlns", xmlNamespace);
-
+                                elem.InnerText = "";
                             }
                         }
 
-                        
+                        #region Normalization
+                        // Set prefix
+                        elem.Prefix = prefix;
+
+                        // Аттрибуты
+                        if (elem.HasAttributes)
+                        {
+                            var attributes = elem.Attributes;
+                            //var xmlNamespace = elem.NamespaceURI;
+                            elem.RemoveAllAttributes();
+                            foreach (XmlAttribute attr in attributes)
+                                elem.SetAttribute(attr.Name, attr.Value);
+
+                            //elem.SetAttributeNode("xmlns", xmlNamespace);
+                        }
+                        #endregion
                     }
                 }
             }
