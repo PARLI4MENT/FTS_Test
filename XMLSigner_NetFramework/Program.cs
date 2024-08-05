@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -23,22 +24,20 @@ namespace XMLSigner
             {
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
-
                 XmlElement xmlRoot = xmlDoc.DocumentElement;
-                var sw = new Stopwatch();
-                sw.Start();
-                var lastObject = xmlRoot.GetElementsByTagName("Object", "*")[2];
 
-                sw.Stop();
+                var lastObject = xmlRoot.GetElementsByTagName("Object", "*")[2];
+                Console.WriteLine(lastObject.OuterXml);
+                Tree((XmlElement)lastObject);
+
                 Console.WriteLine();
-                Console.WriteLine(sw.Elapsed);
+                Console.WriteLine(lastObject.OuterXml);
 
                 ///// Get Last "KeyInfo"
                 //var lastKeyInfo = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("KeyInfo", "*")[0];
                 //Console.WriteLine(lastKeyInfo.OuterXml);
                 //Console.WriteLine();
                 //Console.WriteLine();
-                //Normalization(lastKeyInfo);
                 //Console.WriteLine(lastKeyInfo.OuterXml);
                 //Console.WriteLine();
 
@@ -98,6 +97,17 @@ namespace XMLSigner
 
             Console.WriteLine("\nPress any key...");
             Console.ReadKey();
+        }
+
+        public static void Tree(XmlElement element)
+        {
+            if (element.GetType().Equals(typeof(System.Xml.XmlElement)))  //Type check first
+            {
+                XmlElement xElement = (XmlElement)element;
+                Console.WriteLine(xElement.Name);
+                if (xElement.HasChildNodes) 
+                    Tree(xElement);
+            }
         }
         
         /// <summary>
