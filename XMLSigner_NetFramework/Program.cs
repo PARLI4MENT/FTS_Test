@@ -28,7 +28,7 @@ namespace XMLSigner
 
                 var lastObject = xmlRoot.GetElementsByTagName("Object", "*")[2];
                 //Console.WriteLine(lastObject.OuterXml);
-                Tree((XmlElement)lastObject);
+                Normalization(lastObject);
 
                 Console.WriteLine();
                 Console.WriteLine(lastObject.OuterXml);
@@ -193,32 +193,70 @@ namespace XMLSigner
         public static void Normalization(XmlNode xmlNode, string prefix = "n1", bool rootNode = false)
         {
 
-            if (xmlNode.HasChildNodes)
+            if (xmlNode.GetType().Equals(typeof(System.Xml.XmlElement)))
             {
-                var xmlElems = xmlNode.ChildNodes;
-                foreach (XmlNode node in xmlElems)
+                foreach (var node in xmlNode.ChildNodes)
                 {
-                    /// Set prefix
-                    node.Prefix = prefix;
+                    if (node.GetType().Equals(typeof(System.Xml.XmlElement)))
+                    {
+                        var elem = (XmlElement)node;
 
-                    Normalization(node);
+                        Console.WriteLine($"\t{elem.Name}");
+                        if (elem.HasChildNodes)
+                        {
+                            Normalization(elem);
+                        }
+
+                        // Normalization
+                        {
+                            // Set prefix
+                            elem.Prefix = prefix;
+
+                            // Аттрибуты
+                            if (elem.HasAttributes)
+                            {
+                                var attributes = elem.Attributes;
+                                //var xmlNamespace = elem.NamespaceURI;
+                                elem.RemoveAllAttributes();
+                                foreach (XmlAttribute attr in attributes)
+                                    elem.SetAttribute(attr.Name, attr.Value);
+
+                                //elem.SetAttributeNode("xmlns", xmlNamespace);
+
+                            }
+                        }
+
+                        
+                    }
                 }
             }
-            else
-            {
-                if (string.IsNullOrEmpty(xmlNode.Value))
-                {
-                    string tmpChildName = xmlNode.Name;
-                    XmlNode parentNode = xmlNode.ParentNode;
-                    parentNode.RemoveChild(xmlNode);
-                    var xmlTextChild = xmlNode.OwnerDocument.CreateElement(tmpChildName);
-                    parentNode.AppendChild(xmlTextChild);
-                    parentNode.FirstChild.InnerText = "";
-                    parentNode.FirstChild.Prefix = prefix;
 
-                    return;
-                }
-            }
+            //if (xmlNode.HasChildNodes)
+            //{
+            //    var xmlElems = xmlNode.ChildNodes;
+            //    foreach (XmlNode node in xmlElems)
+            //    {
+            //        /// Set prefix
+            //        node.Prefix = prefix;
+
+            //        Normalization(node);
+            //    }
+            //}
+            //else
+            //{
+            //    if (string.IsNullOrEmpty(xmlNode.Value))
+            //    {
+            //        string tmpChildName = xmlNode.Name;
+            //        XmlNode parentNode = xmlNode.ParentNode;
+            //        parentNode.RemoveChild(xmlNode);
+            //        var xmlTextChild = xmlNode.OwnerDocument.CreateElement(tmpChildName);
+            //        parentNode.AppendChild(xmlTextChild);
+            //        parentNode.FirstChild.InnerText = "";
+            //        parentNode.FirstChild.Prefix = prefix;
+
+            //        return;
+            //    }
+            //}
 
             //if (xmlNode.NamespaceURI.Count() > 0 && (xmlNode.Attributes.Count > 0))
             //    NormalizeAttribute((XmlElement)xmlNode);
