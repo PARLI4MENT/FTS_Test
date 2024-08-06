@@ -1,18 +1,13 @@
 ﻿#define TEST
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Diagnostics;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Reflection.Emit;
+using System.Security.Policy;
 using System.Xml;
 using System.Xml.Linq;
-using System.Xml.Serialization;
-using System.Xml.XPath;
 
 namespace XMLSigner
 {
@@ -21,19 +16,21 @@ namespace XMLSigner
         static void Main(string[] args)
         {
             string pathToXml = @"Resource\test.xml";
-            {
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
-                XmlElement xmlRoot = xmlDoc.DocumentElement;
 
-                var lastObject = xmlRoot.GetElementsByTagName("Object", "*")[2];
-                //Console.WriteLine(lastObject.OuterXml);
-                Normalization(lastObject);
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
+            XmlElement xmlRoot = xmlDoc.DocumentElement;
 
-                Console.WriteLine();
-                Console.WriteLine(lastObject.OuterXml);
-            }
+            var lastObject = (XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2];
+            //Console.WriteLine(lastObject.OuterXml);
+            Normalization(lastObject);
 
+            Console.WriteLine();
+            Console.WriteLine(lastObject.OuterXml);
+            Console.WriteLine();
+
+            Console.WriteLine(SignXMLGost.HashGostR3411_2012_256(lastObject.OuterXml));
+            Console.WriteLine();
             /*
                 /// Хэширование
                 //string strs = "<n1:KeyInfo xmlns:n1=\"http://www.w3.org/2000/09/xmldsig#\" Id=\"KeyInfo\"><n1:X509Data><n1:X509Certificate></n1:X509Certificate></n1:X509Data></n1:KeyInfo>";
@@ -84,7 +81,7 @@ namespace XMLSigner
             //}
             */
 
-            Console.WriteLine("\nPress any key...");
+            Console.Write("\nPress any key...");
             Console.ReadKey();
         }
 
@@ -177,7 +174,7 @@ namespace XMLSigner
             return "//" + path;
         }
 
-        /// <summary></summary>
+        /// <summary>Нормализация XML элемента</summary>
         /// <param name="xmlElement"></param>
         /// <param name="prefix"></param>
         /// <param name="rootElement"></param>
@@ -186,37 +183,43 @@ namespace XMLSigner
         {
             if (xmlNode.GetType().Equals(typeof(XmlElement)))
             {
-                foreach (var node in xmlNode.ChildNodes)
+                var elem = (XmlElement)xmlNode;
+
+                if (elem.HasChildNodes)
+                    foreach (var node in elem.ChildNodes)
+                        if (node.GetType().Equals(typeof(XmlElement)))
+                            Normalization((XmlElement)node);
+
+                if (!elem.HasChildNodes && elem.InnerText == "")
+                    elem.InnerText = "";
+
+                StringCollection strName = new StringCollection();
+                StringCollection strValue = new StringCollection();
+
+                elem.Prefix = prefix;
+
+                if (elem.HasAttributes)
                 {
-                    if (node.GetType().Equals(typeof(XmlElement)))
+                    for (int i = 0; i < elem.Attributes.Count; i++)
                     {
-                        var elem = (XmlElement)node;
-
-                        /// Rename prefix
-                        if (elem.Prefix != "")
+                        if (!elem.Attributes[i].Name.Contains("xmlns"))
                         {
-                            string _prefix = elem.Prefix;
+                            strName.Add(elem.Attributes[i].Name);
+                            strValue.Add(elem.Attributes[i].Value);
                         }
 
-                        if (elem.HasAttributes)
-                        {
-                            var attributes = elem.Attributes;
-                            elem.RemoveAllAttributes();
-                            foreach (XmlAttribute attr in attributes)
-                            {
-                                elem.SetAttribute(attr.Name, attr.Value);
-                            }
-                        }
-
-                        Console.WriteLine($"\t{elem.Name}");
-                        if (elem.HasChildNodes)
-                            Normalization(elem);
-                        else
-                            if(!elem.HasChildNodes && elem.InnerText == "")
-                                 elem.InnerText = "";
-
-                        elem.Prefix = prefix;
                     }
+                    elem.Attributes.RemoveAll();
+
+                    /// Insert Data
+                    for (int i = 0; (i < strName.Count); i++)
+                    {
+                        elem.SetAttribute(strName[i], strValue[i]);
+                    }
+
+
+                    if (elem.Attributes.Count > 1)
+                        Console.WriteLine("Count attr => " + elem.Attributes.Count);
                 }
             }
         }
