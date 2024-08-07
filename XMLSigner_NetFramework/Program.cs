@@ -16,6 +16,7 @@ namespace XMLSigner
 
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
+            xmlDoc.
             XmlElement xmlRoot = xmlDoc.DocumentElement;
 
             var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("ArchAddDocRequest", "*")[0];
@@ -25,7 +26,7 @@ namespace XMLSigner
             Console.WriteLine();
             Console.WriteLine(lastObject.Attributes.Count);
             Console.WriteLine();
-            Console.WriteLine(lastObject.OuterXml);
+            Console.WriteLine(lastObject);
             Console.WriteLine();
 
             //Console.WriteLine(SignXMLGost.HashGostR3411_2012_256(lastObject.OuterXml));
@@ -204,8 +205,6 @@ namespace XMLSigner
                         //if (elem.Attributes[i].Name.Contains("xmlns") && !elem.Attributes[i].Value.Contains(elem.NamespaceURI))
                         if (elem.Attributes[i].Name.Contains("xmlns"))
                         {
-                            //strName.Add(elem.Attributes[i].Name);
-                            //strValue.Add(elem.Attributes[i].Value);
                             elem.RemoveAttributeAt(i);
                             continue;
                         }
@@ -213,7 +212,8 @@ namespace XMLSigner
                     }
 
                     /// Swap Namespace and Attribute
-
+                    Console.WriteLine();
+                    string tmpStr = elem.InnerText;
 
                 }
             }
