@@ -16,7 +16,6 @@ namespace XMLSigner
 
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
-            xmlDoc.
             XmlElement xmlRoot = xmlDoc.DocumentElement;
 
             var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("ArchAddDocRequest", "*")[0];
