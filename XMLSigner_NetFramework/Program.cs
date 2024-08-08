@@ -5,6 +5,8 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Xml;
+using System.Xml.Linq;
+using System.Xml.Serialization;
 
 namespace XMLSigner
 {
@@ -19,13 +21,14 @@ namespace XMLSigner
             XmlElement xmlRoot = xmlDoc.DocumentElement;
 
             var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("ArchAddDocRequest", "*")[0];
-            //Console.WriteLine(lastObject.OuterXml);
+
+            Console.WriteLine(lastObject.Attributes.Count);
+            Console.WriteLine(lastObject.OuterXml);
             Normalization(lastObject);
 
             Console.WriteLine();
-            Console.WriteLine(lastObject.Attributes.Count);
             Console.WriteLine();
-            Console.WriteLine(lastObject);
+            Console.WriteLine(lastObject.Attributes.Count);
             Console.WriteLine();
 
             //Console.WriteLine(SignXMLGost.HashGostR3411_2012_256(lastObject.OuterXml));
@@ -173,6 +176,13 @@ namespace XMLSigner
             return "//" + path;
         }
 
+        public static string NormalizationX()
+        {
+
+
+            return null;
+        }
+
         /// <summary>Нормализация XML элемента</summary>
         /// <param name="xmlElement"></param>
         /// <param name="prefix"></param>
@@ -189,8 +199,8 @@ namespace XMLSigner
                 //        if (node.GetType().Equals(typeof(XmlElement)))
                 //            Normalization((XmlElement)node);
 
-                if (!elem.HasChildNodes && elem.InnerText == "")
-                    elem.InnerText = "";
+                //if (!elem.HasChildNodes && elem.InnerText == "")
+                //    elem.InnerText = "";
 
                 StringCollection strName = new StringCollection();
                 StringCollection strValue = new StringCollection();
@@ -201,8 +211,8 @@ namespace XMLSigner
                 {
                     for (int i = 0; i < elem.Attributes.Count;)
                     {
-                        //if (elem.Attributes[i].Name.Contains("xmlns") && !elem.Attributes[i].Value.Contains(elem.NamespaceURI))
-                        if (elem.Attributes[i].Name.Contains("xmlns"))
+                        if (elem.Attributes[i].Name.Contains("xmlns") && !elem.Attributes[i].Value.Contains(elem.NamespaceURI))
+                            //if (elem.Attributes[i].Name.Contains("xmlns"))
                         {
                             elem.RemoveAttributeAt(i);
                             continue;
@@ -212,8 +222,26 @@ namespace XMLSigner
 
                     /// Swap Namespace and Attribute
                     Console.WriteLine();
-                    string tmpStr = elem.InnerText;
 
+                    if (elem.LocalName == "ArchAddDocRequest")
+                    {
+                        Console.WriteLine();
+                        XDocument xDoc = XDocument.Load(new XmlNodeReader((XmlNode)elem));
+                        XElement xElem = XElement.Parse(elem.OuterXml);
+
+                        Console.WriteLine();
+                    }
+
+                    //{
+                    //    XmlSerializerNamespaces xmlSerNs = new XmlSerializerNamespaces();
+                    //    xmlSerNs.Add("", "");
+                    //}
+
+                    //{
+                    //    XmlSerializer s = new XmlSerializer(typeof(XmlElement));
+                    //    StringWriter sw = new StringWriter();
+                    //    s.Serialize(sw, elem);
+                    //}
                 }
             }
         }
@@ -222,18 +250,6 @@ namespace XMLSigner
         {
             public string NamespaceURI { get; set; }
             public string Prefix { get; set; }
-        }
-
-        private static XmlNode NormalizeAttribute(XmlElement xmlNode, XmlNode xmlNodeParent = null, bool rootNode = false)
-        {
-            // Если root элемент и кол-во
-            if (rootNode && xmlNode.NamespaceURI.Count() > 0) { }
-
-            /// Удаляем ненужные Namespace из ноды
-            if (xmlNode.NamespaceURI != String.Empty)
-                NormalizeAttribute(xmlNode);
-
-            return xmlNode;
         }
     }
 }
