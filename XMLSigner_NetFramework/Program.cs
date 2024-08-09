@@ -1,9 +1,12 @@
 ﻿#define TEST
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -16,20 +19,36 @@ namespace XMLSigner
         {
             string pathToXml = @"Resource\test.xml";
 
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
-            XmlElement xmlRoot = xmlDoc.DocumentElement;
+            /// XMLDocument
+            //{
+            //    XmlDocument xmlDoc = new XmlDocument();
+            //    xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
+            //    XmlElement xmlRoot = xmlDoc.DocumentElement;
 
-            var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("ArchAddDocRequest", "*")[0];
+            //    //var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("ArchAddDocRequest", "*")[0];
+            //    var lastObject = (XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2];
 
-            Console.WriteLine(lastObject.Attributes.Count);
-            Console.WriteLine(lastObject.OuterXml);
-            Normalization(lastObject);
+            //    Console.WriteLine(lastObject.Attributes.Count);
+            //    Console.WriteLine(lastObject.OuterXml);
 
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine(lastObject.Attributes.Count);
-            Console.WriteLine();
+            //    Normalization(lastObject);
+
+            //    Console.WriteLine();
+            //    Console.WriteLine(lastObject.Attributes.Count);
+            //    Console.WriteLine(lastObject.OuterXml);
+            //    Console.WriteLine();
+            //}
+
+            ///XDocument
+            {
+                Console.WriteLine();
+                //XDocument xDoc = XDocument.Load(pathToXml);
+                XElement xElem = XElement.Load(pathToXml);
+                IEnumerable<XElement> nodeList = xElem.Descendants().Where(e => e.Name.LocalName == "Object");
+                nodeList.ToList();
+
+                Console.WriteLine();
+            }            
 
             //Console.WriteLine(SignXMLGost.HashGostR3411_2012_256(lastObject.OuterXml));
             //Console.WriteLine();
@@ -199,13 +218,11 @@ namespace XMLSigner
                 //        if (node.GetType().Equals(typeof(XmlElement)))
                 //            Normalization((XmlElement)node);
 
-                //if (!elem.HasChildNodes && elem.InnerText == "")
-                //    elem.InnerText = "";
+                if (!elem.HasChildNodes && elem.InnerText == "")
+                    elem.InnerText = "";
 
-                StringCollection strName = new StringCollection();
-                StringCollection strValue = new StringCollection();
-
-                elem.Prefix = prefix;
+                if (elem.LocalName != "ArchAddDocRequest")
+                    elem.Prefix = prefix;
 
                 if (elem.HasAttributes)
                 {
@@ -220,36 +237,35 @@ namespace XMLSigner
                         i++;
                     }
 
-                    /// Swap Namespace and Attribute
-                    Console.WriteLine();
 
-                    if (elem.LocalName == "ArchAddDocRequest")
-                    {
-                        Console.WriteLine();
-                        XDocument xDoc = XDocument.Load(new XmlNodeReader((XmlNode)elem));
-                        XElement xElem = XElement.Parse(elem.OuterXml);
 
-                        Console.WriteLine();
-                    }
+                    /*
+                    ///Swap Namespace and Attribute
+                    //    Console.WriteLine();
 
-                    //{
-                    //    XmlSerializerNamespaces xmlSerNs = new XmlSerializerNamespaces();
-                    //    xmlSerNs.Add("", "");
-                    //}
+                    //    if (elem.LocalName == "ArchAddDocRequest")
+                    //    {
+                    //        Console.WriteLine();
+                    //        //XDocument xDoc = XDocument.Load(new XmlNodeReader((XmlNode)elem));
+                    //        //XElement xElem = XElement.Parse(elem.OuterXml);
 
-                    //{
-                    //    XmlSerializer s = new XmlSerializer(typeof(XmlElement));
-                    //    StringWriter sw = new StringWriter();
-                    //    s.Serialize(sw, elem);
-                    //}
+                    //        Console.WriteLine();
+                    //    }
+
+                    //    {
+                    //        XmlSerializerNamespaces xmlSerNs = new XmlSerializerNamespaces();
+                    //        xmlSerNs.Add("", "");
+                    //    }
+
+                    //    {
+                    //        XmlSerializer s = new XmlSerializer(typeof(XmlElement));
+                    //        StringWriter sw = new StringWriter();
+                    //        s.Serialize(sw, elem);
+                    //    }
+                    */
+
                 }
             }
-        }
-
-        private struct XmlNs
-        {
-            public string NamespaceURI { get; set; }
-            public string Prefix { get; set; }
         }
     }
 }
