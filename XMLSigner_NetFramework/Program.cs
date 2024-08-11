@@ -25,8 +25,8 @@ namespace XMLSigner
                 xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
                 XmlElement xmlRoot = xmlDoc.DocumentElement;
 
-                //var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("ArchAddDocRequest", "*")[0];
-                var lastObject = (XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2];
+                var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("ArchAddDocRequest", "*")[0];
+                //var lastObject = (XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2];
 
                 XmlDocument newXmlDoc = new XmlDocument();
                 XmlElement newXmlElem = newXmlDoc.DocumentElement;
@@ -35,6 +35,7 @@ namespace XMLSigner
                 Console.WriteLine(lastObject.OuterXml);
 
                 Normalization(lastObject, newXmlElem);
+
 
                 Console.WriteLine();
                 Console.WriteLine(lastObject.Attributes.Count);
@@ -223,24 +224,24 @@ namespace XMLSigner
 
                 if (!elem.HasChildNodes && elem.InnerText == "")
                     elem.InnerText = "";
-
-                if (String.IsNullOrEmpty(elem.Prefix))
-                    elem.Prefix = prefix;
+                
+                elem.Prefix = prefix;
 
                 if (elem.HasAttributes)
                 {
+                    string attNsName;
+                    string attNsValue;
+
                     for (int i = 0; i < elem.Attributes.Count;)
                     {
                         if (elem.Attributes[i].Name.Contains("xmlns") && !elem.Attributes[i].Value.Contains(elem.NamespaceURI))
-                            //if (elem.Attributes[i].Name.Contains("xmlns"))
                         {
+                            
                             elem.RemoveAttributeAt(i);
                             continue;
                         }
                         i++;
                     }
-
-
 
                     /*
                     ///Swap Namespace and Attribute
