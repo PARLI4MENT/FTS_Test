@@ -26,14 +26,15 @@ namespace XMLSigner
                 XmlElement xmlRoot = xmlDoc.DocumentElement;
 
                 //var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("ArchAddDocRequest", "*")[0];
-                var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("")[0];
+                var lastObject = (XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2];
 
                 XmlDocument newXmlDoc = new XmlDocument();
+                XmlElement newXmlElem = newXmlDoc.DocumentElement;
 
                 Console.WriteLine(lastObject.Attributes.Count);
                 Console.WriteLine(lastObject.OuterXml);
 
-                Normalization(lastObject);
+                Normalization(lastObject, newXmlElem);
 
                 Console.WriteLine();
                 Console.WriteLine(lastObject.Attributes.Count);
@@ -209,21 +210,21 @@ namespace XMLSigner
         /// <param name="prefix"></param>
         /// <param name="rootElement"></param>
         /// <returns></returns>
-        public static void Normalization(XmlNode xmlNode, string prefix = "n1", bool rootNode = false)
+        public static void Normalization(XmlNode xmlNode, XmlNode newXmlNode, string prefix = "n1", bool rootNode = false)
         {
             if (xmlNode.GetType().Equals(typeof(XmlElement)))
             {
                 var elem = (XmlElement)xmlNode;
 
-                ////if (elem.HasChildNodes)
-                ////    foreach (var node in elem.ChildNodes)
-                ////        if (node.GetType().Equals(typeof(XmlElement)))
-                ////            Normalization((XmlElement)node);
+                if (elem.HasChildNodes)
+                    foreach (var node in elem.ChildNodes)
+                        if (node.GetType().Equals(typeof(XmlElement)))
+                            Normalization((XmlElement)node, newXmlNode);
 
                 if (!elem.HasChildNodes && elem.InnerText == "")
                     elem.InnerText = "";
 
-                if (elem.LocalName != "ArchAddDocRequest")
+                if (String.IsNullOrEmpty(elem.Prefix))
                     elem.Prefix = prefix;
 
                 if (elem.HasAttributes)
