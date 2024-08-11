@@ -20,35 +20,37 @@ namespace XMLSigner
             string pathToXml = @"Resource\test.xml";
 
             /// XMLDocument
-            //{
-            //    XmlDocument xmlDoc = new XmlDocument();
-            //    xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
-            //    XmlElement xmlRoot = xmlDoc.DocumentElement;
+            {
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
+                XmlElement xmlRoot = xmlDoc.DocumentElement;
 
-            //    //var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("ArchAddDocRequest", "*")[0];
-            //    var lastObject = (XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2];
+                //var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("ArchAddDocRequest", "*")[0];
+                var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("")[0];
 
-            //    Console.WriteLine(lastObject.Attributes.Count);
-            //    Console.WriteLine(lastObject.OuterXml);
+                XmlDocument newXmlDoc = new XmlDocument();
 
-            //    Normalization(lastObject);
+                Console.WriteLine(lastObject.Attributes.Count);
+                Console.WriteLine(lastObject.OuterXml);
 
-            //    Console.WriteLine();
-            //    Console.WriteLine(lastObject.Attributes.Count);
-            //    Console.WriteLine(lastObject.OuterXml);
-            //    Console.WriteLine();
-            //}
+                Normalization(lastObject);
+
+                Console.WriteLine();
+                Console.WriteLine(lastObject.Attributes.Count);
+                Console.WriteLine(lastObject.OuterXml);
+                Console.WriteLine();
+            }
 
             ///XDocument
-            {
-                Console.WriteLine();
-                //XDocument xDoc = XDocument.Load(pathToXml);
-                XElement xElem = XElement.Load(pathToXml);
-                IEnumerable<XElement> nodeList = xElem.Descendants().Where(e => e.Name.LocalName == "Object");
-                nodeList.ToList();
+            /*
+            //    Console.WriteLine();
+            //    XDocument xDoc = XDocument.Load(pathToXml);
+            //    //IEnumerable<XElement> nodeList = xDoc.Descendants().Where(e => e.Name.LocalName == "Object");
+            //    var tmp = xDoc.Element("Object")
+            //        .Elements("ArchAddDocRequest");
 
-                Console.WriteLine();
-            }            
+            //    Console.WriteLine();
+            */            
 
             //Console.WriteLine(SignXMLGost.HashGostR3411_2012_256(lastObject.OuterXml));
             //Console.WriteLine();
@@ -213,10 +215,10 @@ namespace XMLSigner
             {
                 var elem = (XmlElement)xmlNode;
 
-                //if (elem.HasChildNodes)
-                //    foreach (var node in elem.ChildNodes)
-                //        if (node.GetType().Equals(typeof(XmlElement)))
-                //            Normalization((XmlElement)node);
+                ////if (elem.HasChildNodes)
+                ////    foreach (var node in elem.ChildNodes)
+                ////        if (node.GetType().Equals(typeof(XmlElement)))
+                ////            Normalization((XmlElement)node);
 
                 if (!elem.HasChildNodes && elem.InnerText == "")
                     elem.InnerText = "";
