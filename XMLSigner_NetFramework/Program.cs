@@ -20,27 +20,25 @@ namespace XMLSigner
             string pathToXml = @"Resource\test.xml";
 
             /// XMLDocument
-            {
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
-                XmlElement xmlRoot = xmlDoc.DocumentElement;
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
+            XmlElement xmlRoot = xmlDoc.DocumentElement;
 
-                var lastObject = (XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2];
-                //var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("ArchAddDocRequest", "*")[0];
+            var lastObject = (XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2];
+            //var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("ArchAddDocRequest", "*")[0];
 
-                XmlDocument newXmlDoc = new XmlDocument();
-                XmlElement newXmlElem = newXmlDoc.CreateElement("root");
+            XmlDocument newXmlDoc = new XmlDocument();
+            XmlElement newXmlElem = newXmlDoc.CreateElement("root");
 
-                Console.WriteLine(lastObject.Attributes.Count);
-                Console.WriteLine(lastObject.OuterXml);
+            Console.WriteLine(lastObject.Attributes.Count);
+            Console.WriteLine(lastObject.OuterXml);
 
-                Normalization(lastObject, newXmlElem);
+            Normalization(lastObject, newXmlElem);
 
-                Console.WriteLine();
-                Console.WriteLine(newXmlElem.Attributes.Count);
-                Console.WriteLine(newXmlElem.OuterXml);
-                Console.WriteLine();
-            }
+            Console.WriteLine();
+            Console.WriteLine(newXmlElem.Attributes.Count);
+            Console.WriteLine(newXmlElem.OuterXml);
+            Console.WriteLine();
 
             /// VB
             /*
@@ -195,7 +193,7 @@ namespace XMLSigner
 
             return path;
         }
-        
+
         /// <summary></summary>
         /// <param name="node"></param>
         /// <returns></returns>
@@ -291,14 +289,15 @@ namespace XMLSigner
             {
                 var elem = (XmlElement)xmlNode;
                 XmlNode newElem;
+                newElem = newXmlNode.OwnerDocument.CreateNode(XmlNodeType.Element, ((XmlElement)elem).Name, "");
 
                 if (elem.HasChildNodes)
                 {
                     foreach (var node in elem.ChildNodes)
                     {
-                        newElem = newXmlNode.OwnerDocument.CreateNode(XmlNodeType.Element, ((XmlElement)elem).Name, "");
                         if (node.GetType().Equals(typeof(XmlElement)))
                         {
+                            newElem = newXmlNode.OwnerDocument.CreateNode(XmlNodeType.Element, ((XmlElement)node).Name, "");
                             Normalization((XmlElement)node, newElem);
                         }
 
@@ -324,8 +323,11 @@ namespace XMLSigner
                                 i++;
                             }
                         }
-                        newXmlNode.AppendChild(newElem);
 
+                        if (!elem.HasChildNodes && elem.InnerText == "")
+                            elem.InnerText = "";
+
+                        newXmlNode.AppendChild(newElem);
                     }
                 }
 
