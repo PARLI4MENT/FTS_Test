@@ -20,27 +20,27 @@ namespace XMLSigner
             string pathToXml = @"Resource\test.xml";
 
             /// XMLDocument
-            //{
-            //    XmlDocument xmlDoc = new XmlDocument();
-            //    xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
-            //    XmlElement xmlRoot = xmlDoc.DocumentElement;
+            {
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
+                XmlElement xmlRoot = xmlDoc.DocumentElement;
 
-            //    var lastObject = (XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2];
-            //    //var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("ArchAddDocRequest", "*")[0];
+                var lastObject = (XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2];
+                //var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("ArchAddDocRequest", "*")[0];
 
-            //    XmlDocument newXmlDoc = new XmlDocument();
-            //    XmlElement newXmlElem = newXmlDoc.DocumentElement;
+                XmlDocument newXmlDoc = new XmlDocument();
+                XmlElement newXmlElem = newXmlDoc.CreateElement("root");
 
-            //    Console.WriteLine(lastObject.Attributes.Count);
-            //    Console.WriteLine(lastObject.OuterXml);
+                Console.WriteLine(lastObject.Attributes.Count);
+                Console.WriteLine(lastObject.OuterXml);
 
-            //    Normalization(lastObject, newXmlElem);
+                Normalization(lastObject, newXmlElem);
 
-            //    Console.WriteLine();
-            //    Console.WriteLine(lastObject.Attributes.Count);
-            //    Console.WriteLine(lastObject.OuterXml);
-            //    Console.WriteLine();
-            //}
+                Console.WriteLine();
+                Console.WriteLine(newXmlElem.Attributes.Count);
+                Console.WriteLine(newXmlElem.OuterXml);
+                Console.WriteLine();
+            }
 
             /// VB
             /*
@@ -290,65 +290,50 @@ namespace XMLSigner
             if (xmlNode.GetType().Equals(typeof(XmlElement)))
             {
                 var elem = (XmlElement)xmlNode;
+                XmlNode newElem;
 
                 if (elem.HasChildNodes)
                 {
                     foreach (var node in elem.ChildNodes)
                     {
+                        newElem = newXmlNode.OwnerDocument.CreateNode(XmlNodeType.Element, ((XmlElement)elem).Name, "");
                         if (node.GetType().Equals(typeof(XmlElement)))
                         {
-                            Normalization((XmlElement)node, newXmlNode);
+                            Normalization((XmlElement)node, newElem);
                         }
-                    }
-                }
 
-                if (!elem.HasChildNodes && elem.InnerText == "")
-                    elem.InnerText = "";
-                
-                elem.Prefix = prefix;
+                        newElem.Prefix = prefix;
+                        ((XmlElement)newElem).IsEmpty = false;
 
-                if (elem.HasAttributes)
-                {
-                    string attNsName;
-                    string attNsValue;
+                        newElem.InnerText = elem.InnerText;
 
-                    for (int i = 0; i < elem.Attributes.Count;)
-                    {
-                        if (elem.Attributes[i].Name.Contains("xmlns"))
+                        if (elem.HasAttributes)
                         {
-                            elem.RemoveAttributeAt(i);
-                            continue;
+                            for (int i = 0; i < elem.Attributes.Count;)
+                            {
+                                if (elem.Attributes[i].Name.Contains("xmlns") && !elem.Attributes[i].Value.Contains(elem.NamespaceURI))
+                                    continue;
+
+                                if (elem.Attributes[i].Name.Contains("xmlns") && elem.Attributes[i].Value.Contains(elem.NamespaceURI))
+                                {
+                                    ((XmlElement)newElem).SetAttribute(elem.Attributes[i].Name + ":n1", elem.Attributes[i].Value);
+                                    continue;
+                                }
+
+                                ((XmlElement)newElem).SetAttribute(elem.Attributes[i].Name, elem.Attributes[i].Value);
+                                i++;
+                            }
                         }
-                        i++;
+                        newXmlNode.AppendChild(newElem);
+
                     }
-
-                    /*
-                    ///Swap Namespace and Attribute
-                    //    Console.WriteLine();
-
-                    //    if (elem.LocalName == "ArchAddDocRequest")
-                    //    {
-                    //        Console.WriteLine();
-                    //        //XDocument xDoc = XDocument.Load(new XmlNodeReader((XmlNode)elem));
-                    //        //XElement xElem = XElement.Parse(elem.OuterXml);
-
-                    //        Console.WriteLine();
-                    //    }
-
-                    //    {
-                    //        XmlSerializerNamespaces xmlSerNs = new XmlSerializerNamespaces();
-                    //        xmlSerNs.Add("", "");
-                    //    }
-
-                    //    {
-                    //        XmlSerializer s = new XmlSerializer(typeof(XmlElement));
-                    //        StringWriter sw = new StringWriter();
-                    //        s.Serialize(sw, elem);
-                    //    }
-                    */
-
                 }
+
+
             }
         }
+
+
+
     }
 }
