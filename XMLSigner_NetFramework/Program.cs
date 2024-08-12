@@ -20,28 +20,40 @@ namespace XMLSigner
             string pathToXml = @"Resource\test.xml";
 
             /// XMLDocument
-            {
+            //{
+            //    XmlDocument xmlDoc = new XmlDocument();
+            //    xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
+            //    XmlElement xmlRoot = xmlDoc.DocumentElement;
+
+            //    var lastObject = (XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2];
+            //    //var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("ArchAddDocRequest", "*")[0];
+
+            //    XmlDocument newXmlDoc = new XmlDocument();
+            //    XmlElement newXmlElem = newXmlDoc.DocumentElement;
+
+            //    Console.WriteLine(lastObject.Attributes.Count);
+            //    Console.WriteLine(lastObject.OuterXml);
+
+            //    Normalization(lastObject, newXmlElem);
+
+            //    Console.WriteLine();
+            //    Console.WriteLine(lastObject.Attributes.Count);
+            //    Console.WriteLine(lastObject.OuterXml);
+            //    Console.WriteLine();
+            //}
+
+            /// VB
+            /*
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
                 XmlElement xmlRoot = xmlDoc.DocumentElement;
 
-                var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("ArchAddDocRequest", "*")[0];
-                //var lastObject = (XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2];
-
-                XmlDocument newXmlDoc = new XmlDocument();
-                XmlElement newXmlElem = newXmlDoc.DocumentElement;
-
-                Console.WriteLine(lastObject.Attributes.Count);
-                Console.WriteLine(lastObject.OuterXml);
-
-                Normalization(lastObject, newXmlElem);
-
-
+                var lastObject = (XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2];
+                NormXML(lastObject);
                 Console.WriteLine();
-                Console.WriteLine(lastObject.Attributes.Count);
-                Console.WriteLine(lastObject.OuterXml);
+                AtribOrderChanger(lastObject);
                 Console.WriteLine();
-            }
+            */
 
             ///XDocument
             /*
@@ -52,7 +64,7 @@ namespace XMLSigner
             //        .Elements("ArchAddDocRequest");
 
             //    Console.WriteLine();
-            */            
+            */
 
             //Console.WriteLine(SignXMLGost.HashGostR3411_2012_256(lastObject.OuterXml));
             //Console.WriteLine();
@@ -206,6 +218,68 @@ namespace XMLSigner
             return null;
         }
 
+        public static void NormXML(XmlElement nodeXml)
+        {
+            XmlAttributeCollection all_atr = nodeXml.Attributes;
+            var AtrName = new string[all_atr.Count, 2];
+            int i = 0;
+
+            foreach (XmlAttribute atr in all_atr)
+            {
+                if (atr.Name == "Id" || atr.Name == "DocumentModeID" || atr.Name == "Algorithm"
+                    || atr.Name == "URI" || atr.Name == "cols")
+                {
+                    AtrName[i, 0] = atr.Name;
+                    AtrName[i, 1] = atr.Value;
+                    i += 1;
+                }
+            }
+
+            nodeXml.RemoveAllAttributes();
+            nodeXml.Prefix = "n1";
+            nodeXml.IsEmpty = false;
+
+            for (int a = 0, loopTo = i - 1; a <= loopTo; a++)
+            {
+                nodeXml.SetAttribute(AtrName[a, 0], AtrName[a, 1]);
+            }
+
+            foreach (XmlNode node in nodeXml.ChildNodes)
+            {
+                if (node.NodeType == XmlNodeType.Element)
+                {
+                    NormXML((XmlElement)node);
+                }
+            }
+        }
+
+        public static void AtribOrderChanger(XmlElement nodexml)
+        {
+            string a, b, c, d;
+
+            if (nodexml.Attributes.Count == 2)
+            {
+                if (nodexml.Attributes[0].Name != "xmlns")
+                {
+                    a = nodexml.Attributes[0].Name;
+                    b = nodexml.Attributes[0].Value;
+                    c = nodexml.Attributes[1].Name;
+                    d = nodexml.Attributes[1].Value;
+                    nodexml.RemoveAllAttributes();
+                    nodexml.SetAttribute(c, d);
+                    nodexml.SetAttribute(a, b);
+                }
+            }
+
+            foreach (XmlNode node in nodexml.ChildNodes)
+            {
+                if (node.NodeType == XmlNodeType.Element)
+                {
+                    AtribOrderChanger((XmlElement)node);
+                }
+            }
+        }
+
         /// <summary>Нормализация XML элемента</summary>
         /// <param name="xmlElement"></param>
         /// <param name="prefix"></param>
@@ -218,9 +292,15 @@ namespace XMLSigner
                 var elem = (XmlElement)xmlNode;
 
                 if (elem.HasChildNodes)
+                {
                     foreach (var node in elem.ChildNodes)
+                    {
                         if (node.GetType().Equals(typeof(XmlElement)))
+                        {
                             Normalization((XmlElement)node, newXmlNode);
+                        }
+                    }
+                }
 
                 if (!elem.HasChildNodes && elem.InnerText == "")
                     elem.InnerText = "";
@@ -234,9 +314,8 @@ namespace XMLSigner
 
                     for (int i = 0; i < elem.Attributes.Count;)
                     {
-                        if (elem.Attributes[i].Name.Contains("xmlns") && !elem.Attributes[i].Value.Contains(elem.NamespaceURI))
+                        if (elem.Attributes[i].Name.Contains("xmlns"))
                         {
-                            
                             elem.RemoveAttributeAt(i);
                             continue;
                         }
