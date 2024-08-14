@@ -123,7 +123,7 @@
     <Compile Include="OutClass\AccessDB.cs" />
     <Compile Include="OutClass\Initializer.cs" />
     <Compile Include="OutClass\Mssql.cs" />
-    <Compile Include="OutClass\NormalizationXml.cs" />
+    <Compile Include="OutClass\NormalizationXmlSign.cs" />
     <Compile Include="OutClass\PgSql.cs" />
     <Compile Include="OutClass\ImplementateToXml.cs" />
     <Compile Include="OutClass\SerilizeJsonConfig.cs" />

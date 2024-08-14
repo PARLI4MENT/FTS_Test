@@ -1,9 +1,12 @@
 ﻿#define TEST
 
+using FileNs;
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Xml;
-using System.Xml.Linq;
+using XmlNs;
 using XMLSigner.OutClass;
 
 namespace XMLSigner
@@ -12,9 +15,23 @@ namespace XMLSigner
     {
         static void Main(string[] args)
         {
-            string pathToXml = @"Resource\test.xml";
+            string path = ("Resource/test.xml");
+            Console.WriteLine("Start");
+            
+            /// Переименование
+            //RenamerXML.RenameMoveParallel();
 
-            new NormalizationXml(pathToXml);
+            //ImplementateToXml.ImplementParallel(Directory.GetFiles("C:\\_test\\intermidateFiles"));
+            
+            var sw = new Stopwatch();
+            sw.Start();
+
+            new NormalizationXmlSign("C:\\_test\\implementFiles");
+
+            sw.Stop();
+            Console.WriteLine(sw.Elapsed);
+            Console.WriteLine($"AVG time: {Directory.GetFiles("C:\\_test\\implementFiles").Count() / (int)(sw.ElapsedMilliseconds / 1000)},"
+                 + $"{sw.ElapsedMilliseconds % 1000} docs/sec");
 
             /// VB
             /*

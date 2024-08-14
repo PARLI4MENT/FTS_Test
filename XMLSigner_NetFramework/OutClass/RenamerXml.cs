@@ -39,6 +39,7 @@ namespace FileNs
                 }
             }
         }
+
         public static void RenameMoveParallel(string[] rawFolders, int _MaxDegreeOfParallelism = -1)
         {
             if (_MaxDegreeOfParallelism < -1)
@@ -58,7 +59,9 @@ namespace FileNs
                 });
         }
 
-        public static void RenameMove(string pathRawFiles, int _MaxDegreeOfParallelism = -1)
+        /// <summary> Линейное переименование и перемещение сырых Xml-файлов </summary>
+        /// <param name="pathRawFiles">Путь к папке с сырыми Xml-файлами</param>
+        public static void RenameMove(string pathRawFiles)
         {
             var rawFolder = Directory.GetDirectories(pathRawFiles);
             foreach (var rawFile in rawFolder)
@@ -74,6 +77,10 @@ namespace FileNs
                 }
             }
         }
+
+        /// <summary> Параллельное переименование и перемещение сырых Xml-файлов </summary>
+        /// <param name="pathRawFiles">Путь к папке с сырыми Xml-файлами</param>
+        /// <param name="_MaxDegreeOfParallelism">Максимальное ко-во параллельное вычисление</param>
         public static void RenameMoveParallel(string pathRawFiles, int _MaxDegreeOfParallelism = -1)
         {
             if (_MaxDegreeOfParallelism < -1)
@@ -183,7 +190,6 @@ namespace FileNs
             if (!string.IsNullOrEmpty(destinationPath))
                 _dirDestination = destinationPath;
 
-            // Переписать на string[]
             string[] baseFolder = Directory.GetDirectories(_dirInput);
 
             int subFolder = 0;
@@ -207,7 +213,7 @@ namespace FileNs
 
             _subFolder = subFolder; ;
 
-            //Console.WriteLine($"\tParsed files = {subFolder}");
+            Console.WriteLine($"\tParsed files = {subFolder}");
 
             swRename.Stop();
             _elapsedMilliseconds = swRename.ElapsedMilliseconds;

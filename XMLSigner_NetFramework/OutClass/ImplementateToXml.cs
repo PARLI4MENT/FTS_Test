@@ -272,7 +272,7 @@ namespace XmlNs
 
                     //File.AppendAllText("C:\\_test\\Arch_docs.log", Environment.NewLine + "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
 
-                    string NameArray = (string)Path.GetFileName(intermidateFile).Split('.')[0]; // Можно упростить
+                    string NameArray = Path.GetFileName(intermidateFile).Split('.')[0]; // Можно упростить
                     var file_xml = new XmlDocument();
                     var doc_to_arch = new XmlDocument();
 

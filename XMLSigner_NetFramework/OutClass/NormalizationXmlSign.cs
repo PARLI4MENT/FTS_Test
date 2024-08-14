@@ -4,34 +4,43 @@ using System.Xml;
 using System.IO;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace XMLSigner.OutClass
 {
-    public class NormalizationXml
+    public class NormalizationXmlSign
     {
-        public NormalizationXml(string pathToXml)
+        /// <summary> </summary>
+        /// <param name="pathToXmls"></param>
+        public NormalizationXmlSign(string pathToXmlsFolder)
         {
-            /// XML Document Orig
-            XmlDocument xmlDocOrigin = new XmlDocument();
-            xmlDocOrigin.Load(new StringReader(File.ReadAllText(pathToXml)));
-            XmlElement xmlRootOrigin = (XmlElement)xmlDocOrigin.GetElementsByTagName("Body")[0];
+            string[] inplementFiles = Directory.GetFiles(pathToXmlsFolder);
 
-            /// XML Document Editing
-            XmlDocument xmlDocEdit = new XmlDocument();
-            xmlDocEdit.Load(new StringReader(File.ReadAllText(pathToXml)));
-            XmlElement xmlRootEdit = (XmlElement)xmlDocEdit.GetElementsByTagName("Body")[0];
+            Parallel.ForEach(inplementFiles,
+                new ParallelOptions { MaxDegreeOfParallelism = -1 },
+                inmplFile =>
+            {
+                /// XML Document Orig
+                XmlDocument xmlDocOrigin = new XmlDocument();
+                xmlDocOrigin.Load(new StringReader(File.ReadAllText(inmplFile)));
+                XmlElement xmlRootOrigin = (XmlElement)xmlDocOrigin.GetElementsByTagName("Body")[0];
 
-            FindReference(xmlRootEdit, xmlRootOrigin);
+                /// XML Document Editing
+                XmlDocument xmlDocEdit = new XmlDocument();
+                xmlDocEdit.Load(new StringReader(File.ReadAllText(inmplFile)));
+                XmlElement xmlRootEdit = (XmlElement)xmlDocEdit.GetElementsByTagName("Body")[0];
 
-            Console.WriteLine();
-            xmlDocOrigin.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), $"sign_{Path.GetFileName(pathToXml)}"));
-            Console.WriteLine();
+                FindElements(xmlRootEdit, xmlRootOrigin);
+
+                xmlDocOrigin.Save(Path.Combine(new FileInfo(inmplFile).DirectoryName, Path.GetFileName(inmplFile)));
+            });
+
         }
 
         /// <summary> Сделать автопоиск по элементу Reference </summary>
         /// <param name="xmlEdit"></param>
         /// <param name="xmlOrig"></param>
-        private void FindReference(XmlElement xmlEdit, XmlElement xmlOrig)
+        private void FindElements(XmlElement xmlEdit, XmlElement xmlOrig)
         {
             var objEditNodes = xmlEdit.GetElementsByTagName("Object");
             var objOrigNodes = xmlOrig.GetElementsByTagName("Object");
@@ -46,7 +55,6 @@ namespace XMLSigner.OutClass
                     var strKeyHash = SignXMLGost.HashGostR3411_2012_256(swapKey);
                     ((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("DigestValue")[0].InnerText = strKeyHash;
                     ((XmlElement)objOrigNodes.Item(i)).GetElementsByTagName("DigestValue")[0].InnerText = strKeyHash;
-                    Console.WriteLine();
 
                     /// Object hash
                     Normalization(((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("Object", "*")[0]);
@@ -54,7 +62,6 @@ namespace XMLSigner.OutClass
                     var strObjHash = SignXMLGost.HashGostR3411_2012_256(swapObj);
                     ((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("DigestValue")[1].InnerText = strObjHash;
                     ((XmlElement)objOrigNodes.Item(i)).GetElementsByTagName("DigestValue")[1].InnerText = strObjHash;
-                    Console.WriteLine();
 
                     /// Sign Object
                     Normalization(((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("SignedInfo", "*")[0]);
@@ -62,7 +69,6 @@ namespace XMLSigner.OutClass
                     var strSignCms = SignXMLGost.SignCmsMessage(swapSingedInfo, SignXMLGost.Certificate);
                     ((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("SignatureValue")[0].InnerText = strSignCms;
                     ((XmlElement)objOrigNodes.Item(i)).GetElementsByTagName("SignatureValue")[0].InnerText = strSignCms;
-                    Console.WriteLine();
                 }
             }
         }
