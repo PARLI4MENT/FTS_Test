@@ -28,71 +28,17 @@ namespace XMLSigner
             xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
             XmlElement xmlRoot = xmlDoc.DocumentElement;
 
-            var lastObject = (XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2];
+            var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("KeyInfo")[0];
             //var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("ArchAddDocRequest", "*")[0];
             
             Normalization(lastObject);
+            var finalText = SwapAttributes(lastObject.OuterXml);
 
-            Console.WriteLine(lastObject.Attributes.Count);
-            //SwapAttributes(lastObject.OuterXml);
-            /// SWAP Attributes
-            {
-                XDocument xDoc = XDocument.Parse(lastObject.OuterXml);
-                XElement xElement = xDoc.Root;
+            Console.WriteLine(finalText);
 
-                foreach (var elem in xElement.DescendantNodesAndSelf())
-                {
-                    if (elem is XElement)
-                    {
-                        if (((XElement)elem).HasAttributes && ((XElement)elem).Attributes().Count() > 1)
-                        {
-                            if (!((XElement)elem).Attributes().First().Name.ToString().Contains("xmlns:n1"))
-                            {
-                                var fAttr = ((XElement)elem).Attributes().First();
-                                var sAttr = ((XElement)elem).Attributes().Last();
-
-                                ((XElement)elem).Attributes().Remove();
-
-                                ((XElement)elem).SetAttributeValue(sAttr.Name, sAttr.Value);
-                                ((XElement)elem).SetAttributeValue(fAttr.Name, fAttr.Value);
-                            }
-                        }
-                    }
-                }
-
-                Console.WriteLine(xElement.ToString());
-
-                Console.WriteLine(xElement.Attributes().Count());
-            }
-
+            Console.WriteLine(SignXMLGost.HashGostR3411_2012_256(finalText));
             Console.WriteLine();
 
-            /// VB
-            /*
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
-                XmlElement xmlRoot = xmlDoc.DocumentElement;
-
-                var lastObject = (XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2];
-                NormXML(lastObject);
-                Console.WriteLine();
-                AtribOrderChanger(lastObject);
-                Console.WriteLine();
-            */
-
-            ///XDocument
-            /*
-            //    Console.WriteLine();
-            //    XDocument xDoc = XDocument.Load(pathToXml);
-            //    //IEnumerable<XElement> nodeList = xDoc.Descendants().Where(e => e.Name.LocalName == "Object");
-            //    var tmp = xDoc.Element("Object")
-            //        .Elements("ArchAddDocRequest");
-
-            //    Console.WriteLine();
-            */
-
-            //Console.WriteLine(SignXMLGost.HashGostR3411_2012_256(lastObject.OuterXml));
-            //Console.WriteLine();
             /*
                 /// Хэширование
                 //string strs = "<n1:KeyInfo xmlns:n1=\"http://www.w3.org/2000/09/xmldsig#\" Id=\"KeyInfo\"><n1:X509Data><n1:X509Certificate></n1:X509Certificate></n1:X509Data></n1:KeyInfo>";
@@ -141,6 +87,19 @@ namespace XMLSigner
             //    //'Unrecognized database format 'C:\testACCDB.accdb'.' 
             //    //AccessDB.ConnectToAccessWithAce(AccessDB.PathToACCDB);
             //}
+            */
+
+            /// VB
+            /*
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
+                XmlElement xmlRoot = xmlDoc.DocumentElement;
+
+                var lastObject = (XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2];
+                NormXML(lastObject);
+                Console.WriteLine();
+                AtribOrderChanger(lastObject);
+                Console.WriteLine();
             */
 
             Console.Write("\nPress any key...");
@@ -361,7 +320,7 @@ namespace XMLSigner
                 }
             }
 
-            return null;
+            return xElement.ToString(SaveOptions.DisableFormatting);
         }
 
 
