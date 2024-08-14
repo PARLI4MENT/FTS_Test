@@ -4,15 +4,12 @@ using GostCryptography.Pkcs;
 using GostCryptography.Xml;
 using System;
 using System.IO;
-using System.Linq.Expressions;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Linq;
-using System.Xml.XPath;
 
 namespace XMLSigner
 {

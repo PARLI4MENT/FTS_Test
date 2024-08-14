@@ -9,8 +9,6 @@ namespace XMLSigner.OutClass
 {
     public class NormalizationXml
     {
-        private string _pathToFile;
-
         public NormalizationXml(string pathToXml)
         {
             /// XML Document Orig
@@ -24,6 +22,10 @@ namespace XMLSigner.OutClass
             XmlElement xmlRootEdit = (XmlElement)xmlDocEdit.GetElementsByTagName("Body")[0];
 
             FindReference(xmlRootEdit, xmlRootOrigin);
+
+            Console.WriteLine();
+            xmlDocOrigin.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), $"sign_{Path.GetFileName(pathToXml)}"));
+            Console.WriteLine();
         }
 
         /// <summary> Сделать автопоиск по элементу Reference </summary>
@@ -38,14 +40,28 @@ namespace XMLSigner.OutClass
             {
                 if (objEditNodes.Item(i).HasChildNodes)
                 {
+                    /// KeyInfo hash
                     Normalization(((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("KeyInfo", "*")[0]);
                     var swapKey = SwapAttributes(((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("KeyInfo", "*")[0].OuterXml);
-                    var strHash = SignXMLGost.HashGostR3411_2012_256(swapKey);
-
-
-                    ((XmlElement)((XmlElement)((XmlElement)objOrigNodes.Item(i)).GetElementsByTagName("Reference", "*")[0]).GetElementsByTagName("DigestValue", "*")[0]).InnerText = strHash;
+                    var strKeyHash = SignXMLGost.HashGostR3411_2012_256(swapKey);
+                    ((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("DigestValue")[0].InnerText = strKeyHash;
+                    ((XmlElement)objOrigNodes.Item(i)).GetElementsByTagName("DigestValue")[0].InnerText = strKeyHash;
                     Console.WriteLine();
 
+                    /// Object hash
+                    Normalization(((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("Object", "*")[0]);
+                    var swapObj = SwapAttributes(((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("Object", "*")[0].OuterXml);
+                    var strObjHash = SignXMLGost.HashGostR3411_2012_256(swapObj);
+                    ((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("DigestValue")[1].InnerText = strObjHash;
+                    ((XmlElement)objOrigNodes.Item(i)).GetElementsByTagName("DigestValue")[1].InnerText = strObjHash;
+                    Console.WriteLine();
+
+                    /// Sign Object
+                    Normalization(((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("SignedInfo", "*")[0]);
+                    var swapSingedInfo = SwapAttributes(((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("SignedInfo", "*")[0].OuterXml);
+                    var strSignCms = SignXMLGost.SignCmsMessage(swapSingedInfo, SignXMLGost.Certificate);
+                    ((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("SignatureValue")[0].InnerText = strSignCms;
+                    ((XmlElement)objOrigNodes.Item(i)).GetElementsByTagName("SignatureValue")[0].InnerText = strSignCms;
                     Console.WriteLine();
                 }
             }
