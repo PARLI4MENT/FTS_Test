@@ -453,7 +453,7 @@ namespace XmlNs
             return doneData;
         }
 
-        private void DataImplementation(string FileName, bool deletedInputFile = false)
+        private void DataImplementationTemplate(string FileName, bool deletedInputFile = false)
         {
             const int Company_key_id = 1;
 

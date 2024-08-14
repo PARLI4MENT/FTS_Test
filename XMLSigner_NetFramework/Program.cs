@@ -1,5 +1,6 @@
 ﻿#define TEST
 
+using GostCryptography.Pkcs;
 using GostCryptography.Xml;
 using SQLTestNs;
 using System;
@@ -33,7 +34,6 @@ namespace XMLSigner
             xmlDocOrigin.Load(new StringReader(File.ReadAllText(pathToXml)));
             XmlElement xmlRootOrigin = xmlDocOrigin.DocumentElement;
 
-
             /// XML Document Editing
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
@@ -48,9 +48,10 @@ namespace XMLSigner
             Normalization(lastObject);
             var finalTextObject = SwapAttributes(lastObject.OuterXml);
 
-            var tmp = SignXMLGost.SignCmsMessage(finalTextObject, SignXMLGost.Certificate);
+            var tmp2 = SignXMLGost.SignCmsMessage(finalTextObject, SignXMLGost.Certificate);
 
-            Console.WriteLine(tmp);
+            Console.WriteLine();
+            Console.WriteLine(tmp2);
             Console.WriteLine();
 
             //Console.WriteLine();

@@ -58,42 +58,9 @@ namespace XMLSigner
                 Console.ReadKey();
             }
 
-            /// Парсинг
-            /*
-            //{
-            //    XmlDocument xmlDoc = new XmlDocument();
-            //    xmlDoc.Load(new StringReader(File.ReadAllText(path_ObjectWithHash)));
-
-            //    var xDoc = XDocument.Parse(xmlDoc.OuterXml);
-
-            //}
-            */
-
-            /*
-            //{
-            //    //string pathDest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Int.xml");
-
-            //    XmlDocument xmlDoc = new XmlDocument();
-            //    xmlDoc.Load(pathToXml);
-
-            //    XmlNode xmlNodeRoot = xmlDoc.DocumentElement;
-            //    var xmlNodesListObject = (XmlNode)xmlDoc.GetElementsByTagName("Object", "*")[3];
-
-            //    //(XmlNode)xmlDoc.GetElementsByTagName("Object", "*")[2]
-            //    var xmlNodeTemp = xmlDoc.GetElementsByTagName("Object", "*")[2];
-            //    xmlNodeTemp.SelectSingleNode("//Object");
-
-
-            //    Console.WriteLine(HashGostR3411_2012_256(xmlNodeTemp.OuterXml));
-
-            //        Console.WriteLine();
-            //}
-            */
 
             Console.WriteLine();
         }
-
-        
 
         public static string Normalization(string OuterXml)
         {
@@ -122,9 +89,10 @@ namespace XMLSigner
         /// <returns></returns>
         public static string SignCmsMessage(string message, X509Certificate2 certificate)
         {
-            byte[] byteMessage = Encoding.UTF8.GetBytes(message);
+            var bytesSrc = Encoding.UTF8.GetBytes(message);
+
             // Создание объекта для подписи сообщения
-            var signedCms = new GostSignedCms(new ContentInfo(byteMessage));
+            var signedCms = new GostSignedCms(new ContentInfo(bytesSrc), true);
 
             // Создание объект с информацией о подписчике
             var signer = new CmsSigner(certificate);
@@ -135,8 +103,10 @@ namespace XMLSigner
             // Создание подписи для сообщения CMS/PKCS#7
             signedCms.ComputeSignature(signer);
 
-            // Создание сообщения CMS/PKCS#7
-            return Convert.ToBase64String(signedCms.Encode());
+            // Создание подписи CMS/PKCS#7
+            var tmp = signedCms.Encode();
+
+            return Convert.ToBase64String(tmp);
         }
 
         private static bool VerifyMessageCms(string message)
