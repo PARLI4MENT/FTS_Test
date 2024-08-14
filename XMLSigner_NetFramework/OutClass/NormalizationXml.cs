@@ -26,7 +26,9 @@ namespace XMLSigner.OutClass
             FindReference(xmlRootEdit, xmlRootOrigin);
         }
 
-        /// <summary> Сделать автопоиск по элементу Reference</summary>
+        /// <summary> Сделать автопоиск по элементу Reference </summary>
+        /// <param name="xmlEdit"></param>
+        /// <param name="xmlOrig"></param>
         private void FindReference(XmlElement xmlEdit, XmlElement xmlOrig)
         {
             var objEditNodes = xmlEdit.GetElementsByTagName("Object");
@@ -36,13 +38,13 @@ namespace XMLSigner.OutClass
             {
                 if (objEditNodes.Item(i).HasChildNodes)
                 {
-                    Normalization(((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("KeyInfo")[0]);
+                    Normalization(((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("KeyInfo", "*")[0]);
+                    var swapKey = SwapAttributes(((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("KeyInfo", "*")[0].OuterXml);
+                    var strHash = SignXMLGost.HashGostR3411_2012_256(swapKey);
+
+
+                    ((XmlElement)((XmlElement)((XmlElement)objOrigNodes.Item(i)).GetElementsByTagName("Reference", "*")[0]).GetElementsByTagName("DigestValue", "*")[0]).InnerText = strHash;
                     Console.WriteLine();
-                    var tmp1 = (XmlElement)objEditNodes.Item(i);
-                    var tmp2 = tmp1.GetElementsByTagName("KeyInfo")[0];
-                    var tmp4 = tmp2.OuterXml;
-                    var tmp3 = SwapAttributes(tmp4);
-                    var strHash = SignXMLGost.HashGostR3411_2012_256(tmp3);
 
                     Console.WriteLine();
                 }
