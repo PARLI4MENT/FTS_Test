@@ -4,11 +4,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 using System.Xml.Linq;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 
 namespace XMLSigner
@@ -26,18 +30,41 @@ namespace XMLSigner
 
             var lastObject = (XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2];
             //var lastObject = ((XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("ArchAddDocRequest", "*")[0];
-
-            XmlDocument newXmlDoc = new XmlDocument();
-            XmlElement newXmlElem = newXmlDoc.CreateElement("root");
+            
+            Normalization(lastObject);
 
             Console.WriteLine(lastObject.Attributes.Count);
-            Console.WriteLine(lastObject.OuterXml);
+            //SwapAttributes(lastObject.OuterXml);
+            /// SWAP Attributes
+            {
+                XDocument xDoc = XDocument.Parse(lastObject.OuterXml);
+                XElement xElement = xDoc.Root;
 
-            Normalization(lastObject, newXmlElem);
+                foreach (var elem in xElement.DescendantNodesAndSelf())
+                {
+                    if (elem is XElement)
+                    {
+                        if (((XElement)elem).HasAttributes && ((XElement)elem).Attributes().Count() > 1)
+                        {
+                            if (!((XElement)elem).Attributes().First().Name.ToString().Contains("xmlns:n1"))
+                            {
+                                var fAttr = ((XElement)elem).Attributes().First();
+                                var sAttr = ((XElement)elem).Attributes().Last();
 
-            Console.WriteLine();
-            Console.WriteLine(newXmlElem.Attributes.Count);
-            Console.WriteLine(newXmlElem.OuterXml);
+                                ((XElement)elem).Attributes().Remove();
+
+                                ((XElement)elem).SetAttributeValue(sAttr.Name, sAttr.Value);
+                                ((XElement)elem).SetAttributeValue(fAttr.Name, fAttr.Value);
+                            }
+                        }
+                    }
+                }
+
+                Console.WriteLine(xElement.ToString());
+
+                Console.WriteLine(xElement.Attributes().Count());
+            }
+
             Console.WriteLine();
 
             /// VB
@@ -211,8 +238,6 @@ namespace XMLSigner
 
         public static string NormalizationX()
         {
-
-
             return null;
         }
 
@@ -283,58 +308,61 @@ namespace XMLSigner
         /// <param name="prefix"></param>
         /// <param name="rootElement"></param>
         /// <returns></returns>
-        public static void Normalization(XmlNode xmlNode, XmlNode newXmlNode, string prefix = "n1", bool rootNode = false)
+        public static void Normalization(XmlNode xmlNode, string prefix = "n1", bool rootNode = false)
         {
             if (xmlNode.GetType().Equals(typeof(XmlElement)))
             {
                 var elem = (XmlElement)xmlNode;
-                XmlNode newElem;
-                newElem = newXmlNode.OwnerDocument.CreateNode(XmlNodeType.Element, ((XmlElement)elem).Name, "");
 
                 if (elem.HasChildNodes)
-                {
                     foreach (var node in elem.ChildNodes)
-                    {
                         if (node.GetType().Equals(typeof(XmlElement)))
+                            Normalization((XmlElement)node);
+
+                elem.Prefix = "n1";
+                elem.IsEmpty = false;
+
+                if (elem.HasAttributes)
+                {
+                    for (int i = 0; i < elem.Attributes.Count;)
+                    {
+                        if (elem.Attributes[i].Name.Contains("xmlns"))
                         {
-                            newElem = newXmlNode.OwnerDocument.CreateNode(XmlNodeType.Element, ((XmlElement)node).Name, "");
-                            Normalization((XmlElement)node, newElem);
+                            elem.RemoveAttributeAt(i);
+                            continue;
                         }
-
-                        newElem.Prefix = prefix;
-                        ((XmlElement)newElem).IsEmpty = false;
-
-                        newElem.InnerText = elem.InnerText;
-
-                        if (elem.HasAttributes)
-                        {
-                            for (int i = 0; i < elem.Attributes.Count;)
-                            {
-                                if (elem.Attributes[i].Name.Contains("xmlns") && !elem.Attributes[i].Value.Contains(elem.NamespaceURI))
-                                    continue;
-
-                                if (elem.Attributes[i].Name.Contains("xmlns") && elem.Attributes[i].Value.Contains(elem.NamespaceURI))
-                                {
-                                    ((XmlElement)newElem).SetAttribute(elem.Attributes[i].Name + ":n1", elem.Attributes[i].Value);
-                                    continue;
-                                }
-
-                                ((XmlElement)newElem).SetAttribute(elem.Attributes[i].Name, elem.Attributes[i].Value);
-                                i++;
-                            }
-                        }
-
-                        if (!elem.HasChildNodes && elem.InnerText == "")
-                            elem.InnerText = "";
-
-                        newXmlNode.AppendChild(newElem);
+                        i++;
                     }
                 }
-
-
             }
         }
+        private static string SwapAttributes(string OuterXml)
+        {
+            XDocument xDoc = XDocument.Parse(OuterXml);
+            XElement xElement = xDoc.Root;
 
+            foreach (var elem in xElement.DescendantNodesAndSelf())
+            {
+                if (elem is XElement)
+                {
+                    if (((XElement)elem).HasAttributes && ((XElement)elem).Attributes().Count() > 1)
+                    {
+                        if (!((XElement)elem).Attributes().First().Name.ToString().Contains("xmlns:n1"))
+                        {
+                            var fAttr = ((XElement)elem).Attributes().First();
+                            var sAttr = ((XElement)elem).Attributes().Last();
+
+                            ((XElement)elem).Attributes().Remove();
+
+                            ((XElement)elem).SetAttributeValue(sAttr.Name, sAttr.Value);
+                            ((XElement)elem).SetAttributeValue(fAttr.Name, fAttr.Value);
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
 
 
     }
