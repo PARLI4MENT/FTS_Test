@@ -20,54 +20,6 @@ namespace XMLSigner
     {
         public static X509Certificate2 Certificate = FindGostCertificateCurrent();
 
-        /// <summary>
-        /// Вычисление Hash строки, подписание
-        /// </summary>
-        /// <param name="certificate"></param>
-        public static void SignedXml(X509Certificate2 certificate)
-        {
-            string pathToXml = @"C:\_test\_test\test.xml";
-
-            {
-                //XDocument xDocMain = XDocument.Load(new StringReader(File.ReadAllText(pathToXml)), LoadOptions.SetBaseUri);
-                //XPathNavigator xNavi = xDocMain.CreateNavigator();
-                //string strExp = "/Envelope/Body/Signature/Object/ArchAddDocRequest/ArchDoc/Signature/Object/Envelope/Body/Signature/Object/ArchAddDocRequest/ArchDoc/Signature/KeyInfo";
-                //XPathNodeIterator xPathNodeIter = xNavi.Select(strExp);
-
-            }
-
-            {
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
-                var xmlRootNode = xmlDoc.DocumentElement;
-
-                /// [2]Object => [0]ArchAddDocRequest => [4]ArchDoc => [0]Signature => [2]KeyInfo
-                //var xmlNodeKeyInfo = xmlRootNode.GetElementsByTagName("Object", "*")[2].ChildNodes[0].ChildNodes[4].ChildNodes[0].ChildNodes[2];
-                var xmlNodeKeyInfo = ((XmlElement)xmlRootNode.GetElementsByTagName("Object", "*")[2]).GetElementsByTagName("KeyInfo", "*")[0];
-
-                /// Хеширование KeyInfo
-                var xmlNodeRefKeyInfoDigVal = xmlRootNode.GetElementsByTagName("Object", "*")[2].ChildNodes[0].ChildNodes[4].ChildNodes[0].ChildNodes[0].ChildNodes[2].ChildNodes[2];
-                xmlNodeRefKeyInfoDigVal.InnerText = HashGostR3411_2012_256(xmlNodeKeyInfo.OuterXml);
-
-                Console.WriteLine(xmlNodeKeyInfo.OuterXml);
-                Console.WriteLine();
-                Console.WriteLine(HashGostR3411_2012_256(xmlNodeKeyInfo.OuterXml));
-
-                //xmlDoc.Save(pathToXml);
-
-                Console.ReadKey();
-            }
-
-
-            Console.WriteLine();
-        }
-
-        public static string Normalization(string OuterXml)
-        {
-            string NormalString = string.Empty;
-            return NormalString;
-        }
-
         /// <summary> Вычисление хэша по ГОСТ Р 34.11-2012/256 </summary>
         /// <param name="DataForHash"></param>
         /// <returns>Возвращает строку с Hash</returns>
