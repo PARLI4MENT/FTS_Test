@@ -12,6 +12,7 @@ namespace XMLSigner.OutClass
             
         }
 
+
         /// <summary> Нормализация Xml документа</summary>
         /// <param name="xmlNode"></param>
         /// <param name="prefix"></param>
