@@ -4,6 +4,7 @@ using GostCryptography.Pkcs;
 using GostCryptography.Xml;
 using System;
 using System.IO;
+using System.Linq.Expressions;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
@@ -17,7 +18,7 @@ namespace XMLSigner
 {
     public class SignXMLGost
     {
-        public static X509Certificate2 Certificate = FindGostCertificate();
+        public static X509Certificate2 Certificate = FindGostCertificateCurrent();
 
         /// <summary>
         /// Вычисление Hash строки, подписание
@@ -92,6 +93,14 @@ namespace XMLSigner
             Console.WriteLine();
         }
 
+        
+
+        public static string Normalization(string OuterXml)
+        {
+            string NormalString = string.Empty;
+            return NormalString;
+        }
+
         /// <summary> Вычисление хэша по ГОСТ Р 34.11-2012/256 </summary>
         /// <param name="DataForHash"></param>
         /// <returns>Возвращает строку с Hash</returns>
@@ -107,23 +116,15 @@ namespace XMLSigner
             return Convert.ToBase64String(hashValue);
         }
 
-        public static string Normalization(string OuterXml)
-        {
-            string NormalString = string.Empty;
-
-
-
-            return NormalString;
-        }
-
-        /// <summary> Подписание потока байтов</summary>
-        /// <param name="certificate"></param>
+        /// <summary>  Подписание строки </summary>
         /// <param name="message"></param>
-        /// <returns> Возвращает поток байтов подписи</returns>
-        private static byte[] SignCmsMessage(X509Certificate2 certificate, byte[] message)
+        /// <param name="certificate"></param>
+        /// <returns></returns>
+        public static string SignCmsMessage(string message, X509Certificate2 certificate)
         {
+            byte[] byteMessage = Encoding.UTF8.GetBytes(message);
             // Создание объекта для подписи сообщения
-            var signedCms = new GostSignedCms(new ContentInfo(message));
+            var signedCms = new GostSignedCms(new ContentInfo(byteMessage));
 
             // Создание объект с информацией о подписчике
             var signer = new CmsSigner(certificate);
@@ -135,14 +136,21 @@ namespace XMLSigner
             signedCms.ComputeSignature(signer);
 
             // Создание сообщения CMS/PKCS#7
-            return signedCms.Encode();
+            return Convert.ToBase64String(signedCms.Encode());
         }
 
-        /// <summary> TEST </summary>
-        /// <returns></returns>
-        private static byte[] CreateMessage()
+        private static bool VerifyMessageCms(string message)
         {
-            return Encoding.UTF8.GetBytes("Some message to sign...");
+            byte[] signedMessage = Convert.FromBase64String(message);
+
+            var signedCms = new GostSignedCms();
+
+            signedCms.Decode(signedMessage);
+            
+            try { signedCms.CheckSignature(true); }
+            catch (Exception ex) { Console.WriteLine(ex.Message); return false; }
+
+            return true;
         }
 
         public static void SignFullXml(string xmlFile, X509Certificate2 certificate, bool deleteSourceFile = false)
@@ -229,6 +237,12 @@ namespace XMLSigner
             finally { store.Close(); }
 
             return null;
+        }
+        public static X509Certificate2 FindGostCertificateCurrent(StoreLocation storeLocation = StoreLocation.CurrentUser)
+        {
+            var store = new X509Store(StoreName.My, storeLocation);
+            store.Open(OpenFlags.OpenExistingOnly | OpenFlags.ReadOnly);
+            return store.Certificates[1];
         }
 
         /// <summary>
