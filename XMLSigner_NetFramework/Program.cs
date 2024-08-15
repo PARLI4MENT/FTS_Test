@@ -48,7 +48,7 @@ namespace XMLSigner
             swTotal.Stop();
             Console.WriteLine();
             Console.WriteLine($"NormalizationXmlSign => {swCurrent.Elapsed}");
-            Console.WriteLine($"AVG time: {Directory.GetFiles(StaticPath.PathSignedFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
+            Console.WriteLine($"AVG time: {Directory.GetFiles(StaticPath.PathImplementFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
                  + $"{swCurrent.ElapsedMilliseconds % 1000} docs/sec");
             
             Console.WriteLine();
