@@ -14,27 +14,26 @@ namespace XMLSigner.OutClass
         /// <param name="pathToXmls"></param>
         public NormalizationXmlSign(string pathToXmlsFolder, int _MaxDegreeOfParallelism = -1)
         {
-            string[] inplementFiles = Directory.GetFiles(pathToXmlsFolder);
+            //string[] inplementFiles = Directory.GetFiles(pathToXmlsFolder);
 
-            Parallel.ForEach(inplementFiles,
-                new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
-                inmplFile =>
-            {
+            //Parallel.ForEach(inplementFiles,
+            //    new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
+            //    inmplFile =>
+            //{
                 /// XML Document Orig
                 XmlDocument xmlDocOrigin = new XmlDocument();
-                xmlDocOrigin.Load(new StringReader(File.ReadAllText(inmplFile)));
+                xmlDocOrigin.Load(new StringReader(File.ReadAllText(pathToXmlsFolder)));
                 XmlElement xmlRootOrigin = (XmlElement)xmlDocOrigin.GetElementsByTagName("Body")[0];
 
                 /// XML Document Editing
                 XmlDocument xmlDocEdit = new XmlDocument();
-                xmlDocEdit.Load(new StringReader(File.ReadAllText(inmplFile)));
+                xmlDocEdit.Load(new StringReader(File.ReadAllText(pathToXmlsFolder)));
                 XmlElement xmlRootEdit = (XmlElement)xmlDocEdit.GetElementsByTagName("Body")[0];
 
                 FindElements(xmlRootEdit, xmlRootOrigin);
 
-                xmlDocOrigin.Save(Path.Combine(new FileInfo(inmplFile).DirectoryName, Path.GetFileName(inmplFile)));
-            });
-
+                xmlDocOrigin.Save(Path.Combine(new FileInfo(pathToXmlsFolder).DirectoryName, Path.GetFileName(pathToXmlsFolder)));
+            //});
         }
 
         /// <summary> Сделать автопоиск по элементу Reference </summary>
@@ -71,6 +70,30 @@ namespace XMLSigner.OutClass
                     ((XmlElement)objOrigNodes.Item(i)).GetElementsByTagName("SignatureValue")[0].InnerText = strSignCms;
                 }
             }
+            Console.WriteLine();
+
+            /// KeyInfo hash
+            Normalization(xmlEdit.GetElementsByTagName("KeyInfo", "*")[0]);
+            var swapBodyKey = SwapAttributes(((XmlElement)xmlEdit.GetElementsByTagName("KeyInfo", "*")[0]).OuterXml);
+            var strBodyKeyHash = SignXMLGost.HashGostR3411_2012_256(swapBodyKey);
+            ((XmlElement)xmlEdit.GetElementsByTagName("DigestValue")[0]).InnerText = strBodyKeyHash;
+            ((XmlElement)xmlOrig.GetElementsByTagName("DigestValue")[0]).InnerText = strBodyKeyHash;
+
+            /// Object hash
+            Normalization(xmlEdit.GetElementsByTagName("Object", "*")[0]);
+            var swapBodyObj = SwapAttributes(((XmlElement)xmlEdit.GetElementsByTagName("Object", "*")[0]).OuterXml);
+            var strBodyObjHash = SignXMLGost.HashGostR3411_2012_256(swapBodyObj);
+            ((XmlElement)xmlEdit.GetElementsByTagName("DigestValue")[1]).InnerText = strBodyObjHash;
+            ((XmlElement)xmlOrig.GetElementsByTagName("DigestValue")[1]).InnerText = strBodyObjHash;
+
+            /// Sign Object
+            Normalization(xmlEdit.GetElementsByTagName("SignedInfo", "*")[0]);
+            var swapBodySingedInfo = SwapAttributes(((XmlElement)xmlEdit.GetElementsByTagName("SignedInfo", "*")[0]).OuterXml);
+            var strBodySignCms = SignXMLGost.SignCmsMessage(swapBodySingedInfo, SignXMLGost.Certificate);
+            ((XmlElement)xmlEdit.GetElementsByTagName("SignatureValue")[0]).InnerText = strBodySignCms;
+            ((XmlElement)xmlOrig.GetElementsByTagName("SignatureValue")[0]).InnerText = strBodySignCms;
+
+            Console.WriteLine();
         }
 
         /// <summary> Нормализация Xml документа</summary>

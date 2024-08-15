@@ -16,9 +16,19 @@ namespace XMLSigner
         static void Main(string[] args)
         {
             string pathToXml = ("Resource/test.xml");
-
             Console.WriteLine("Start");
 
+            ////
+            //XmlDocument xmlDocOrig = new XmlDocument();
+            //xmlDocOrig.Load(new StringReader(File.ReadAllText(pathToXml)));
+
+            //XmlDocument xmlDocEdit = new XmlDocument();
+            //xmlDocEdit.Load(new StringReader(File.ReadAllText(pathToXml)));
+
+            new NormalizationXmlSign(pathToXml);
+
+
+            /*
             var swTotal = new Stopwatch();
             var swCurrent = new Stopwatch();
             swTotal.Start();
@@ -42,19 +52,19 @@ namespace XMLSigner
                  + $"{swCurrent.ElapsedMilliseconds % 1000} docs/sec");
             swCurrent.Restart();
 
-
-            new NormalizationXmlSign(StaticPath.PathImplementFolder, 10);
-            swCurrent.Stop();
-            swTotal.Stop();
-            Console.WriteLine();
-            Console.WriteLine($"NormalizationXmlSign => {swCurrent.Elapsed}");
-            Console.WriteLine($"AVG time: {Directory.GetFiles(StaticPath.PathImplementFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
-                 + $"{swCurrent.ElapsedMilliseconds % 1000} docs/sec");
+            ///// Нормализация, хэш и подписание
+            //new NormalizationXmlSign(StaticPath.PathImplementFolder, 10);
+            //swCurrent.Stop();
+            //swTotal.Stop();
+            //Console.WriteLine();
+            //Console.WriteLine($"NormalizationXmlSign => {swCurrent.Elapsed}");
+            //Console.WriteLine($"AVG time: {Directory.GetFiles(StaticPath.PathImplementFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
+            //     + $"{swCurrent.ElapsedMilliseconds % 1000} docs/sec");
             
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine($"Total time: {(int)(swTotal.ElapsedMilliseconds / 1000)},{swTotal.ElapsedMilliseconds % 1000} sec");
-
+            //Console.WriteLine();
+            //Console.WriteLine();
+            //Console.WriteLine($"Total time: {(int)(swTotal.ElapsedMilliseconds / 1000)},{swTotal.ElapsedMilliseconds % 1000} sec");
+            */
             Console.Write("\nPress any key...");
             Console.ReadKey();
         }
