@@ -48,7 +48,7 @@ namespace SQLTestNs
 
         public void ExecuteToDB(string[] args, int Company_key_id)
         {
-            string _strConnMain = $"Server=localhost;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
+            string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
             using (var sqlConn = new NpgsqlConnection(_strConnMain))
             {
                 sqlConn.Open();

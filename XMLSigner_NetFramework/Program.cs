@@ -15,36 +15,45 @@ namespace XMLSigner
     {
         static void Main(string[] args)
         {
-            string path = ("Resource/test.xml");
+            string pathToXml = ("Resource/test.xml");
+
             Console.WriteLine("Start");
-            
+
+            var swTotal = new Stopwatch();
+            var swCurrent = new Stopwatch();
+            swTotal.Start();
+            swCurrent.Start();
+
             /// Переименование
-            //RenamerXML.RenameMoveParallel();
+            RenamerXML.RenameMoveParallel(StaticPath.PathRawFolder, 10);
+            swCurrent.Stop();
+            Console.WriteLine();
+            Console.WriteLine($"RenameMoveParallel => {swCurrent.Elapsed}");
+            Console.WriteLine($"AVG time: {Directory.GetFiles(StaticPath.PathIntermidateFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
+                 + $"{swCurrent.ElapsedMilliseconds % 1000} docs/sec");
+            swCurrent.Restart();
 
-            //ImplementateToXml.ImplementParallel(Directory.GetFiles("C:\\_test\\intermidateFiles"));
+            /// Извлечение и вставка данных в шаблон
+            ImplementateToXml.ImplementParallel(StaticPath.PathIntermidateFolder, 10);
+            swCurrent.Stop();
+            Console.WriteLine();
+            Console.WriteLine($"ImplementParallel => {swCurrent.Elapsed}");
+            Console.WriteLine($"AVG time: {Directory.GetFiles(StaticPath.PathImplementFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
+                 + $"{swCurrent.ElapsedMilliseconds % 1000} docs/sec");
+            swCurrent.Restart();
+
+
+            new NormalizationXmlSign(StaticPath.PathImplementFolder, 10);
+            swCurrent.Stop();
+            swTotal.Stop();
+            Console.WriteLine();
+            Console.WriteLine($"NormalizationXmlSign => {swCurrent.Elapsed}");
+            Console.WriteLine($"AVG time: {Directory.GetFiles(StaticPath.PathSignedFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
+                 + $"{swCurrent.ElapsedMilliseconds % 1000} docs/sec");
             
-            var sw = new Stopwatch();
-            sw.Start();
-
-            new NormalizationXmlSign("C:\\_test\\implementFiles");
-
-            sw.Stop();
-            Console.WriteLine(sw.Elapsed);
-            Console.WriteLine($"AVG time: {Directory.GetFiles("C:\\_test\\implementFiles").Count() / (int)(sw.ElapsedMilliseconds / 1000)},"
-                 + $"{sw.ElapsedMilliseconds % 1000} docs/sec");
-
-            /// VB
-            /*
-                XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
-                XmlElement xmlRoot = xmlDoc.DocumentElement;
-
-                var lastObject = (XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2];
-                NormXML(lastObject);
-                Console.WriteLine();
-                AtribOrderChanger(lastObject);
-                Console.WriteLine();
-            */
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine($"Total time: {(int)(swTotal.ElapsedMilliseconds / 1000)},{swTotal.ElapsedMilliseconds % 1000} sec");
 
             Console.Write("\nPress any key...");
             Console.ReadKey();
@@ -71,6 +80,21 @@ namespace XMLSigner
             }
         }
 
+        public static void VB()
+        {
+            string pathToXml = ("Resource/test.xml");
+
+
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));
+            XmlElement xmlRoot = xmlDoc.DocumentElement;
+
+            var lastObject = (XmlElement)xmlRoot.GetElementsByTagName("Object", "*")[2];
+            NormXML(lastObject);
+            Console.WriteLine();
+            AtribOrderChanger(lastObject);
+            Console.WriteLine();
+        }
         public static void NormXML(XmlElement nodeXml)
         {
             XmlAttributeCollection all_atr = nodeXml.Attributes;

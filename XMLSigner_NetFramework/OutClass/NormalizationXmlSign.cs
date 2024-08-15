@@ -12,12 +12,12 @@ namespace XMLSigner.OutClass
     {
         /// <summary> </summary>
         /// <param name="pathToXmls"></param>
-        public NormalizationXmlSign(string pathToXmlsFolder)
+        public NormalizationXmlSign(string pathToXmlsFolder, int _MaxDegreeOfParallelism = -1)
         {
             string[] inplementFiles = Directory.GetFiles(pathToXmlsFolder);
 
             Parallel.ForEach(inplementFiles,
-                new ParallelOptions { MaxDegreeOfParallelism = -1 },
+                new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
                 inmplFile =>
             {
                 /// XML Document Orig

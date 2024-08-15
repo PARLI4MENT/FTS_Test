@@ -1,4 +1,4 @@
-﻿#define TEST1
+﻿#define DEBUG
 
 using System.Collections.Generic;
 using System;
@@ -40,6 +40,9 @@ namespace FileNs
             }
         }
 
+        /// <summary> Распраллеленое переименование и перемещение сырых Xml-файлов </summary>
+        /// <param name="rawFolders"> Set array with raw files </param>
+        /// <param name="_MaxDegreeOfParallelism"> Limit parallel threading operation (-1 unlimited - default) </param>
         public static void RenameMoveParallel(string[] rawFolders, int _MaxDegreeOfParallelism = -1)
         {
             if (_MaxDegreeOfParallelism < -1)
@@ -79,8 +82,8 @@ namespace FileNs
         }
 
         /// <summary> Параллельное переименование и перемещение сырых Xml-файлов </summary>
-        /// <param name="pathRawFiles">Путь к папке с сырыми Xml-файлами</param>
-        /// <param name="_MaxDegreeOfParallelism">Максимальное ко-во параллельное вычисление</param>
+        /// <param name="pathRawFiles"> Set folder with raw files </param>
+        /// <param name="_MaxDegreeOfParallelism"> Limit parallel threading operation (-1 unlimited - default) </param>
         public static void RenameMoveParallel(string pathRawFiles, int _MaxDegreeOfParallelism = -1)
         {
             if (_MaxDegreeOfParallelism < -1)
@@ -95,7 +98,6 @@ namespace FileNs
 
                     foreach (string file in filesSubfolder)
                     {
-
                         // Combine Xml
                         string tmpPathCombine = Path.Combine("C:\\_test\\intermidateFiles", string.Concat(Path.GetFileName(rawFile), ".", Path.GetFileName(file)));
                         File.Copy(file, tmpPathCombine);
@@ -103,9 +105,7 @@ namespace FileNs
                 });
         }
 
-        /// <summary>
-        /// Перемещение и переименование Xml-файлов по маске
-        /// </summary>
+        /// <summary> Перемещение и переименование Xml-файлов по маске </summary>
         /// <param name="rawFile">Путь к папке с исходными файлами</param>
         /// <param name="destinationPath">Путь к папке назначения</param>
         /// <param name="deletedRawFolder">Удалять исходную папку</param>
@@ -152,11 +152,11 @@ namespace FileNs
                 }
             }
 
-            // Timer
+#if DEBUG
             swRename.Stop();
             _elapsedMilliseconds = swRename.ElapsedMilliseconds;
             _countRawFiles = baseFolder.Count();
-
+#endif  
             Console.WriteLine("{\n");
 
             // Delete non usable base folder
@@ -192,7 +192,6 @@ namespace FileNs
 
             string[] baseFolder = Directory.GetDirectories(_dirInput);
 
-            int subFolder = 0;
             Parallel.ForEach(baseFolder, dir =>
             {
                 /// Тут можно упростить =>
@@ -204,24 +203,20 @@ namespace FileNs
 
                 foreach (string file in filesSubfolder)
                 {
-                    subFolder += filesSubfolder.Count;
                     Task.Run(() =>
                         File.Copy(file, Path.Combine(_dirDestination, string.Concat(Path.GetFileName(dir), ".", Path.GetFileName(file))))
                     );
                 }
             });
-
-            _subFolder = subFolder; ;
-
-            Console.WriteLine($"\tParsed files = {subFolder}");
-
+#if DEBUG
             swRename.Stop();
             _elapsedMilliseconds = swRename.ElapsedMilliseconds;
             _countRawFiles = baseFolder.Count();
-
+#endif
             // Delete non usable base folder
             if (deletedRawFolder)
-                Task.Run(() => Delete());
+                if (deletedRawFolder)
+                    Task.Run(() => Delete());
         }
 
         //public static void GetLastStatistics()
@@ -237,9 +232,7 @@ namespace FileNs
         //    Console.WriteLine("}\n");
         //}
 
-        /// <summary>
-        /// Deleted raw folder
-        /// </summary>
+        /// <summary> Deleted raw folder </summary>
         private void Delete()
         {
             foreach (var item in Directory.GetDirectories(_dirInput))
@@ -248,9 +241,7 @@ namespace FileNs
             }
         }
 
-        /// <summary>
-        /// Для личных нужд
-        /// </summary>
+        /// <summary> Для личных нужд </summary>
         /// <param name="lists"></param>
         protected static void OutFilePath(List<string> lists)
         {
