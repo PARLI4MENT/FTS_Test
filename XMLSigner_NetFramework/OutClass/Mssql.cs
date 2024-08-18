@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SQLTestNs
+namespace SQLNs
 {
     internal class Mssql
     {

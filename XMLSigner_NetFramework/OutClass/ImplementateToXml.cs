@@ -1,4 +1,4 @@
-﻿using SQLTestNs;
+﻿using SQLNs;
 using System;
 using System.Collections.Generic;
 using System.IO;

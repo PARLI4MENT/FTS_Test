@@ -100,7 +100,7 @@ namespace FileNs
                     {
                         // Combine Xml
                         string tmpPathCombine = Path.Combine("C:\\_test\\intermidateFiles", string.Concat(Path.GetFileName(rawFile), ".", Path.GetFileName(file)));
-                        File.Copy(file, tmpPathCombine);
+                        File.Copy(file, tmpPathCombine, true);
                     }
                 });
         }

@@ -9,7 +9,7 @@ using System.Xml.Schema;
 using System.IO;
 using System.Runtime.CompilerServices;
 
-namespace SQLTestNs
+namespace SQLNs
 {
     public class AccessDB
     {

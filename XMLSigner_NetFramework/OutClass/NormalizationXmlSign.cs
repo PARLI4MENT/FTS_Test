@@ -14,26 +14,26 @@ namespace XMLSigner.OutClass
         /// <param name="pathToXmls"></param>
         public NormalizationXmlSign(string pathToXmlsFolder, int _MaxDegreeOfParallelism = -1)
         {
-            //string[] inplementFiles = Directory.GetFiles(pathToXmlsFolder);
+            string[] inplementFiles = Directory.GetFiles(pathToXmlsFolder);
 
-            //Parallel.ForEach(inplementFiles,
-            //    new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
-            //    inmplFile =>
-            //{
+            Parallel.ForEach(inplementFiles,
+                new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
+                inmplFile =>
+            {
                 /// XML Document Orig
                 XmlDocument xmlDocOrigin = new XmlDocument();
-                xmlDocOrigin.Load(new StringReader(File.ReadAllText(pathToXmlsFolder)));
+                xmlDocOrigin.Load(new StringReader(File.ReadAllText(inmplFile)));
                 XmlElement xmlRootOrigin = (XmlElement)xmlDocOrigin.GetElementsByTagName("Body")[0];
 
                 /// XML Document Editing
                 XmlDocument xmlDocEdit = new XmlDocument();
-                xmlDocEdit.Load(new StringReader(File.ReadAllText(pathToXmlsFolder)));
+                xmlDocEdit.Load(new StringReader(File.ReadAllText(inmplFile)));
                 XmlElement xmlRootEdit = (XmlElement)xmlDocEdit.GetElementsByTagName("Body")[0];
 
                 FindElements(xmlRootEdit, xmlRootOrigin);
 
-                xmlDocOrigin.Save(Path.Combine(new FileInfo(pathToXmlsFolder).DirectoryName, Path.GetFileName(pathToXmlsFolder)));
-            //});
+                xmlDocOrigin.Save(Path.Combine(StaticPath.PathSignedFolder, Path.GetFileName(inmplFile)));
+            });
         }
 
         /// <summary> Сделать автопоиск по элементу Reference </summary>
@@ -70,7 +70,6 @@ namespace XMLSigner.OutClass
                     ((XmlElement)objOrigNodes.Item(i)).GetElementsByTagName("SignatureValue")[0].InnerText = strSignCms;
                 }
             }
-            Console.WriteLine();
 
             /// KeyInfo hash
             Normalization(xmlEdit.GetElementsByTagName("KeyInfo", "*")[0]);
@@ -93,7 +92,6 @@ namespace XMLSigner.OutClass
             ((XmlElement)xmlEdit.GetElementsByTagName("SignatureValue")[0]).InnerText = strBodySignCms;
             ((XmlElement)xmlOrig.GetElementsByTagName("SignatureValue")[0]).InnerText = strBodySignCms;
 
-            Console.WriteLine();
         }
 
         /// <summary> Нормализация Xml документа</summary>

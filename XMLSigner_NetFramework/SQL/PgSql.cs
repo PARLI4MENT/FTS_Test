@@ -6,7 +6,7 @@ using System.IO;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 
-namespace SQLTestNs
+namespace SQLNs
 {
     public class PgSql
     {

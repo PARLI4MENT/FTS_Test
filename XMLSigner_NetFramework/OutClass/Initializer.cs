@@ -6,7 +6,7 @@ using System.IO;
 using System.Xml.Schema;
 using System.Configuration;
 
-namespace SQLTestNs
+namespace SQLNs
 {
     public class Conifiguration
     {
