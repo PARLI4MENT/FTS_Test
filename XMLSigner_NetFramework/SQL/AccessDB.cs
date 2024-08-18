@@ -2,22 +2,23 @@
 using System.Data.OleDb;
 using System.Data;
 using System.Diagnostics;
+using System.Configuration;
+using System.IO;
+using System.Runtime.InteropServices;
 
 namespace SQLNs
 {
     public class AccessDB
     {
-        private static string _pathToMDB = "C:\\_test\\testMDB.mdb";
-        public static string PathToMDB { get { return _pathToMDB; } set { _pathToMDB = value; } }
+        private static string _pathToMDB;
 
-        private static string _pathToACCDB = "C:\\_test\\testACCDB.accdb";
-        public static string PathToACCDB { get { return _pathToACCDB; } set { _pathToACCDB = value; } }
+        private static string _pathToACCDB;
 
         private static string _provider = "Microsoft.Jet.OLEDB.4.0";
         public static string Provider
         {
             get { return _provider ?? "Microsoft.Jet.OLEDB.4.0"; }
-            set { _provider = value; }
+            private set { _provider = value; }
         }
 
         private static string _connectionString;
@@ -44,8 +45,29 @@ namespace SQLNs
             }
         }
 
+        private static OleDbConnection _oleDbConnection;
+        public OleDbConnection OleDbConnection { get; private set; }
+
         /// <summary> Конструктор по-умолчинию (Ничего не принимает)</summary>
         public AccessDB() { }
+
+        /// <summary> Конструктор MS Access</summary>
+        /// <param name="pathToDb"> Путь к файлу MS Access </param>
+        public AccessDB(string pathToDb)
+        {
+            switch (Path.GetExtension(pathToDb).ToLower())
+            {
+                case "accdb":
+                    _connectionString = $@"Provider=Microsoft.Jet.OLEDB.4.0; Data source= {_pathToACCDB}";
+                    break;
+                case "mdb":
+                    _connectionString = $@"Provider=Microsoft.Jet.OLEDB.4.0; Data source= {_pathToMDB}";
+                    break;
+                default:
+                    Debug.WriteLine("Extension not meet requirements MS Access!");
+                    break;
+            }
+        }
 
         /// <summary> Выполнение базовой инициализации MS Access (не доделано)</summary>
         /// <param name="connectionString"> Строка подключения </param>

@@ -267,7 +267,11 @@ namespace XmlNs
         public static List<string[]> ImplementParallel(string[] intermidateFiles, int _MaxDegreeOfParallelism = -1, bool deletedInputFile = false)
         {
             List<string[]> doneData = new List<string[]>();
-            Parallel.ForEach(intermidateFiles,
+
+            var accessDB = new AccessDB("C:\\_test\\testMDB.mdb");
+
+            Parallel.ForEach(
+                intermidateFiles,
                 new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
                 intermidateFile =>
                 {
@@ -464,6 +468,8 @@ namespace XmlNs
         {
             string[] intermidateFiles = Directory.GetFiles(intermidateFolder, "*.xml", SearchOption.AllDirectories);
 
+
+
             Parallel.ForEach(intermidateFiles,
                 new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
                 intermidateFile =>
@@ -640,7 +646,7 @@ namespace XmlNs
                     //File.AppendAllText("C:\\_test\\Arch_docs.log", "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
 
                     // Query to PostgresSql DB
-                    new PgSql().ExecuteToDB(new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName });
+                    new AccessDB().ExecuteToDB(new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName });
 
                     if (deletedInputFile)
                     {
