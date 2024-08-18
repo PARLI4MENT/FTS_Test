@@ -5,10 +5,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
+using XMLSigner.SQL;
 
 namespace SQLNs
 {
-    public class PgSql
+    public class PgSql: ISql
     {
         private static string _Server { get; set; } = "192.168.0.142";
         public void SetServer(string _server) => _server = _Server;
@@ -46,7 +47,7 @@ namespace SQLNs
 
         }
 
-        public void ExecuteToDB(string[] args, int Company_key_id)
+        public void ExecuteToDB(string[] args)
         {
             string _strConnMain = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
             using (var sqlConn = new NpgsqlConnection(_strConnMain))
@@ -57,7 +58,7 @@ namespace SQLNs
                     sqlComm.CommandText = $@"INSERT INTO ""public"".""ExchED""
                                 (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
                                 ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
-                                VALUES ('{args[0]}', 'CMN.00202', '{args[1]}', {Company_key_id}, '{args[2]}',
+                                VALUES ('{args[0]}', 'CMN.00202', '{args[1]}', {1}, '{args[2]}',
                                 '{args[3]}', '{args[4]}', '{args[5]}', '{Path.GetFileName(args[6])}');";
                     sqlComm.Connection = sqlConn;
                     sqlComm.ExecuteNonQuery();

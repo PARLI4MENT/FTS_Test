@@ -120,9 +120,10 @@
   <ItemGroup>
     <Compile Include="Fields\ExchED.cs" />
     <Compile Include="Fields\ECD_list.cs" />
-    <Compile Include="OutClass\AccessDB.cs" />
+    <Compile Include="SQL\AccessDB.cs" />
     <Compile Include="OutClass\Initializer.cs" />
-    <Compile Include="OutClass\Mssql.cs" />
+    <Compile Include="SQL\ISql.cs" />
+    <Compile Include="SQL\Mssql.cs" />
     <Compile Include="OutClass\NormalizationXmlSign.cs" />
     <Compile Include="SQL\PgSql.cs" />
     <Compile Include="OutClass\ImplementateToXml.cs" />

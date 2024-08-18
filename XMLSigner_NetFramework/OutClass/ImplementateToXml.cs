@@ -73,7 +73,7 @@ namespace XmlNs
         
         public static string[] ImplementLinear(string intermidateFile, int _MaxDegreeOfParallelism = -1, bool deletedInputFile = false)
         {
-            const int Company_key_id = 1;
+            int Company_key_id = 1;
 
             string DateStr = intermidateFile + ";";
 
@@ -245,7 +245,7 @@ namespace XmlNs
             //File.AppendAllText("C:\\_test\\Arch_docs.log", "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
 
             // Query to PostgresSql DB
-            //new PgSql().ExecuteToDB(new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName }, Company_key_id);
+            new PgSql().ExecuteToDB(new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName });
 
             string[] doneData;
             doneData = new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName };
@@ -271,7 +271,7 @@ namespace XmlNs
                 new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
                 intermidateFile =>
                 {
-                    const int Company_key_id = 1;
+                    int Company_key_id = 1;
 
                     string DateStr = intermidateFile + ";";
 
@@ -443,7 +443,7 @@ namespace XmlNs
                     //File.AppendAllText("C:\\_test\\Arch_docs.log", "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
 
                     // Query to PostgresSql DB
-                    new PgSql().ExecuteToDB(new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName }, Company_key_id);
+                    new PgSql().ExecuteToDB(new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName });
 
                     doneData.Add(new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName });
 
@@ -468,7 +468,7 @@ namespace XmlNs
                 new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
                 intermidateFile =>
                 {
-                    const int Company_key_id = 1;
+                    int Company_key_id = 1;
 
                     string DateStr = intermidateFile + ";";
 
@@ -640,7 +640,7 @@ namespace XmlNs
                     //File.AppendAllText("C:\\_test\\Arch_docs.log", "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
 
                     // Query to PostgresSql DB
-                    new PgSql().ExecuteToDB(new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName }, Company_key_id);
+                    new PgSql().ExecuteToDB(new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName });
 
                     if (deletedInputFile)
                     {
