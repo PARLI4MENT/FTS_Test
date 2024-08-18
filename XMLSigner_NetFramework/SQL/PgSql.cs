@@ -3,7 +3,6 @@ using System;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using XMLSigner.SQL;
 
@@ -286,6 +285,8 @@ namespace SQLNs
         */
         #endregion
 
+        /// <summary> Получение данных из </summary>
+        /// <param name="sqlConnection">Объект подключения</param>
         private static void PgRetriveData(NpgsqlConnection sqlConnection)
         {
             using (var sqlComm = new NpgsqlCommand("SELECT * FROM \"public\".\"testTabel1\"", sqlConnection))
@@ -301,6 +302,8 @@ namespace SQLNs
             }
         }
 
+        /// <summary> Полная очистка таблицы от данных PostgresSql</summary>
+        /// <param name="_tableName"></param>
         private void PgClearData([Optional] string _tableName)
         {
             string strCommand = $@"DELETE FROM""public"".""{_tableName}""";

@@ -7,7 +7,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 
 namespace FileNs
 {
@@ -24,6 +23,10 @@ namespace FileNs
         private static int _countRawFiles { get; set; }
         private static int _subFolder { get; set; }
 
+
+        /// <summary> Линейное переименование и перемещение сырых Xml-файлов </summary>
+        /// <param name="rawFolders"></param>
+        /// <param name="_MaxDegreeOfParallelism"></param>
         public static void RenameMove(string[] rawFolders, int _MaxDegreeOfParallelism = -1)
         {
             foreach (var rawFolder in rawFolders)
@@ -164,9 +167,7 @@ namespace FileNs
                 Task.Run(() => Delete());
         }
 
-        /// <summary>
-        /// Паралельное перемещение и переименование Xml-файлов по маске
-        /// </summary>
+        /// <summary> Паралельное перемещение и переименование Xml-файлов по маске </summary>
         /// <param name="rawFile">Путь к папке с исходными файлами</param>
         /// <param name="destinationPath">Путь к папке назначения</param>
         /// <param name="deletedRawFolder">Удалять исходную папку</param>
@@ -232,23 +233,19 @@ namespace FileNs
         //    Console.WriteLine("}\n");
         //}
 
-        /// <summary> Deleted raw folder </summary>
+        /// <summary> Удаление подпапок из исходной папки </summary>
         private void Delete()
         {
             foreach (var item in Directory.GetDirectories(_dirInput))
-            {
                 Directory.Delete(item);
-            }
         }
 
         /// <summary> Для личных нужд </summary>
         /// <param name="lists"></param>
         protected static void OutFilePath(List<string> lists)
         {
-            foreach (object item in lists)
-            {
+            foreach (object item in lists) 
                 Console.WriteLine($"[] => {item}");
-            }
         }
     }
 }

@@ -1,17 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.OleDb;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Schema;
-using System.IO;
-using System.Runtime.CompilerServices;
-using XMLSigner.SQL;
 using System.Diagnostics;
-using System.Security.AccessControl;
-using System.Net.Configuration;
 
 namespace SQLNs
 {
@@ -64,9 +54,7 @@ namespace SQLNs
             try
             {
                 using (var connection = new OleDbConnection(connectionString))
-                {
                     CreateBaseTable(connection);
-                }
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); }
         }
@@ -95,6 +83,32 @@ namespace SQLNs
             var insertCommand = $"INSERT INTO ExchED" +
                 "(InnerID, MessageType, EnvelopeID, CompanySet_key_id, DocumentID, DocName, DocNum, DocCode, ArchFileName) " +
                 $"VALUES ('{args[0]}', 'CMN.00202', '{args[1]}', {Company_key_id}, '{args[2]}', '{args[3]}', '{args[4]}', " +
+                $"'{args[5]}', '{args[6]}')";
+            try
+            {
+                using (var connection = new OleDbConnection(ConnectionString))
+                {
+                    if (ConnectionString is null)
+                        return;
+
+                    connection.Open();
+                    using (var command = new OleDbCommand(insertCommand, connection))
+                        command.ExecuteNonQuery();
+
+                    connection.Close();
+                }
+            }
+            catch (Exception ex) { Console.WriteLine(ex.Message); }
+        }
+
+        /// <summary> Выполнение запроса к БД</summary>
+        /// <param name="args"> Массив строк со значениями </param>
+        /// <param name="Company_key_id">Код компании (по-умолчанию 1) </param>
+        public void ExecuteToDB(string[] args)
+        {
+            var insertCommand = $"INSERT INTO ExchED" +
+                "(InnerID, MessageType, EnvelopeID, CompanySet_key_id, DocumentID, DocName, DocNum, DocCode, ArchFileName) " +
+                $"VALUES ('{args[0]}', 'CMN.00202', '{args[1]}', 1, '{args[2]}', '{args[3]}', '{args[4]}', " +
                 $"'{args[5]}', '{args[6]}')";
             try
             {
@@ -228,11 +242,6 @@ namespace SQLNs
                 }
             }
             catch (Exception ex) { Console.WriteLine($"Failed to connect to data source\n{ex.Message}"); }
-        }
-
-        void ExecuteToDB(string[] args)
-        {
-
         }
     }
 

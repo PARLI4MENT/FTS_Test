@@ -91,7 +91,6 @@ namespace XMLSigner.OutClass
             var strBodySignCms = SignXMLGost.SignCmsMessage(swapBodySingedInfo, SignXMLGost.Certificate);
             ((XmlElement)xmlEdit.GetElementsByTagName("SignatureValue")[0]).InnerText = strBodySignCms;
             ((XmlElement)xmlOrig.GetElementsByTagName("SignatureValue")[0]).InnerText = strBodySignCms;
-
         }
 
         /// <summary> Нормализация Xml документа</summary>

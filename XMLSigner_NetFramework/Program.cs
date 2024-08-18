@@ -1,6 +1,7 @@
 ﻿#define TEST
 
 using FileNs;
+using SQLNs;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -18,43 +19,45 @@ namespace XMLSigner
             string pathToXml = ("Resource/test.xml");
             Console.WriteLine("Start");
 
-            //var swTotal = new Stopwatch();
-            //var swCurrent = new Stopwatch();
-            //swTotal.Start();
-            //swCurrent.Start();
+            var swTotal = new Stopwatch();
+            var swCurrent = new Stopwatch();
+            swTotal.Start();
+            swCurrent.Start();
 
-            //// Переименование
-            //RenamerXML.RenameMoveParallel(StaticPath.PathRawFolder, 10);
-            //swCurrent.Stop();
-            //Console.WriteLine();
-            //Console.WriteLine($"RenameMoveParallel => {swCurrent.Elapsed}");
-            //Console.WriteLine($"AVG time: {Directory.GetFiles(StaticPath.PathIntermidateFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
-            //     + $"{swCurrent.ElapsedMilliseconds % 1000} docs/sec");
-            //swCurrent.Restart();
+            // Переименование
+            RenamerXML.RenameMoveParallel(StaticPath.PathRawFolder, 10);
+            swCurrent.Stop();
+            Console.WriteLine();
+            Console.WriteLine($"RenameMoveParallel => {swCurrent.Elapsed}");
+            Console.WriteLine($"AVG time: {Directory.GetFiles(StaticPath.PathIntermidateFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
+                 + $"{swCurrent.ElapsedMilliseconds % 1000} docs/sec");
+            swCurrent.Restart();
 
-            //// Извлечение и вставка данных в шаблон
-            //ImplementateToXml.ImplementParallel(StaticPath.PathIntermidateFolder, 10);
-            //swCurrent.Stop();
-            //Console.WriteLine();
-            //Console.WriteLine($"ImplementParallel => {swCurrent.Elapsed}");
-            //Console.WriteLine($"AVG time: {Directory.GetFiles(StaticPath.PathImplementFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
-            //     + $"{swCurrent.ElapsedMilliseconds % 1000} docs/sec");
-            //swCurrent.Restart();
+            // Извлечение и вставка данных в шаблон
+            ImplementateToXml.ImplementParallel(StaticPath.PathIntermidateFolder, 10);
+            swCurrent.Stop();
+            Console.WriteLine();
+            Console.WriteLine($"ImplementParallel => {swCurrent.Elapsed}");
+            Console.WriteLine($"AVG time: {Directory.GetFiles(StaticPath.PathImplementFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
+                 + $"{swCurrent.ElapsedMilliseconds % 1000} docs/sec");
+            swCurrent.Restart();
 
-            ///// Нормализация, хэш и подписание
-            //new NormalizationXmlSign(StaticPath.PathImplementFolder, 10);
-            //swCurrent.Stop();
-            //swTotal.Stop();
-            //Console.WriteLine();
-            //Console.WriteLine($"NormalizationXmlSign => {swCurrent.Elapsed}");
-            //Console.WriteLine($"AVG time: {Directory.GetFiles(StaticPath.PathImplementFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
-            //     + $"{swCurrent.ElapsedMilliseconds % 1000} docs/sec");
+            /// Нормализация, хэш и подписание
+            new NormalizationXmlSign(StaticPath.PathImplementFolder, 10);
+            swCurrent.Stop();
+            swTotal.Stop();
+            Console.WriteLine();
+            Console.WriteLine($"NormalizationXmlSign => {swCurrent.Elapsed}");
+            Console.WriteLine($"AVG time: {Directory.GetFiles(StaticPath.PathImplementFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
+                 + $"{swCurrent.ElapsedMilliseconds % 1000} docs/sec");
 
-            //Console.WriteLine();
-            //Console.WriteLine();
-            //Console.WriteLine($"Total time: {(int)(swTotal.ElapsedMilliseconds / 1000)},{swTotal.ElapsedMilliseconds % 1000} sec");
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine($"Total time: {(int)(swTotal.ElapsedMilliseconds / 1000)},{swTotal.ElapsedMilliseconds % 1000} sec");
 
             Console.Write("\nPress any key...");
+            Console.ReadKey();
+            AccessDB.ClearDataTable();
             Console.ReadKey();
         }
 
