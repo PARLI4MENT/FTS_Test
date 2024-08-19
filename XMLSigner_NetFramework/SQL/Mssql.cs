@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using XMLSigner.SQL;
 
 namespace SQLNs
 {
-    internal class Mssql
+    internal class Mssql : ISql
     {
+        public void ExecuteToDB(string[] args)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

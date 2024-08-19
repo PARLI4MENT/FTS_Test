@@ -16,53 +16,51 @@ namespace XMLSigner
     {
         static void Main(string[] args)
         {
-            string pathToXml = ("Resource/test.xml");
-            Console.WriteLine("Start");
-            AccessDB.ClearDataTable();
-
+            Console.WriteLine("Start Ms Access");
+            AccessDB.DeleteDataTable();
+            Console.WriteLine($"Rows files: {Directory.GetFiles("C:\\_test\\rawFiles", "*.xml", SearchOption.AllDirectories).Count()}");
 
             var swTotal = new Stopwatch();
             var swCurrent = new Stopwatch();
             swTotal.Start();
             swCurrent.Start();
 
-
+            /// Переименование и перемещение
+            RenamerXML.RenameMoveParallel(StaticPath.PathRawFolder, 10);
+            swCurrent.Stop();
             Console.WriteLine();
-
-            /// Переименование
-            //RenamerXML.RenameMoveParallel(StaticPath.PathRawFolder, 10);
-            //swCurrent.Stop();
-            //Console.WriteLine();
-            //Console.WriteLine($"RenameMoveParallel => {swCurrent.Elapsed}");
-            //Console.WriteLine($"AVG time: {Directory.GetFiles(StaticPath.PathIntermidateFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
-            //     + $"{swCurrent.ElapsedMilliseconds % 1000} docs/sec");
-            //swCurrent.Restart();
+            Console.WriteLine($"Переименование и перемещение (RenameMoveParallel) => {swCurrent.Elapsed}");
+            Console.WriteLine($"Ср. кол-во файлов: {Directory.GetFiles(StaticPath.PathIntermidateFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
+                 + $"{swCurrent.ElapsedMilliseconds % 1000} файлов/сек");
+            swCurrent.Restart();
 
             /// Извлечение и вставка данных в шаблон
             ImplementateToXml.ImplementParallel(StaticPath.PathIntermidateFolder, 4);
             swCurrent.Stop();
             Console.WriteLine();
-            Console.WriteLine($"ImplementParallel => {swCurrent.Elapsed}");
-            Console.WriteLine($"AVG time: {Directory.GetFiles(StaticPath.PathImplementFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
-                 + $"{swCurrent.ElapsedMilliseconds % 1000} docs/sec");
+            Console.WriteLine($"Извлечение и вставка данных в шаблон (ImplementParallel) => {swCurrent.Elapsed}");
+            Console.WriteLine($"Ср. кол-во операций: {Directory.GetFiles(StaticPath.PathImplementFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
+                 + $"{swCurrent.ElapsedMilliseconds % 1000} файлов/сек");
             swCurrent.Restart();
 
             /// Нормализация, хэш и подписание
-            //new NormalizationXmlSign(StaticPath.PathImplementFolder, 10);
-            //swCurrent.Stop();
-            //swTotal.Stop();
-            //Console.WriteLine();
-            //Console.WriteLine($"NormalizationXmlSign => {swCurrent.Elapsed}");
-            //Console.WriteLine($"AVG time: {Directory.GetFiles(StaticPath.PathImplementFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
-            //     + $"{swCurrent.ElapsedMilliseconds % 1000} docs/sec");
+            new NormalizationXmlSign(StaticPath.PathImplementFolder, 10);
+            swCurrent.Stop();
+            swTotal.Stop();
+            Console.WriteLine();
+            Console.WriteLine($"Нормализация, хэш и подписание (NormalizationXmlSign) => {swCurrent.Elapsed}");
+            Console.WriteLine($"Ср. кол-во операций: {Directory.GetFiles(StaticPath.PathImplementFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
+                 + $"{swCurrent.ElapsedMilliseconds % 1000} файлов/сек");
 
             Console.WriteLine();
             Console.WriteLine();
-            Console.WriteLine($"Total time: {(int)(swTotal.ElapsedMilliseconds / 1000)},{swTotal.ElapsedMilliseconds % 1000} sec");
+            Console.WriteLine($"Общее время: {(int)(swTotal.ElapsedMilliseconds / 1000)},{swTotal.ElapsedMilliseconds % 1000} сек");
+            Console.WriteLine($"Ср. кол-во операций: {Directory.GetFiles(StaticPath.PathSignedFolder).Count() / (int)(swTotal.ElapsedMilliseconds / 1000)},"
+                 + $"{swTotal.ElapsedMilliseconds % 1000} файлов/сек");
 
             Console.Write("\nPress any key...");
             Console.ReadKey();
-            AccessDB.ClearDataTable();
+            AccessDB.DeleteDataTable();
             Console.ReadKey();
         }
 
@@ -102,6 +100,7 @@ namespace XMLSigner
             AtribOrderChanger(lastObject);
             Console.WriteLine();
         }
+
         public static void NormXML(XmlElement nodeXml)
         {
             XmlAttributeCollection all_atr = nodeXml.Attributes;

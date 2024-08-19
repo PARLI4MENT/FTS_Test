@@ -8,18 +8,11 @@ using System.Runtime.InteropServices;
 
 namespace SQLNs
 {
-    public class AccessDB
+    public class AccessDB : IDisposable
     {
-        private static string _pathToMDB;
+        private static string _pathToMDB = null;
 
-        private static string _pathToACCDB;
-
-        private static string _provider = "Microsoft.Jet.OLEDB.4.0";
-        public static string Provider
-        {
-            get { return _provider ?? "Microsoft.Jet.OLEDB.4.0"; }
-            private set { _provider = value; }
-        }
+        private static string _pathToACCDB = null;
 
         private static string _connectionString;
 
@@ -38,7 +31,7 @@ namespace SQLNs
                     if (!String.IsNullOrEmpty(_pathToMDB))
                         return $@"Provider=Microsoft.Jet.OLEDB.4.0; Data source= {_pathToMDB}";
                     if (!String.IsNullOrEmpty(_pathToACCDB))
-                        return $@"Provider=Microsoft.Jet.OLEDB.4.0; Data source= {_pathToACCDB}";
+                        return $@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={_pathToACCDB};Persist Security Info=False;";
                     return null;
                 }
                 return _connectionString;
@@ -46,9 +39,8 @@ namespace SQLNs
         }
 
         private static OleDbConnection _oleDbConnection;
-        public OleDbConnection OleDbConnection { get; private set; }
 
-        /// <summary> Конструктор по-умолчинию (Ничего не принимает)</summary>
+        /// <summary> Конструктор MS Access по-умолчанию </summary>
         public AccessDB() { }
 
         /// <summary> Конструктор MS Access</summary>
@@ -57,16 +49,21 @@ namespace SQLNs
         {
             switch (Path.GetExtension(pathToDb).ToLower())
             {
-                case "accdb":
-                    _connectionString = $@"Provider=Microsoft.Jet.OLEDB.4.0; Data source= {_pathToACCDB}";
+                case ".accdb":
+                    _pathToACCDB = pathToDb;
+                    _connectionString = $@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={pathToDb};Persist Security Info=False;";
                     break;
-                case "mdb":
-                    _connectionString = $@"Provider=Microsoft.Jet.OLEDB.4.0; Data source= {_pathToMDB}";
+                case ".mdb":
+                    _pathToMDB = pathToDb;
+                    _connectionString = $@"Provider=Microsoft.Jet.OLEDB.4.0; Data source= {pathToDb};";
                     break;
                 default:
                     Debug.WriteLine("Extension not meet requirements MS Access!");
                     break;
             }
+
+            _oleDbConnection = new OleDbConnection(ConnectionString);
+            _oleDbConnection.Open();
         }
 
         /// <summary> Выполнение базовой инициализации MS Access (не доделано)</summary>
@@ -116,8 +113,6 @@ namespace SQLNs
                     connection.Open();
                     using (var command = new OleDbCommand(insertCommand, connection))
                         command.ExecuteNonQuery();
-
-                    connection.Close();
                 }
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); }
@@ -142,11 +137,26 @@ namespace SQLNs
                     connection.Open();
                     using (var command = new OleDbCommand(insertCommand, connection))
                         command.ExecuteNonQuery();
-
-                    connection.Close();
                 }
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); }
+        }
+        
+        /// <summary> Выполнить запрос </summary>
+        /// <param name="args"> Массив данных типа string </param>
+        public void Execute(string[] args)
+        {
+            var insertCommand = $"INSERT INTO ExchED" +
+                "(InnerID, MessageType, EnvelopeID, CompanySet_key_id, DocumentID, DocName, DocNum, DocCode, ArchFileName) " +
+                $"VALUES ('{args[0]}', 'CMN.00202', '{args[1]}', 1, '{args[2]}', '{args[3]}', '{args[4]}', " +
+                $"'{args[5]}', '{args[6]}')";
+
+            try
+            {
+                using (var command = new OleDbCommand(insertCommand, _oleDbConnection))
+                    command.ExecuteNonQuery();
+            }
+            catch (Exception ex) { Debug.WriteLine(ex.Message); return; }
         }
 
         /// <summary> Тестовый запрос на добавление и удаление данных в таблицу </summary>
@@ -182,10 +192,11 @@ namespace SQLNs
             catch (Exception ex) { Debug.WriteLine(ex.Message); return false; }
         }
 
-        /// <summary> Полная очистка данный в БД</summary>
-        public static void ClearDataTable()
+        /// <summary> Полная очистка данный в БД </summary>
+        /// <param name="tableName"> Имя таблицы </param>
+        public static void DeleteDataTable(string tableName = "ExchED")
         {
-            var clearData = "DELETE * FROM ExchED";
+            var clearData = $"DELETE * FROM {tableName}";
 
             try
             {
@@ -197,6 +208,30 @@ namespace SQLNs
                     using (var command = new OleDbCommand(clearData, connection))
                         command.ExecuteNonQuery();
                     
+                    connection.Close();
+                    return;
+                }
+            }
+            catch (Exception ex) { Debug.WriteLine(ex.Message); return; }
+        }
+
+        /// <summary> Удаление всех данных из всех таблиц. Структура таблиц и сами таблицы остаються. </summary>
+        public static void DeleteAllDataFromTables()
+        {
+            string query = "SELECT MSysObjects.Name AS table_name FROM MSysObjects WHERE (((Left([Name],1))<>\"~\") " +
+                "AND ((Left([Name],4))<>\"MSys\") AND ((MSysObjects.Type) In (1,4,6))) ORDER BY MSysObjects.Name";
+            string[] tablesName;
+
+            try
+            {
+                using (var connection = new OleDbConnection(ConnectionString))
+                {
+                    if (ConnectionString is null) { Debug.WriteLine("Connection string is Null."); return; }
+
+                    connection.Open();
+                    using (var command = new OleDbCommand(query, connection))
+                        command.ExecuteNonQuery();
+
                     connection.Close();
                     return;
                 }
@@ -216,15 +251,13 @@ namespace SQLNs
             catch (Exception ex) { Console.WriteLine(ex.Message); }
         }
 
-        /// <summary>
-        /// Access test connection with ACE Provider
-        /// </summary>
-        /// <param name="connectionString"></param>
-        public static void TestConnectToAccessWithAce(string connectionString)
+        /// <summary> Access test connection with ACE Provider </summary>
+        /// <param name="connectionString">Только для *.accdb файлов </param>
+        public static void TestConnectToAccessWithAce(string pathToAccdb)
         {
             try
             {
-                String connection = $@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={connectionString};Persist Security Info=True";
+                String connection = $@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={pathToAccdb};Persist Security Info=True";
                 using (OleDbConnection conn = new OleDbConnection(connection))
                 {
                     conn.Open();
@@ -242,15 +275,13 @@ namespace SQLNs
             catch (Exception ex) { Console.WriteLine($"Failed to connect to data source\n{ex.Message}"); }
         }
 
-        /// <summary>
-        /// Access test connection with Jet Provider
-        /// </summary>
-        /// <param name="connectionString"></param>
-        public static void TestConnectToAccessWithJet(string connectionString)
+        /// <summary> Access test connection with Jet Provider </summary>
+        /// <param name="connectionString"> Только *.mdb файлы </param>
+        public static void TestConnectToAccessWithJet(string pathToMdb)
         {
             try
             {
-                String connection = $@"Provider=Microsoft.Jet.OLEDB.4.0; Data source= {connectionString}";
+                String connection = $@"Provider=Microsoft.Jet.OLEDB.4.0; Data source= {pathToMdb}";
                 using (OleDbConnection conn = new OleDbConnection(connection))
                 {
                     conn.Open();
@@ -264,8 +295,13 @@ namespace SQLNs
                 }
             }
             catch (Exception ex) { Console.WriteLine($"Failed to connect to data source\n{ex.Message}"); }
+        }
+
+
+        public void Dispose()
+        {
+            if (_oleDbConnection.State == ConnectionState.Open)
+                _oleDbConnection.Close();
         }
     }
-
-    public enum Privider : int { }
 }
