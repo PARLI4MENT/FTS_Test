@@ -6,8 +6,16 @@ using System.Threading.Tasks;
 
 namespace XMLSigner.SQL
 {
-    public interface ISql
+    interface ISql
     {
+        string Server { get; set; }
+        string Port { get; set; }
+        string Uid { get; set; }
+        string Password { get; set; }
+        string Database { get; set; }
+
+
         void ExecuteToDB(string[] args);
+        void ExecuteToDB(string[] args, int Company_key_id);
     }
 }

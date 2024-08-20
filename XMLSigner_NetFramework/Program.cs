@@ -16,8 +16,7 @@ namespace XMLSigner
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Start Ms Access");
-            AccessDB.DeleteDataTable();
+            Console.WriteLine("Start MSSQL");
             Console.WriteLine($"Rows files: {Directory.GetFiles("C:\\_test\\rawFiles", "*.xml", SearchOption.AllDirectories).Count()}");
 
             var swTotal = new Stopwatch();
@@ -26,7 +25,7 @@ namespace XMLSigner
             swCurrent.Start();
 
             /// Переименование и перемещение
-            RenamerXML.RenameMoveParallel(StaticPath.PathRawFolder, 10);
+            RenamerXML.RenameMoveParallel(StaticPath.PathRawFolder);
             swCurrent.Stop();
             Console.WriteLine();
             Console.WriteLine($"Переименование и перемещение (RenameMoveParallel) => {swCurrent.Elapsed}");
@@ -35,7 +34,7 @@ namespace XMLSigner
             swCurrent.Restart();
 
             /// Извлечение и вставка данных в шаблон
-            ImplementateToXml.ImplementParallel(StaticPath.PathIntermidateFolder, 4);
+            ImplementateToXml.ImplementParallel(StaticPath.PathIntermidateFolder);
             swCurrent.Stop();
             Console.WriteLine();
             Console.WriteLine($"Извлечение и вставка данных в шаблон (ImplementParallel) => {swCurrent.Elapsed}");
@@ -44,7 +43,7 @@ namespace XMLSigner
             swCurrent.Restart();
 
             /// Нормализация, хэш и подписание
-            new NormalizationXmlSign(StaticPath.PathImplementFolder, 10);
+            new NormalizationXmlSign(StaticPath.PathImplementFolder);
             swCurrent.Stop();
             swTotal.Stop();
             Console.WriteLine();
@@ -60,7 +59,6 @@ namespace XMLSigner
 
             Console.Write("\nPress any key...");
             Console.ReadKey();
-            AccessDB.DeleteDataTable();
             Console.ReadKey();
         }
 

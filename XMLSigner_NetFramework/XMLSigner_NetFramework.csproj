@@ -123,7 +123,7 @@
     <Compile Include="SQL\AccessDB.cs" />
     <Compile Include="OutClass\Initializer.cs" />
     <Compile Include="SQL\ISql.cs" />
-    <Compile Include="SQL\Mssql.cs" />
+    <Compile Include="SQL\MsSql.cs" />
     <Compile Include="OutClass\NormalizationXmlSign.cs" />
     <Compile Include="SQL\PgSql.cs" />
     <Compile Include="OutClass\ImplementateToXml.cs" />
@@ -141,6 +141,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
