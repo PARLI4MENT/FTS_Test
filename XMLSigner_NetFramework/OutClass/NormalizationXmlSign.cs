@@ -5,6 +5,7 @@ using System.IO;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using XmlFTS.OutClass;
 
 namespace XMLSigner.OutClass
 {
@@ -32,7 +33,7 @@ namespace XMLSigner.OutClass
 
                 FindElements(xmlRootEdit, xmlRootOrigin);
 
-                xmlDocOrigin.Save(Path.Combine(StaticPath.PathSignedFolder, Path.GetFileName(inmplFile)));
+                xmlDocOrigin.Save(Path.Combine(StaticPathConfiguration.PathSignedFolder, Path.GetFileName(inmplFile)));
             });
         }
 

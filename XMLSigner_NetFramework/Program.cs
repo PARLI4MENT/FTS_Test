@@ -9,6 +9,7 @@ using System.Linq;
 using System.Xml;
 using XmlNs;
 using XMLSigner.OutClass;
+using XmlFTS.OutClass;
 
 namespace XMLSigner
 {
@@ -16,46 +17,48 @@ namespace XMLSigner
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Start MSSQL");
-            Console.WriteLine($"Rows files: {Directory.GetFiles("C:\\_test\\rawFiles", "*.xml", SearchOption.AllDirectories).Count()}");
+            StaticPathConfiguration.InitializePath();
 
-            var swTotal = new Stopwatch();
-            var swCurrent = new Stopwatch();
-            swTotal.Start();
-            swCurrent.Start();
+            //Console.WriteLine("Start MSSQL");
+            //Console.WriteLine($"Rows files: {Directory.GetFiles("C:\\_test\\rawFiles", "*.xml", SearchOption.AllDirectories).Count()}");
 
-            /// Переименование и перемещение
-            RenamerXML.RenameMoveParallel(StaticPath.PathRawFolder);
-            swCurrent.Stop();
-            Console.WriteLine();
-            Console.WriteLine($"Переименование и перемещение (RenameMoveParallel) => {swCurrent.Elapsed}");
-            Console.WriteLine($"Ср. кол-во файлов: {Directory.GetFiles(StaticPath.PathIntermidateFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
-                 + $"{swCurrent.ElapsedMilliseconds % 1000} файлов/сек");
-            swCurrent.Restart();
+            //var swTotal = new Stopwatch();
+            //var swCurrent = new Stopwatch();
+            //swTotal.Start();
+            //swCurrent.Start();
 
-            /// Извлечение и вставка данных в шаблон
-            ImplementateToXml.ImplementParallel(StaticPath.PathIntermidateFolder);
-            swCurrent.Stop();
-            Console.WriteLine();
-            Console.WriteLine($"Извлечение и вставка данных в шаблон (ImplementParallel) => {swCurrent.Elapsed}");
-            Console.WriteLine($"Ср. кол-во операций: {Directory.GetFiles(StaticPath.PathImplementFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
-                 + $"{swCurrent.ElapsedMilliseconds % 1000} файлов/сек");
-            swCurrent.Restart();
+            ///// Переименование и перемещение
+            //RenamerXML.RenameMoveParallel(StaticPathConfiguration.PathRawFolder);
+            //swCurrent.Stop();
+            //Console.WriteLine();
+            //Console.WriteLine($"Переименование и перемещение (RenameMoveParallel) => {swCurrent.Elapsed}");
+            //Console.WriteLine($"Ср. кол-во файлов: {Directory.GetFiles(StaticPathConfiguration.PathIntermidateFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
+            //     + $"{swCurrent.ElapsedMilliseconds % 1000} файлов/сек");
+            //swCurrent.Restart();
 
-            /// Нормализация, хэш и подписание
-            new NormalizationXmlSign(StaticPath.PathImplementFolder);
-            swCurrent.Stop();
-            swTotal.Stop();
-            Console.WriteLine();
-            Console.WriteLine($"Нормализация, хэш и подписание (NormalizationXmlSign) => {swCurrent.Elapsed}");
-            Console.WriteLine($"Ср. кол-во операций: {Directory.GetFiles(StaticPath.PathImplementFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
-                 + $"{swCurrent.ElapsedMilliseconds % 1000} файлов/сек");
+            ///// Извлечение и вставка данных в шаблон
+            //ImplementateToXml.ImplementParallel(StaticPathConfiguration.PathIntermidateFolder);
+            //swCurrent.Stop();
+            //Console.WriteLine();
+            //Console.WriteLine($"Извлечение и вставка данных в шаблон (ImplementParallel) => {swCurrent.Elapsed}");
+            //Console.WriteLine($"Ср. кол-во операций: {Directory.GetFiles(StaticPathConfiguration.PathImplementFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
+            //     + $"{swCurrent.ElapsedMilliseconds % 1000} файлов/сек");
+            //swCurrent.Restart();
 
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine($"Общее время: {(int)(swTotal.ElapsedMilliseconds / 1000)},{swTotal.ElapsedMilliseconds % 1000} сек");
-            Console.WriteLine($"Ср. кол-во операций: {Directory.GetFiles(StaticPath.PathSignedFolder).Count() / (int)(swTotal.ElapsedMilliseconds / 1000)},"
-                 + $"{swTotal.ElapsedMilliseconds % 1000} файлов/сек");
+            ///// Нормализация, хэш и подписание
+            //new NormalizationXmlSign(StaticPathConfiguration.PathImplementFolder);
+            //swCurrent.Stop();
+            //swTotal.Stop();
+            //Console.WriteLine();
+            //Console.WriteLine($"Нормализация, хэш и подписание (NormalizationXmlSign) => {swCurrent.Elapsed}");
+            //Console.WriteLine($"Ср. кол-во операций: {Directory.GetFiles(StaticPathConfiguration.PathImplementFolder).Count() / (int)(swCurrent.ElapsedMilliseconds / 1000)},"
+            //     + $"{swCurrent.ElapsedMilliseconds % 1000} файлов/сек");
+
+            //Console.WriteLine();
+            //Console.WriteLine();
+            //Console.WriteLine($"Общее время: {(int)(swTotal.ElapsedMilliseconds / 1000)},{swTotal.ElapsedMilliseconds % 1000} сек");
+            //Console.WriteLine($"Ср. кол-во операций: {Directory.GetFiles(StaticPathConfiguration.PathSignedFolder).Count() / (int)(swTotal.ElapsedMilliseconds / 1000)},"
+            //     + $"{swTotal.ElapsedMilliseconds % 1000} файлов/сек");
 
             Console.Write("\nPress any key...");
             Console.ReadKey();

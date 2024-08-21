@@ -1,18 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using System.Configuration;
 
-namespace XMLSigner.OutClass
+namespace XmlFTS.OutClass
 {
-    public static class StaticPath
+    public static class StaticPathConfiguration
     {
         /// <summary> Не доделанно </summary>
         public static void InitializePath()
         {
-            Type type = typeof(StaticPath);
+            Type type = typeof(StaticPathConfiguration);
 
             /// Get add static memebers of This class
-            FieldInfo[] staticFiled = type.GetFields(BindingFlags.Static |  BindingFlags.Public | BindingFlags.NonPublic);
+            FieldInfo[] staticFiled = type.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
 
             /// Layout the names of all static member
             Dictionary<string, string> map = new Dictionary<string, string>();
@@ -25,9 +29,10 @@ namespace XMLSigner.OutClass
                 Console.WriteLine("{0}={1}", key, map[key].ToString());
         }
 
-        /// <summary> Path to template XML </summary>
+        /// <summary> Путь к XML шаблону </summary>
         public static string TemplateXML { get; set; } = "C:\\_test\\create_doc_in_arch.xml";
-        /// <summary> Path to Raw folder </summary>
+
+        /// <summary> Путь к папке с иходными файлами </summary>
         public static string PathRawFolder { get; set; } = "C:\\_test\\rawFiles";
 
         /// <summary> Path to Intermidate folder </summary>

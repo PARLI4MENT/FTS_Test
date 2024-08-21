@@ -4,10 +4,7 @@ namespace Fields
 {
     public class ExchED
     {
-        /// <summary>
-        /// Get string command to Create table into Database
-        /// Default table => "ExchED"
-        /// </summary>
+        /// <summary> Get string command to Create table into Database. Default table => "ExchED" </summary>
         public static string GetSqlCommandCreator
         {
             get
@@ -26,10 +23,7 @@ namespace Fields
             }
         }
 
-        /// <summary>
-        /// Get string command to Insert into Database
-        /// Table name => "ExchED" 
-        /// </summary>
+        /// <summary> Get string command to Insert into Database. Table name => "ExchED"  </summary>
         /// INSERT INTO "public"."ExchED"
         /// ("InnerID", "MessageType", "EnvelopeID", "CompanySet_key_id", "DocumentID", "DocName", "DocNum", "DocCode", "ArchFileName")
         /// VALUES ('InnerID_1', 'MessageType_1', 'EnvelopeID_1', 1, 'DocumentID_1', 'DocName', 'DocNum', 'DocCode', 'ArchFileName_1');
@@ -45,9 +39,7 @@ namespace Fields
             }
         }
 
-        /// <summary>
-        /// Return table name
-        /// </summary>
+        /// <summary> Return table name </summary>
         public static string GetTableName { get { return "ExchED"; } }
 
         public string InnerID { get; set; }

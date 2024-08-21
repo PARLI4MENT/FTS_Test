@@ -23,7 +23,6 @@ namespace FileNs
         private static int _countRawFiles { get; set; }
         private static int _subFolder { get; set; }
 
-
         /// <summary> Линейное переименование и перемещение сырых Xml-файлов </summary>
         /// <param name="rawFolders"></param>
         /// <param name="_MaxDegreeOfParallelism"></param>
@@ -114,7 +113,6 @@ namespace FileNs
         /// <param name="deletedRawFolder">Удалять исходную папку</param>
         public void RenameAndMove([Optional] string rawFile, [Optional] string destinationPath, bool deletedRawFolder = false)
         {
-            /// Clear InputFiles from inputFiles folder
             {
                 var inputFiles = Directory.GetFiles(_dirDestination);
                 if (inputFiles.Count() != 0)
@@ -159,7 +157,7 @@ namespace FileNs
             swRename.Stop();
             _elapsedMilliseconds = swRename.ElapsedMilliseconds;
             _countRawFiles = baseFolder.Count();
-#endif  
+#endif
             Console.WriteLine("{\n");
 
             // Delete non usable base folder
@@ -173,13 +171,10 @@ namespace FileNs
         /// <param name="deletedRawFolder">Удалять исходную папку</param>
         public void RenameAndMoveParallel([Optional] string rawFile, [Optional] string destinationPath, bool deletedRawFolder = false)
         {
-            /// Clear InputFiles from inputFiles folder
-            {
-                var inputFiles = Directory.GetFiles(_dirDestination);
-                if (inputFiles.Count() != 0)
-                    foreach (var inFile in inputFiles)
-                        File.Delete(inFile);
-            }
+            var inputFiles = Directory.GetFiles(_dirDestination);
+            if (inputFiles.Count() != 0)
+                foreach (var inFile in inputFiles)
+                    File.Delete(inFile);
 
             Console.WriteLine("Старт переименования и перемещения...");
             var swRename = new Stopwatch();
@@ -201,13 +196,10 @@ namespace FileNs
                 List<string> filesSubfolder = new List<string>();
                 filesSubfolder.AddRange(Directory.GetFiles(Path.Combine(subDir[0], "xml")));
 
-
                 foreach (string file in filesSubfolder)
-                {
                     Task.Run(() =>
                         File.Copy(file, Path.Combine(_dirDestination, string.Concat(Path.GetFileName(dir), ".", Path.GetFileName(file))))
                     );
-                }
             });
 #if DEBUG
             swRename.Stop();

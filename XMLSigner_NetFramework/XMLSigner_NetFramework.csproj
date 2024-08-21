@@ -127,9 +127,7 @@
     <Compile Include="OutClass\NormalizationXmlSign.cs" />
     <Compile Include="SQL\PgSql.cs" />
     <Compile Include="OutClass\ImplementateToXml.cs" />
-    <Compile Include="OutClass\SerilizeJsonConfig.cs" />
     <Compile Include="OutClass\SignXMLGost.cs" />
-    <Compile Include="OutClass\StaticPath.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OutClass\RenamerXml.cs" />
@@ -153,6 +151,10 @@
     <ProjectReference Include="..\EnvelopeSerilize\EnvelopeSerilize.csproj">
       <Project>{3631635d-8ca0-4700-af46-80ad211b5b62}</Project>
       <Name>EnvelopeSerilize</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\XmlFTS\XmlFTS.csproj">
+      <Project>{6b5456b4-eef0-4872-9740-e5ea5a3a9a35}</Project>
+      <Name>XmlFTS</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
