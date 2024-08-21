@@ -36,25 +36,38 @@ namespace ConsoleApp1
                     }
                 }
             }
-            catch (Exception ex) { Console.WriteLine(ex.Message); return; }
+            catch (ConfigurationErrorsException ex) { Console.WriteLine(ex.Message); return; }
         }
 
         static void ReadSetting(string key)
         {
             try
             {
-
+                var appSettings = ConfigurationManager.AppSettings;
+                string result = appSettings[key] ?? "Not found";
+                Console.WriteLine(result);
             }
-            catch (Exception ex) { Console.WriteLine(ex.Message); return; }
+            catch (ConfigurationErrorsException ex) { Console.WriteLine(ex.Message); return; }
         }
 
         static void AddUpdateAppSettings(string key, string value)
         {
             try
             {
-
+                var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                var settings = configFile.AppSettings.Settings;
+                if (settings[key] is null)
+                {
+                    settings.Add(key, value);
+                }
+                else
+                {
+                    settings[key].Value = value;
+                }
+                configFile.Save(ConfigurationSaveMode.Modified);
+                ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
             }
-            catch (Exception ex) { Console.WriteLine(ex.Message); return; }
+            catch (ConfigurationErrorsException ex) { Console.WriteLine(ex.Message); return; }
         }
     }
 }
