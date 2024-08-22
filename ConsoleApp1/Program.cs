@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using System.Configuration;
-using System.Runtime.Remoting;
 
-namespace ConsoleApp1
+namespace ConfigurationTest
 {
     internal class Program
     {
@@ -15,13 +9,11 @@ namespace ConsoleApp1
         {
             ReadAllSetting();
 
-
-
             Console.WriteLine();
             Console.ReadKey();
         }
 
-        static void ReadAllSetting()
+        public static void ReadAllSetting()
         {
             try
             {
@@ -39,7 +31,7 @@ namespace ConsoleApp1
             catch (ConfigurationErrorsException ex) { Console.WriteLine(ex.Message); return; }
         }
 
-        static void ReadSetting(string key)
+        public static void ReadSetting(string key)
         {
             try
             {
@@ -50,7 +42,7 @@ namespace ConsoleApp1
             catch (ConfigurationErrorsException ex) { Console.WriteLine(ex.Message); return; }
         }
 
-        static void AddUpdateAppSettings(string key, string value)
+        public static void AddUpdateAppSettings(string key, string value)
         {
             try
             {

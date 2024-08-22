@@ -39,7 +39,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XML_Viewer", "XML_Viewer\XM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlFTS", "XmlFTS\XmlFTS.csproj", "{6B5456B4-EEF0-4872-9740-E5EA5A3A9A35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{9136CD0D-4537-4959-9A5E-EB14806FE11F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigurationTest", "ConsoleApp1\ConfigurationTest.csproj", "{9136CD0D-4537-4959-9A5E-EB14806FE11F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
