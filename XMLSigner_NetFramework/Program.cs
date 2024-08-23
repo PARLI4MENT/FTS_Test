@@ -1,15 +1,13 @@
 ﻿#define TEST
 
 using FileNs;
-using SQLNs;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using XmlNs;
-using XMLSigner.OutClass;
 using XmlFTS.OutClass;
+using XMLSigner.OutClass;
 
 namespace XMLSigner
 {
@@ -65,9 +63,7 @@ namespace XMLSigner
             Console.ReadKey();
         }
 
-        /// <summary>
-        /// Create XML Tree
-        /// </summary>
+        /// <summary> Возвращает  </summary>
         /// <param name="element"></param>
         public static void GetTree(XmlElement element)
         {
