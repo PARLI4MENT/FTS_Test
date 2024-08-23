@@ -11,30 +11,30 @@ namespace XMLSigner.OutClass
 {
     public class NormalizationXmlSign
     {
-        /// <summary> </summary>
+        /// <summary> Конструктор  </summary>
         /// <param name="pathToXmls"></param>
         public NormalizationXmlSign(string pathToXmlsFolder, int _MaxDegreeOfParallelism = -1)
         {
-            string[] inplementFiles = Directory.GetFiles(pathToXmlsFolder);
+            string[] implementFiles = Directory.GetFiles(pathToXmlsFolder);
 
-            Parallel.ForEach(inplementFiles,
+            Parallel.ForEach(implementFiles,
                 new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
-                inmplFile =>
-            {
-                /// XML Document Orig
-                XmlDocument xmlDocOrigin = new XmlDocument();
-                xmlDocOrigin.Load(new StringReader(File.ReadAllText(inmplFile)));
-                XmlElement xmlRootOrigin = (XmlElement)xmlDocOrigin.GetElementsByTagName("Body")[0];
+                implementFile =>
+                {
+                    /// XML Document Orig
+                    XmlDocument xmlDocOrigin = new XmlDocument();
+                    xmlDocOrigin.Load(new StringReader(File.ReadAllText(implementFile)));
+                    XmlElement xmlRootOrigin = (XmlElement)xmlDocOrigin.GetElementsByTagName("Body")[0];
 
-                /// XML Document Editing
-                XmlDocument xmlDocEdit = new XmlDocument();
-                xmlDocEdit.Load(new StringReader(File.ReadAllText(inmplFile)));
-                XmlElement xmlRootEdit = (XmlElement)xmlDocEdit.GetElementsByTagName("Body")[0];
+                    /// XML Document Editing
+                    XmlDocument xmlDocEdit = new XmlDocument();
+                    xmlDocEdit.Load(new StringReader(File.ReadAllText(implementFile)));
+                    XmlElement xmlRootEdit = (XmlElement)xmlDocEdit.GetElementsByTagName("Body")[0];
 
-                FindElements(xmlRootEdit, xmlRootOrigin);
+                    FindElements(xmlRootEdit, xmlRootOrigin);
 
-                xmlDocOrigin.Save(Path.Combine(StaticPathConfiguration.PathSignedFolder, Path.GetFileName(inmplFile)));
-            });
+                    xmlDocOrigin.Save(Path.Combine(StaticPathConfiguration.PathSignedFolder, Path.GetFileName(implementFile)));
+                });
         }
 
         /// <summary> Сделать автопоиск по элементу Reference </summary>
@@ -52,21 +52,21 @@ namespace XMLSigner.OutClass
                     /// KeyInfo hash
                     Normalization(((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("KeyInfo", "*")[0]);
                     var swapKey = SwapAttributes(((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("KeyInfo", "*")[0].OuterXml);
-                    var strKeyHash = SignXMLGost.HashGostR3411_2012_256(swapKey);
+                    var strKeyHash = SignXmlGost.HashGostR3411_2012_256(swapKey);
                     ((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("DigestValue")[0].InnerText = strKeyHash;
                     ((XmlElement)objOrigNodes.Item(i)).GetElementsByTagName("DigestValue")[0].InnerText = strKeyHash;
 
                     /// Object hash
                     Normalization(((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("Object", "*")[0]);
                     var swapObj = SwapAttributes(((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("Object", "*")[0].OuterXml);
-                    var strObjHash = SignXMLGost.HashGostR3411_2012_256(swapObj);
+                    var strObjHash = SignXmlGost.HashGostR3411_2012_256(swapObj);
                     ((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("DigestValue")[1].InnerText = strObjHash;
                     ((XmlElement)objOrigNodes.Item(i)).GetElementsByTagName("DigestValue")[1].InnerText = strObjHash;
 
                     /// Sign Object
                     Normalization(((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("SignedInfo", "*")[0]);
                     var swapSingedInfo = SwapAttributes(((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("SignedInfo", "*")[0].OuterXml);
-                    var strSignCms = SignXMLGost.SignCmsMessage(swapSingedInfo, SignXMLGost.Certificate);
+                    var strSignCms = SignXmlGost.SignCmsMessage(swapSingedInfo, SignXmlGost.Certificate);
                     ((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("SignatureValue")[0].InnerText = strSignCms;
                     ((XmlElement)objOrigNodes.Item(i)).GetElementsByTagName("SignatureValue")[0].InnerText = strSignCms;
                 }
@@ -75,21 +75,21 @@ namespace XMLSigner.OutClass
             /// KeyInfo hash
             Normalization(xmlEdit.GetElementsByTagName("KeyInfo", "*")[0]);
             var swapBodyKey = SwapAttributes(((XmlElement)xmlEdit.GetElementsByTagName("KeyInfo", "*")[0]).OuterXml);
-            var strBodyKeyHash = SignXMLGost.HashGostR3411_2012_256(swapBodyKey);
+            var strBodyKeyHash = SignXmlGost.HashGostR3411_2012_256(swapBodyKey);
             ((XmlElement)xmlEdit.GetElementsByTagName("DigestValue")[0]).InnerText = strBodyKeyHash;
             ((XmlElement)xmlOrig.GetElementsByTagName("DigestValue")[0]).InnerText = strBodyKeyHash;
 
             /// Object hash
             Normalization(xmlEdit.GetElementsByTagName("Object", "*")[0]);
             var swapBodyObj = SwapAttributes(((XmlElement)xmlEdit.GetElementsByTagName("Object", "*")[0]).OuterXml);
-            var strBodyObjHash = SignXMLGost.HashGostR3411_2012_256(swapBodyObj);
+            var strBodyObjHash = SignXmlGost.HashGostR3411_2012_256(swapBodyObj);
             ((XmlElement)xmlEdit.GetElementsByTagName("DigestValue")[1]).InnerText = strBodyObjHash;
             ((XmlElement)xmlOrig.GetElementsByTagName("DigestValue")[1]).InnerText = strBodyObjHash;
 
             /// Sign Object
             Normalization(xmlEdit.GetElementsByTagName("SignedInfo", "*")[0]);
             var swapBodySingedInfo = SwapAttributes(((XmlElement)xmlEdit.GetElementsByTagName("SignedInfo", "*")[0]).OuterXml);
-            var strBodySignCms = SignXMLGost.SignCmsMessage(swapBodySingedInfo, SignXMLGost.Certificate);
+            var strBodySignCms = SignXmlGost.SignCmsMessage(swapBodySingedInfo, SignXmlGost.Certificate);
             ((XmlElement)xmlEdit.GetElementsByTagName("SignatureValue")[0]).InnerText = strBodySignCms;
             ((XmlElement)xmlOrig.GetElementsByTagName("SignatureValue")[0]).InnerText = strBodySignCms;
         }
@@ -126,7 +126,7 @@ namespace XMLSigner.OutClass
                 }
             }
         }
-        
+
         /// <summary> Смена xmlns и аттрибута местами</summary>
         /// <param name="OuterXml"></param>
         /// <param name="disableFormating"></param>

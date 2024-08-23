@@ -141,7 +141,7 @@ namespace SQLNs
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); }
         }
-        
+
         /// <summary> Выполнить запрос </summary>
         /// <param name="args"> Массив данных типа string </param>
         public void Execute(string[] args)
@@ -185,7 +185,7 @@ namespace SQLNs
                         command.ExecuteNonQuery();
                     Debug.WriteLine("Delete testing is DONE!");
 
-                        connection.Close();
+                    connection.Close();
                     return true;
                 }
             }
@@ -207,7 +207,7 @@ namespace SQLNs
                     connection.Open();
                     using (var command = new OleDbCommand(clearData, connection))
                         command.ExecuteNonQuery();
-                    
+
                     connection.Close();
                     return;
                 }

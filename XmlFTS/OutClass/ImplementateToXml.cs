@@ -70,7 +70,7 @@ namespace XmlNs
 
             }
         }
-        
+
         public static string[] ImplementLinear(string intermidateFile, int _MaxDegreeOfParallelism = -1, bool deletedInputFile = false)
         {
             int Company_key_id = 1;
@@ -260,9 +260,9 @@ namespace XmlNs
         }
 
         /// <summary> Извлечение данные из промежуточных XML-файлов, вставка в шаблонный XML и сохранение в папку (implementFiles по-умолчанию)</summary>
-        /// <param name="intermidateFiles"> Set intermidate array files</param>
-        /// <param name="_MaxDegreeOfParallelism">Limit parallel threading operation (-1 unlimited - default)</param>
-        /// <param name="deletedInputFile">Delete src XML-file</param>
+        /// <param name="intermidateFiles"> Принимает массив строк (string[]) с путями к файлам </param>
+        /// <param name="_MaxDegreeOfParallelism"> Лимит параллельных операций (По-умолчанию -1 (ограничение отсутствует)) </param>
+        /// <param name="deletedInputFile"> Удалять исходные XML-файлы (по-умолчанию false) </param>
         /// <returns></returns>
         public static List<string[]> ImplementParallel(string[] intermidateFiles, int _MaxDegreeOfParallelism = -1, bool deletedInputFile = false)
         {
@@ -459,7 +459,7 @@ namespace XmlNs
 
         /// <summary> Извлечение данные из промежуточных XML-файлов, вставка в шаблонный XML и сохранение в папку (implementFiles по-умолчанию)</summary>
         /// <param name="intermidateFiles"> Set intermidate array files</param>
-        /// <param name="_MaxDegreeOfParallelism">Limit parallel threading operation (-1 unlimited - default)</param>
+        /// <param name="_MaxDegreeOfParallelism"> Лимит параллельных операций (По-умолчанию -1 (ограничение отсутсвует)) </param>
         /// <param name="deletedInputFile">Delete src XML-file</param>
         public static void ImplementParallel(string intermidateFolder, int _MaxDegreeOfParallelism = -1, bool deletedInputFile = false)
         {
@@ -654,6 +654,9 @@ namespace XmlNs
             }
         }
 
+        /// <summary>  </summary>
+        /// <param name="FileName"></param>
+        /// <param name="deletedInputFile"></param>
         private void DataImplementationTemplate(string FileName, bool deletedInputFile = false)
         {
             const int Company_key_id = 1;

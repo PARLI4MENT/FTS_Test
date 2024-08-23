@@ -1,12 +1,12 @@
 ﻿#define DEBUG
 
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace FileNs
 {
@@ -24,7 +24,7 @@ namespace FileNs
         private static int _subFolder { get; set; }
 
         /// <summary> Линейное переименование и перемещение сырых Xml-файлов </summary>
-        /// <param name="rawFolders"></param>
+        /// <param name="rawFolders"> </param>
         /// <param name="_MaxDegreeOfParallelism"></param>
         public static void RenameMove(string[] rawFolders, int _MaxDegreeOfParallelism = -1)
         {
@@ -42,7 +42,7 @@ namespace FileNs
             }
         }
 
-        /// <summary> Распраллеленое переименование и перемещение сырых Xml-файлов </summary>
+        /// <summary> Распраллеленое переименование и перемещение "сырых" Xml-файлов </summary>
         /// <param name="rawFolders"> Set array with raw files </param>
         /// <param name="_MaxDegreeOfParallelism"> Limit parallel threading operation (-1 unlimited - default) </param>
         public static void RenameMoveParallel(string[] rawFolders, int _MaxDegreeOfParallelism = -1)
@@ -52,7 +52,8 @@ namespace FileNs
 
             Parallel.ForEach(rawFolders,
                 new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
-                rawFolder => {
+                rawFolder =>
+                {
                     string[] subDir = Directory.GetDirectories(Path.Combine(rawFolder, "files"));
                     string[] filesSubfolder = (Directory.GetFiles(Path.Combine(subDir[0], "xml")));
                     foreach (string file in filesSubfolder)
@@ -94,7 +95,8 @@ namespace FileNs
             var rawFolder = Directory.GetDirectories(pathRawFiles);
             Parallel.ForEach(rawFolder,
                 new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
-                rawFile => {
+                rawFile =>
+                {
                     string[] subDir = Directory.GetDirectories(Path.Combine(rawFile, "files"));
                     string[] filesSubfolder = (Directory.GetFiles(Path.Combine(subDir[0], "xml")));
 
@@ -176,7 +178,7 @@ namespace FileNs
                 foreach (var inFile in inputFiles)
                     File.Delete(inFile);
 
-            Console.WriteLine("Старт переименования и перемещения...");
+            Debug.WriteLine("Старт переименования и перемещения...");
             var swRename = new Stopwatch();
             swRename.Start();
 
@@ -236,7 +238,7 @@ namespace FileNs
         /// <param name="lists"></param>
         protected static void OutFilePath(List<string> lists)
         {
-            foreach (object item in lists) 
+            foreach (object item in lists)
                 Console.WriteLine($"[] => {item}");
         }
     }

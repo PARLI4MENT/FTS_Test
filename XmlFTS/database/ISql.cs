@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace XMLSigner.SQL
 {
-    interface ISql
+    internal interface ISql
     {
         string Server { get; set; }
         string Port { get; set; }

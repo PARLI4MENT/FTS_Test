@@ -118,19 +118,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Fields\ExchED.cs" />
-    <Compile Include="Fields\ECD_list.cs" />
-    <Compile Include="SQL\AccessDB.cs" />
-    <Compile Include="OutClass\Initializer.cs" />
-    <Compile Include="SQL\ISql.cs" />
-    <Compile Include="SQL\MsSql.cs" />
-    <Compile Include="OutClass\NormalizationXmlSign.cs" />
-    <Compile Include="SQL\PgSql.cs" />
-    <Compile Include="OutClass\ImplementateToXml.cs" />
-    <Compile Include="OutClass\SignXMLGost.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="OutClass\RenamerXml.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

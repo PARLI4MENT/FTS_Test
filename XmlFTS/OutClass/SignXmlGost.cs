@@ -13,7 +13,7 @@ using System.Xml;
 
 namespace XMLSigner
 {
-    public class SignXMLGost
+    public class SignXmlGost
     {
         public static X509Certificate2 Certificate = FindGostCertificateCurrent();
 
@@ -65,7 +65,7 @@ namespace XMLSigner
             var signedCms = new GostSignedCms();
 
             signedCms.Decode(signedMessage);
-            
+
             try { signedCms.CheckSignature(true); }
             catch (Exception ex) { Console.WriteLine(ex.Message); return false; }
 
@@ -118,7 +118,7 @@ namespace XMLSigner
 
                     signedXml.AddReference(dataReference); ;
 
-                    var keyInfo = new KeyInfo(); 
+                    var keyInfo = new KeyInfo();
                     keyInfo.AddClause(new KeyInfoX509Data(Certificate));
                     signedXml.KeyInfo = keyInfo;
 
