@@ -49,20 +49,27 @@ namespace XmlFTS.OutClass
                 Directory.CreateDirectory(StaticPathConfiguration.PathSignedFolder);
 
             /// Определение файла шаблона
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.InitialDirectory = basePath;
-            openFileDialog.Filter = "Файл XML (.xml)|*.xml";
-            openFileDialog.FilterIndex = 0;
-            openFileDialog.Multiselect = false;
-            openFileDialog.RestoreDirectory = true;
+            //OpenFileDialog openFileDialog = new OpenFileDialog();
+            //openFileDialog.InitialDirectory = basePath;
+            //openFileDialog.Filter = "Файл XML (.xml)|*.xml";
+            //openFileDialog.FilterIndex = 0;
+            //openFileDialog.Multiselect = false;
+            //openFileDialog.RestoreDirectory = true;
 
-            var result = openFileDialog.ShowDialog();
-            if (result == true)
-            {
-                string destFilename = Path.Combine(basePath, Path.GetFileName(openFileDialog.FileName));
-                File.Copy(openFileDialog.FileName, destFilename);
-                StaticPathConfiguration.TemplateXML = destFilename;
-            }
+            //var result = openFileDialog.ShowDialog();
+            //if (result == true)
+            //{
+            //    string destFilename = Path.Combine(basePath, Path.GetFileName(openFileDialog.FileName));
+            //    File.Copy(openFileDialog.FileName, destFilename);
+            //    StaticPathConfiguration.TemplateXML = destFilename;
+            //}
+
+            // Путь к файлу шаблоном
+            if (!File.Exists(Path.Combine(basePath, "template.xml")))
+                Debug.WriteLine("Файла с шаблоном не существует");
+            StaticPathConfiguration.TemplateXML = Path.Combine(basePath, "template.xml");
+
+
 
             Console.WriteLine();
         }
