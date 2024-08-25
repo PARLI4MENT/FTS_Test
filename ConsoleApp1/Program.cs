@@ -8,6 +8,10 @@ namespace ConfigurationTest
         static void Main(string[] args)
         {
             ReadAllSetting();
+            Console.WriteLine();
+
+            AddUpdateAppSettings("TEST", "Test");
+            ReadAllSetting();
 
             Console.WriteLine();
             Console.ReadKey();
@@ -18,13 +22,13 @@ namespace ConfigurationTest
             try
             {
                 var appSettings = ConfigurationManager.AppSettings;
-                if (appSettings != null )
+                if (appSettings.Count == 0)
                     Console.WriteLine("AppSettings is empty.");
                 else
                 {
                     foreach (var key in appSettings.AllKeys)
                     {
-                        Console.WriteLine($@"Key={key} => {appSettings[key]}");
+                        Console.WriteLine($@"Key[{key}] => {appSettings[key]}");
                     }
                 }
             }
@@ -48,7 +52,7 @@ namespace ConfigurationTest
             {
                 var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
                 var settings = configFile.AppSettings.Settings;
-                if (settings[key] is null)
+                if (settings[key] == null)
                 {
                     settings.Add(key, value);
                 }

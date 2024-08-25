@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace XmlNs
 {
-    class ImplementateToXml
+    public class ImplementateToXml
     {
         public static string FileInFolder { get; private set; } = "C:\\_test\\intermidateFiles";
         public static string FileOutFolder { get; private set; } = "C:\\_test\\implementFiles";

@@ -1,5 +1,6 @@
 ﻿using System.Data.SqlClient;
 using System.IO;
+using XmlFTS.OutClass;
 
 namespace SQLNs
 {
@@ -23,6 +24,13 @@ namespace SQLNs
 
         string _strConnMain = $"Server={_Server};Database={_Database};User Id={_Uid};Password={_Password};";
 
+        string ConnectionStringKeyConfiguration = "MssqlConnectionString";
+
+        public MsSql()
+        {
+            Config.AddUpdateAppSettings("ConnectionStringKeyConfiguration", null);
+        }
+
         public void ExecuteToDB(string[] args)
         {
             using (var connection = new SqlConnection(_strConnMain))
@@ -39,7 +47,7 @@ namespace SQLNs
             }
         }
 
-        public void ExecuteToDB(string[] args, int Company_key_id)
+        private void ExecuteToDB(string[] args, int Company_key_id)
         {
 
         }

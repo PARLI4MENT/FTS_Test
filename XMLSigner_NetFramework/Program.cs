@@ -15,8 +15,9 @@ namespace XMLSigner
     {
         static void Main(string[] args)
         {
-            StaticPathConfiguration.InitializePath();
 
+            Config.BaseConfiguration();
+            
             Console.WriteLine("Start MSSQL");
             Console.WriteLine($"Rows files: {Directory.GetFiles("C:\\_test\\rawFiles", "*.xml", SearchOption.AllDirectories).Count()}");
 
@@ -35,7 +36,7 @@ namespace XMLSigner
             swCurrent.Restart();
 
             /// Извлечение и вставка данных в шаблон
-            ImplementateToXml.ImplementParallel(StaticPathConfiguration.PathIntermidateFolder);
+            XmlNs.ImplementateToXml.ImplementParallel(StaticPathConfiguration.PathIntermidateFolder);
             swCurrent.Stop();
             Console.WriteLine();
             Console.WriteLine($"Извлечение и вставка данных в шаблон (ImplementParallel) => {swCurrent.Elapsed}");
