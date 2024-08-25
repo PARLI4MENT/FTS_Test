@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define DEBUG
+
+using System;
 using System.Data.OleDb;
 using System.Data;
 using System.Diagnostics;
@@ -37,7 +39,8 @@ namespace SQLNs
                 return _connectionString;
             }
         }
-
+        
+        /// <summary> Data source for MS Access </summary>
         private static OleDbConnection _oleDbConnection;
 
         /// <summary> Конструктор MS Access по-умолчанию </summary>
@@ -175,7 +178,7 @@ namespace SQLNs
                 {
                     if (ConnectionString is null)
                         return false;
-
+    
                     connection.Open();
                     using (var command = new OleDbCommand(insertCommand, connection))
                         command.ExecuteNonQuery();
