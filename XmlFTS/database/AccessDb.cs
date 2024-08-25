@@ -7,6 +7,8 @@ using System.Diagnostics;
 using System.Configuration;
 using System.IO;
 using System.Runtime.InteropServices;
+using XMLSigner.SQL;
+using XmlFTS.OutClass;
 
 namespace SQLNs
 {
@@ -17,75 +19,61 @@ namespace SQLNs
     /// </remarks>
     public class AccessDB : IDisposable
     {
-        private static string _pathToMDB = null;
-
-        private static string _pathToACCDB = null;
-
-        private static string _connectionString;
-
         private static string connectionKey = "AccessConnectionString";
-
-        /// <summary>
-        /// Функция проверка строки подключения MS Access. Возвращает null если ни один из способов не действителен
-        /// </summary>
-        public static string ConnectionString
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(_connectionString))
-                {
-                    if (String.IsNullOrEmpty(_pathToMDB) && String.IsNullOrEmpty(_pathToACCDB))
-                        return null;
-
-                    if (!String.IsNullOrEmpty(_pathToMDB))
-                        return $@"Provider=Microsoft.Jet.OLEDB.4.0; Data source= {_pathToMDB}";
-                    if (!String.IsNullOrEmpty(_pathToACCDB))
-                        return $@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={_pathToACCDB};Persist Security Info=False;";
-                    return null;
-                }
-                return _connectionString;
-            }
-        }
+        private static string _connectionString;
         
         /// <summary> Data source for MS Access </summary>
         private static OleDbConnection _oleDbConnection;
 
-        /// <summary> Конструктор MS Access по-умолчанию </summary>
-        public AccessDB() { }
-
-        /// <summary> Конструктор MS Access</summary>
-        /// <param name="pathToDb"> Путь к файлу MS Access </param>
-        public AccessDB(string pathToDb)
+        /// <summary> Конструктор по-умолчанию </summary>
+        /// <remarks> Проверяет на наличие строки подключения к MS Access Jet Provider </remarks>
+        public AccessDB()
         {
-            switch (Path.GetExtension(pathToDb).ToLower())
+            if (string.IsNullOrEmpty(_connectionString))
+            { 
+                if (string.IsNullOrEmpty(Config.ReadSettings(connectionKey)))
+                {
+                    Debug.WriteLine("Отсутствует путь к файлу MS Access");
+                    return;
+                }
+            }
+            _connectionString = Config.ReadSettings(connectionKey);
+        }
+
+        /// <summary> Конструктор MS Access по-умолчанию </summary>
+        public AccessDB(string pathToMdb)
+        {
+            if (File.Exists(pathToMdb))
             {
-                case ".accdb":
-                    _pathToACCDB = pathToDb;
-                    _connectionString = $@"Provider=Microsoft.ACE.OLEDB.12.0;Data Source={pathToDb};Persist Security Info=False;";
-                    break;
-                case ".mdb":
-                    _pathToMDB = pathToDb;
-                    _connectionString = $@"Provider=Microsoft.Jet.OLEDB.4.0; Data source= {pathToDb};";
-                    break;
-                default:
-                    Debug.WriteLine("Extension not meet requirements MS Access!");
-                    break;
+                _connectionString = $"Provider=Microsoft.Jet.OLEDB.4.0; Data source= {pathToMdb};";
+                Config.AddUpdateAppSettings(connectionKey, _connectionString);
             }
 
-            _oleDbConnection = new OleDbConnection(ConnectionString);
-            _oleDbConnection.Open();
+            //_oleDbConnection = new OleDbConnection(ConnectionString);
+            //_oleDbConnection.Open();
+        }
+
+        /// <summary> Функция проверка строки подключения MS Access. Возвращает null если ни один из способов не действителен </summary>
+        public static string ConnectionString
+        {
+            get { return _connectionString; }
+            set
+            {
+                _connectionString= $"Provider=Microsoft.Jet.OLEDB.4.0; Data source= {value};";
+                Config.AddUpdateAppSettings(connectionKey, _connectionString);
+            }
         }
 
         /// <summary> Выполнение базовой инициализации MS Access (не доделано)</summary>
-        /// <param name="connectionString"> Строка подключения </param>
-        private static void BaseInitialize(string connectionString)
+        /// <param name="pathToMDB"> Путь к файлу .mdb </param>
+        private static void BaseInitialize()
         {
             try
             {
-                using (var connection = new OleDbConnection(connectionString))
+                using (var connection = new OleDbConnection(_connectionString))
                     CreateBaseTable(connection);
             }
-            catch (Exception ex) { Console.WriteLine(ex.Message); }
+            catch (OleDbException ex) { Debug.WriteLine(ex.Message); return; }
         }
 
         /// <summary> NOT USE </summary>
@@ -112,30 +100,6 @@ namespace SQLNs
             var insertCommand = $"INSERT INTO ExchED" +
                 "(InnerID, MessageType, EnvelopeID, CompanySet_key_id, DocumentID, DocName, DocNum, DocCode, ArchFileName) " +
                 $"VALUES ('{args[0]}', 'CMN.00202', '{args[1]}', {Company_key_id}, '{args[2]}', '{args[3]}', '{args[4]}', " +
-                $"'{args[5]}', '{args[6]}')";
-            try
-            {
-                using (var connection = new OleDbConnection(ConnectionString))
-                {
-                    if (ConnectionString is null)
-                        return;
-
-                    connection.Open();
-                    using (var command = new OleDbCommand(insertCommand, connection))
-                        command.ExecuteNonQuery();
-                }
-            }
-            catch (Exception ex) { Console.WriteLine(ex.Message); }
-        }
-
-        /// <summary> Выполнение запроса к БД</summary>
-        /// <param name="args"> Массив строк со значениями </param>
-        /// <param name="Company_key_id">Код компании (по-умолчанию 1) </param>
-        public void ExecuteToDB(string[] args)
-        {
-            var insertCommand = $"INSERT INTO ExchED" +
-                "(InnerID, MessageType, EnvelopeID, CompanySet_key_id, DocumentID, DocName, DocNum, DocCode, ArchFileName) " +
-                $"VALUES ('{args[0]}', 'CMN.00202', '{args[1]}', 1, '{args[2]}', '{args[3]}', '{args[4]}', " +
                 $"'{args[5]}', '{args[6]}')";
             try
             {
@@ -263,7 +227,7 @@ namespace SQLNs
 
         /// <summary> Access test connection with ACE Provider </summary>
         /// <param name="connectionString">Только для *.accdb файлов </param>
-        public static void TestConnectToAccessWithAce(string pathToAccdb)
+        private static void TestConnectToAccessWithAce(string pathToAccdb)
         {
             try
             {
@@ -306,7 +270,6 @@ namespace SQLNs
             }
             catch (Exception ex) { Console.WriteLine($"Failed to connect to data source\n{ex.Message}"); }
         }
-
 
         public void Dispose()
         {

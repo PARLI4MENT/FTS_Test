@@ -130,6 +130,7 @@ namespace XmlFTS.OutClass
             catch (ConfigurationErrorsException ex) { Debug.WriteLine(ex.Message); return; }
         }
 
+        /// <summary> Получение пути к файлу конфигурации </summary>
         public static string GetAppConfigLocation
         {
             get
