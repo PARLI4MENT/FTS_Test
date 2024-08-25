@@ -10,6 +10,13 @@ using System.Runtime.InteropServices;
 
 namespace SQLNs
 {
+
+    /// <summary>
+    /// Класс для доступа к MS Access
+    /// </summary>
+    /// <remarks>
+    /// Первая инициализация обязательна. Данные строки подключения сохраняются в файл конфигурации.
+    /// </remarks>
     public class AccessDB : IDisposable
     {
         private static string _pathToMDB = null;
@@ -17,6 +24,8 @@ namespace SQLNs
         private static string _pathToACCDB = null;
 
         private static string _connectionString;
+
+        private static string connectionKey = "AccessConnectionString";
 
         /// <summary>
         /// Функция проверка строки подключения MS Access. Возвращает null если ни один из способов не действителен
@@ -71,7 +80,7 @@ namespace SQLNs
 
         /// <summary> Выполнение базовой инициализации MS Access (не доделано)</summary>
         /// <param name="connectionString"> Строка подключения </param>
-        public static void BaseInitialize(string connectionString)
+        private static void BaseInitialize(string connectionString)
         {
             try
             {

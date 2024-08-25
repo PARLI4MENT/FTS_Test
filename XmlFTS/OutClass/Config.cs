@@ -32,22 +32,27 @@ namespace XmlFTS.OutClass
             StaticPathConfiguration.PathRawFolder = Path.Combine(basePath, "rawFiles");
             if (!Directory.Exists(StaticPathConfiguration.PathRawFolder))
                 Directory.CreateDirectory(StaticPathConfiguration.PathRawFolder);
+            AddUpdateAppSettings("PathRawFolder", StaticPathConfiguration.PathRawFolder);
 
             /// Путь к папке с промежуточными файлами
             StaticPathConfiguration.PathIntermidateFolder = Path.Combine(basePath, "intermidateFiles");
             if (!Directory.Exists(StaticPathConfiguration.PathIntermidateFolder))
                 Directory.CreateDirectory(StaticPathConfiguration.PathIntermidateFolder);
+            AddUpdateAppSettings("PathIntermidateFolder", StaticPathConfiguration.PathIntermidateFolder);
 
             /// Путь к папке с шаблонными файлами
             StaticPathConfiguration.PathImplementFolder = Path.Combine(basePath, "implementFiles");
             if (!Directory.Exists(StaticPathConfiguration.PathImplementFolder))
                 Directory.CreateDirectory(StaticPathConfiguration.PathImplementFolder);
+            AddUpdateAppSettings("PathImplementFolder", StaticPathConfiguration.PathImplementFolder);
 
             /// Путь к папке с подписанными файлами
             StaticPathConfiguration.PathSignedFolder = Path.Combine(basePath, "signedFiles");
             if (!Directory.Exists(StaticPathConfiguration.PathSignedFolder))
                 Directory.CreateDirectory(StaticPathConfiguration.PathSignedFolder);
+            AddUpdateAppSettings("PathSignedFolder", StaticPathConfiguration.PathSignedFolder);
 
+            /*
             /// Определение файла шаблона
             //OpenFileDialog openFileDialog = new OpenFileDialog();
             //openFileDialog.InitialDirectory = basePath;
@@ -63,15 +68,15 @@ namespace XmlFTS.OutClass
             //    File.Copy(openFileDialog.FileName, destFilename);
             //    StaticPathConfiguration.TemplateXML = destFilename;
             //}
+            */
 
             // Путь к файлу шаблоном
             if (!File.Exists(Path.Combine(basePath, "template.xml")))
                 Debug.WriteLine("Файла с шаблоном не существует");
             StaticPathConfiguration.TemplateXML = Path.Combine(basePath, "template.xml");
+            AddUpdateAppSettings("TemplateXML", StaticPathConfiguration.TemplateXML);
 
-
-
-            Console.WriteLine();
+            Debug.WriteLine(string.Empty);
         }
 
         public static void BaseConfiguration(string PathRawFolder, string PathIntermidateFolder, string PathImplementFolder, string PathSignedFolder, string TemplateXML)
@@ -106,9 +111,9 @@ namespace XmlFTS.OutClass
             catch (ConfigurationErrorsException ex) { Debug.WriteLine(ex.Message); return null; }
         }
 
-        /// <summary> Добавление/обновление настройки  </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
+        /// <summary> Добавление/обновление поля конфигурации </summary>
+        /// <param name="key">Наименование поля</param>
+        /// <param name="value">Значение поля</param>
         public static void AddUpdateAppSettings(string key, string value)
         {
             try
@@ -123,6 +128,14 @@ namespace XmlFTS.OutClass
                 ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
             }
             catch (ConfigurationErrorsException ex) { Debug.WriteLine(ex.Message); return; }
+        }
+
+        public static string GetAppConfigLocation
+        {
+            get
+            {
+                return AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
+            }
         }
     }
 }
