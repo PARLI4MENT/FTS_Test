@@ -11,9 +11,7 @@ using System.Runtime.InteropServices;
 namespace SQLNs
 {
 
-    /// <summary>
-    /// Класс для доступа к MS Access
-    /// </summary>
+    /// <summary> Класс для доступа к MS Access </summary>
     /// <remarks>
     /// Первая инициализация обязательна. Данные строки подключения сохраняются в файл конфигурации.
     /// </remarks>
