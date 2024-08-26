@@ -10,6 +10,7 @@ using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using XmlFTS.OutClass;
 
 namespace XMLSigner
 {
@@ -128,7 +129,7 @@ namespace XMLSigner
 
                     xmlDocument.DocumentElement.AppendChild(xmlDocument.ImportNode(signatureXml, true));
 
-                    xmlDocument.Save(Path.Combine("C:\\_test\\signedFiles", ("Signed." + Path.GetFileName(xmlFile))));
+                    xmlDocument.Save(Path.Combine(StaticPathConfiguration.PathSignedFolder, ("Signed." + Path.GetFileName(xmlFile))));
 
                     if (deleteSourceFile)
                         File.Delete(Path.GetFullPath(xmlFile));
