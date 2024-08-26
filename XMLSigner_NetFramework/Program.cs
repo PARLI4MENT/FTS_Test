@@ -1,6 +1,7 @@
 ﻿#define TEST
 
 using FileNs;
+using Microsoft.Win32;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -21,6 +22,9 @@ namespace XMLSigner
             //store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
             //var cert = store.Certificates.Find(X509FindType.FindBySubjectName, "", true)[0];
             //Console.WriteLine(cert.SerialNumber);
+
+            var temp = Registry.GetValue("", "", null);
+
 
             Config.BaseConfiguration();
             Console.WriteLine();

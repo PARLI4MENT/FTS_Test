@@ -20,14 +20,16 @@ namespace SQLNs
         private static string _Port = "5438";
         public void SetPort(string _port) => _Port = _port;
 
-        private static string _Database = "declarantplus";
-        public string SetDatabase(string _database) => _Database = _database;
-
         private static string _Uid = "postgres";
         public void SetUid(string _uid) => _Uid = _uid;
 
         private static string _Password = "passwd0105";
         public void SetPassword(string _password) => _Password = _password;
+
+        private static string _Database = "declarantplus";
+        public string SetDatabase(string _database) => _Database = _database;
+
+        public static string ConnectionString { get; private set; }
 
         public void SetConnectionString(string Server, string Port, string Uid, string Password, [Optional]string Database)
         {
@@ -39,36 +41,45 @@ namespace SQLNs
 
             if (string.IsNullOrEmpty(Database))
             {
-                Config.AddUpdateAppSettings("PgConnectionString", $"Server={_Server};Port={_Port};Uid={_Uid};Pwd={_Password};");
+                Config.AddUpdateAppSettings(connectionKey, $"Server={_Server};Port={_Port};Uid={_Uid};Pwd={_Password};");
+                ConnectionString = Config.ReadSettings(connectionKey);
                 return;
             }
-                Config.AddUpdateAppSettings("PgConnectionString", string.Concat(ConfigurationManager.ConnectionStrings["PgConnectionString"].ConnectionString, "Database=", _Database, ";"));
+                Config.AddUpdateAppSettings(connectionKey, string.Concat(ConfigurationManager.ConnectionStrings[connectionKey].ConnectionString, "Database=", _Database, ";"));
         }
         public void SetConnectionString()
         {
-            Config.AddUpdateAppSettings("PgConnectionString", $"Server={_Server};Port={_Port};Uid={_Uid};Pwd={_Password};");
+            Config.AddUpdateAppSettings(connectionKey, $"Server={_Server};Port={_Port};Uid={_Uid};Pwd={_Password};");
         }
 
-        public static NpgsqlConnection _pgConnection;
+        public PgSql()
+        {
+            if (!string.IsNullOrEmpty(Config.ReadSettings(connectionKey)))
+                ConnectionString = Config.ReadSettings(connectionKey);
+        }
 
-
-        public PgSql() { }
-
-        public PgSql(string Server, string Port, string Uid, string Password)
+        public PgSql(string Server, string Port, string Uid, string Password, [Optional]string Database)
         {
             _Server = Server;
             _Port = Port;
             _Uid = Uid;
             _Password = Password;
 
-            Config.AddUpdateAppSettings("PgConnectionString", $"Server={Server};Port={Port};Uid={Uid};Pwd={Password};");
+            SetConnectionString(Server, Port, Uid, Password, Database);
 
             PgSqlCheckConnection();
         }
 
+        /// <summary> Выполнение запроса в PostgresSQL </summary>
+        /// <remarks>
+        /// string[0] NameArray, string[1] EnvelopeID, string[2] DocumentID, string[3] PrDocumentName
+        /// string[4] PrDocumentNumber, string[5] DocCode, string[6] NewDocToArchName
+        /// </remarks>
+        /// <param name="args"> Массив значение типа string </param>
+        /// <param name="Company_key_id"></param>
         public void ExecuteToDB(string[] args, int Company_key_id)
         {
-            using (var sqlConn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings["PgConnectionString"].ConnectionString))
+            using (var sqlConn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings[connectionKey].ConnectionString))
             {
                 sqlConn.Open();
                 using (var sqlComm = new NpgsqlCommand())
@@ -86,12 +97,15 @@ namespace SQLNs
             }
         }
 
-        /// <summary> NotImplementedException </summary>
-        /// <param name="args"></param>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <summary> Выполнение запроса в PostgresSQL </summary>
+        /// <remarks>
+        /// string[0] NameArray, string[1] EnvelopeID, string[2] DocumentID, string[3] PrDocumentName
+        /// string[4] PrDocumentNumber, string[5] DocCode, string[6] NewDocToArchName
+        /// </remarks>
+        /// <param name="args"> Массив значение типа string </param>
         public void ExecuteToDB(string[] args)
         {
-            using (var sqlConn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings["PgConnectionString"].ConnectionString))
+            using (var sqlConn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings[connectionKey].ConnectionString))
             {
                 sqlConn.Open();
                 using (var sqlComm = new NpgsqlCommand())
