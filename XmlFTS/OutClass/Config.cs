@@ -83,6 +83,9 @@ namespace XmlFTS.OutClass
             StaticPathConfiguration.TemplateXML = Path.Combine(basePath, "template.xml");
             AddUpdateAppSettings("TemplateXML", StaticPathConfiguration.TemplateXML);
 
+            MaxDegreeOfParallelism = 4;
+            DeleteSourceFiles = false;
+
 #if DEBUG
             Debug.WriteLine(string.Empty);
 #endif

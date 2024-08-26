@@ -234,7 +234,7 @@ namespace FileNs
         /// <param name="lists"></param>
         protected static void OutFilePath(List<string> lists)
         {
-            foreach (object item in lists)
+            foreach (var item in lists)
                 Console.WriteLine($"[] => {item}");
         }
     }

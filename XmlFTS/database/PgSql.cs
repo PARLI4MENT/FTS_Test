@@ -1,37 +1,56 @@
 ﻿using Npgsql;
 using System;
+using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using XmlFTS.OutClass;
 using XMLSigner.SQL;
 
 namespace SQLNs
 {
     public class PgSql
     {
-        private static string _Server { get; set; } = "192.168.0.142";
-        public void SetServer(string _server) => _server = _Server;
-        public string GetServer() => _Server;
+        private string connectionKey = "PgConnectionString";
 
-        private static string _Port { get; set; } = "5438";
+        private static string _Server = "192.168.0.142";
+        public void SetServer(string _server) => _Server = _server;
+
+        private static string _Port = "5438";
         public void SetPort(string _port) => _Port = _port;
-        public string GetPort() => _Port;
 
-        private static string _Database { get; set; } = "declarantplus";
-        public string GetDatabase() => _Database;
+        private static string _Database = "declarantplus";
+        public string SetDatabase(string _database) => _Database = _database;
 
-        private static string _Uid { get; set; } = "postgres";
+        private static string _Uid = "postgres";
         public void SetUid(string _uid) => _Uid = _uid;
-        public string GetUid() => _Uid;
 
-        private static string _Password { get; set; } = "passwd0105";
+        private static string _Password = "passwd0105";
         public void SetPassword(string _password) => _Password = _password;
-        public string GetPassword() => _Password;
+
+        public void SetConnectionString(string Server, string Port, string Uid, string Password, [Optional]string Database)
+        {
+            if (string.IsNullOrEmpty(Server) || string.IsNullOrEmpty(Port) || string.IsNullOrEmpty(Uid) || string.IsNullOrEmpty(Password))
+            {
+                Debug.WriteLine("Один из входящих параметров пуст или null");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(Database))
+            {
+                Config.AddUpdateAppSettings("PgConnectionString", $"Server={_Server};Port={_Port};Uid={_Uid};Pwd={_Password};");
+                return;
+            }
+                Config.AddUpdateAppSettings("PgConnectionString", string.Concat(ConfigurationManager.ConnectionStrings["PgConnectionString"].ConnectionString, "Database=", _Database, ";"));
+        }
+        public void SetConnectionString()
+        {
+            Config.AddUpdateAppSettings("PgConnectionString", $"Server={_Server};Port={_Port};Uid={_Uid};Pwd={_Password};");
+        }
 
         public static NpgsqlConnection _pgConnection;
 
-        string _strConnMain = $"Server={_Server};Port={_Port};Uid={_Uid};Pwd={_Password};";
 
         public PgSql() { }
 
@@ -41,14 +60,15 @@ namespace SQLNs
             _Port = Port;
             _Uid = Uid;
             _Password = Password;
-            if (PgSqlCheckConnection())
-                Console.WriteLine("Error connection to PostgresSQL database");
 
+            Config.AddUpdateAppSettings("PgConnectionString", $"Server={Server};Port={Port};Uid={Uid};Pwd={Password};");
+
+            PgSqlCheckConnection();
         }
 
         public void ExecuteToDB(string[] args, int Company_key_id)
         {
-            using (var sqlConn = new NpgsqlConnection(_strConnMain))
+            using (var sqlConn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings["PgConnectionString"].ConnectionString))
             {
                 sqlConn.Open();
                 using (var sqlComm = new NpgsqlCommand())
@@ -71,7 +91,7 @@ namespace SQLNs
         /// <exception cref="NotImplementedException"></exception>
         public void ExecuteToDB(string[] args)
         {
-            using (var sqlConn = new NpgsqlConnection(_strConnMain))
+            using (var sqlConn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings["PgConnectionString"].ConnectionString))
             {
                 sqlConn.Open();
                 using (var sqlComm = new NpgsqlCommand())
@@ -93,11 +113,10 @@ namespace SQLNs
 
         private static bool PgSqlCheckConnection()
         {
-            string _strConnMain = $"Server={_Server};Port={_Port};Uid={_Uid};Pwd={_Password};";
             try
             {
 
-                using (var sqlConnection = new NpgsqlConnection(_strConnMain))
+                using (var sqlConnection = new NpgsqlConnection(ConfigurationManager.ConnectionStrings["PgConnectionString"].ConnectionString))
                 {
                     sqlConnection.Open();
                     if (sqlConnection.State == ConnectionState.Open)
@@ -118,26 +137,23 @@ namespace SQLNs
             catch (Exception) { return false; }
         }
 
-        public bool CheckDatabaseExist()
+        private bool CheckDatabaseExist()
         {
             string _strConnMain = $"Server={_Server};Port={_Port};Uid={_Uid};Pwd={_Password};";
 
-            using (var sqlConnection = new NpgsqlConnection(_strConnMain))
+            using (var sqlConnection = new NpgsqlConnection(ConfigurationManager.ConnectionStrings["PgConnectionString"].ConnectionString))
             {
-                using (var sqlCommand = new NpgsqlCommand())
-                {
-
-                }
+                using (var sqlCommand = new NpgsqlCommand()) { }
             }
 
             return false;
         }
 
-        public void PgSqlCreateDatabase(bool CreateTable = false)
+        private void PgSqlCreateDatabase(bool CreateTable = false)
         {
             string strComm = $@"CREATE DATABASE {_Database} WITH OWNER postgres ENCODING = 'UTF8' CONNECTION LIMIT = -1;";
 
-            using (var sqlConn = new NpgsqlConnection(_strConnMain))
+            using (var sqlConn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings["PgConnectionString"].ConnectionString))
             {
                 Debug.WriteLine(sqlConn.State.ToString());
                 sqlConn.Open();
@@ -158,7 +174,7 @@ namespace SQLNs
             /// Npgsql.PostgresException: '42P04: database "declarantplus" already exists'
         }
 
-        public void PgSqlBaseCreateTable()
+        private void PgSqlBaseCreateTable()
         {
             /// NOT USE ONLY FOR TEST!
             /*
@@ -170,7 +186,7 @@ namespace SQLNs
 
             try
             {
-                using (var sqlConn = new NpgsqlConnection(string.Concat(_strConnMain, "Database=", _Database, ";")))
+                using (var sqlConn = new NpgsqlConnection(string.Concat(ConfigurationManager.ConnectionStrings["PgConnectionString"].ConnectionString, "Database=", _Database, ";")))
                 {
                     sqlConn.Open();
                     /// Create table => ECD_list
@@ -330,7 +346,7 @@ namespace SQLNs
         {
             string strCommand = $@"DELETE FROM""public"".""{_tableName}""";
 
-            using (var sqlConnection = new NpgsqlConnection(string.Concat(_strConnMain, "Database=", _Database, ";")))
+            using (var sqlConnection = new NpgsqlConnection(string.Concat(ConfigurationManager.ConnectionStrings["PgConnectionString"].ConnectionString, "Database=", _Database, ";")))
             {
                 try
                 {
@@ -350,7 +366,5 @@ namespace SQLNs
                 }
             }
         }
-
-
     }
 }
