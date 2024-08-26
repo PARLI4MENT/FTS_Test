@@ -1,17 +1,24 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
-using System.Security.AccessControl;
-using System.Windows;
 
 namespace XmlFTS.OutClass
 {
     public static class Config
     {
+        public static int MaxDegreeOfParallelism {
+            get { return Convert.ToInt32(ReadSettings("MaxDegreeOfParallelism")); }
+            set { AddUpdateAppSettings("MaxDegreeOfParallelism", value.ToString()); }
+        }
+
+        public static bool DeleteSourceFiles
+        {
+            get { return Convert.ToBoolean(ReadSettings("DeleteSourceFiles")); }
+            set { AddUpdateAppSettings("DeleteSourceFiles", value.ToString()); }
+        }
+
         /// <summary>
         /// Инициализация базовой конфигурация. Пути к папкам, шаблонам итд.
         /// </summary>Инициализация базовой конфигурация. Пути к папкам, шаблонам итд.
@@ -23,7 +30,7 @@ namespace XmlFTS.OutClass
         public static void BaseConfiguration([Optional]string basePath)
         {
             if (string.IsNullOrEmpty(basePath))
-                basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BaseFolder");
+                basePath = AppDomain.CurrentDomain.BaseDirectory;
 
             if (!Directory.Exists(basePath))
                 Directory.CreateDirectory(basePath);
@@ -76,12 +83,42 @@ namespace XmlFTS.OutClass
             StaticPathConfiguration.TemplateXML = Path.Combine(basePath, "template.xml");
             AddUpdateAppSettings("TemplateXML", StaticPathConfiguration.TemplateXML);
 
+#if DEBUG
             Debug.WriteLine(string.Empty);
+#endif
         }
 
         public static void BaseConfiguration(string PathRawFolder, string PathIntermidateFolder, string PathImplementFolder, string PathSignedFolder, string TemplateXML)
         {
+            /// Путь к папке с исходными файлами
+            if (!Directory.Exists(PathRawFolder))
+                Directory.CreateDirectory(PathRawFolder);
+            StaticPathConfiguration.PathRawFolder = PathRawFolder;
+            AddUpdateAppSettings("PathRawFolder", StaticPathConfiguration.PathRawFolder);
 
+            /// Путь к папке с промежуточными файлами
+            if (!Directory.Exists(PathIntermidateFolder))
+                Directory.CreateDirectory(PathIntermidateFolder);
+            StaticPathConfiguration.PathIntermidateFolder = PathIntermidateFolder;
+            AddUpdateAppSettings("PathIntermidateFolder", StaticPathConfiguration.PathIntermidateFolder);
+
+            /// Путь к папке с шаблонными файлами
+            if (!Directory.Exists(PathImplementFolder))
+                Directory.CreateDirectory(PathImplementFolder);
+            StaticPathConfiguration.PathImplementFolder = PathImplementFolder;
+            AddUpdateAppSettings("PathImplementFolder", StaticPathConfiguration.PathImplementFolder);
+
+            /// Путь к папке с подписанными файлами
+            if (!Directory.Exists(PathSignedFolder))
+                Directory.CreateDirectory(PathSignedFolder);
+            StaticPathConfiguration.PathSignedFolder = PathSignedFolder;
+            AddUpdateAppSettings("PathSignedFolder", StaticPathConfiguration.PathSignedFolder);
+
+            // Путь к файлу шаблоном
+            if (!File.Exists(TemplateXML))
+                Debug.WriteLine("Файла с шаблоном не существует");
+            StaticPathConfiguration.TemplateXML = TemplateXML;
+            AddUpdateAppSettings("TemplateXML", StaticPathConfiguration.TemplateXML);
         }
 
         /// <summary> Выводит все ключи и значения настроек в Debug консоли </summary>
@@ -96,19 +133,31 @@ namespace XmlFTS.OutClass
                     foreach (var key in appSettings.AllKeys)
                         Debug.WriteLine($"Key: {key} => {appSettings[key]}");
             }
-            catch (ConfigurationErrorsException ex) { Debug.WriteLine(ex.Message); return; }
+            catch (ConfigurationErrorsException ex)
+            {
+#if DEBUG
+                Debug.WriteLine(ex.Message);
+#endif
+                return;
+            }
         }
+
 
         public static string ReadSettings(string key)
         {
             try
             {
                 var appSetting = ConfigurationManager.AppSettings;
-                string result = appSetting[key] ?? "Поле не найдено";
-                Debug.WriteLine(result);
+                string result = appSetting[key] ?? string.Empty;
                 return result;
             }
-            catch (ConfigurationErrorsException ex) { Debug.WriteLine(ex.Message); return null; }
+            catch (ConfigurationErrorsException ex)
+            {
+#if DEBUG
+                Debug.WriteLine(ex.Message);
+#endif
+                return null;
+            }
         }
 
         /// <summary> Добавление/обновление поля конфигурации </summary>
@@ -127,7 +176,13 @@ namespace XmlFTS.OutClass
                 configFile.Save(ConfigurationSaveMode.Modified);
                 ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
             }
-            catch (ConfigurationErrorsException ex) { Debug.WriteLine(ex.Message); return; }
+            catch (ConfigurationErrorsException ex)
+            {
+#if DEBUG
+                Debug.WriteLine(ex.Message);
+#endif
+                return;
+            }
         }
 
         /// <summary> Получение пути к файлу конфигурации </summary>

@@ -11,7 +11,7 @@ namespace XmlFTS.OutClass
 {
     public static class StaticPathConfiguration
     {
-        /// <summary> Не доделанно </summary>
+        /// <summary> Не доделанно System.Reflection </summary>
         private static void InitializePath()
         {
             Type type = typeof(StaticPathConfiguration);

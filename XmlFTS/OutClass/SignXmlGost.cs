@@ -164,11 +164,9 @@ namespace XMLSigner
             return store.Certificates[1];
         }
 
-        /// <summary>
-        /// Получение имени алгоритма
-        /// </summary>
-        /// <param name="certificate"></param>
-        /// <returns></returns>
+        /// <summary> Получение имени алгоритма </summary>
+        /// <param name="certificate"> Передача сертификата из хранилища </param>
+        /// <returns> Возвращает наименование алгоритма в виде строки типа string</returns>
         private static string GetDigestMethod(X509Certificate2 certificate)
         {
             using (var publicKey = (GostAsymmetricAlgorithm)certificate.GetPrivateKeyAlgorithm())

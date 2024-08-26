@@ -1,18 +1,14 @@
 ﻿#define DEBUG
 
 using System;
-using System.Data.OleDb;
 using System.Data;
+using System.Data.OleDb;
 using System.Diagnostics;
-using System.Configuration;
 using System.IO;
-using System.Runtime.InteropServices;
-using XMLSigner.SQL;
 using XmlFTS.OutClass;
 
 namespace SQLNs
 {
-
     /// <summary> Класс для доступа к MS Access </summary>
     /// <remarks>
     /// Первая инициализация обязательна. Данные строки подключения сохраняются в файл конфигурации.
@@ -21,7 +17,7 @@ namespace SQLNs
     {
         private static string connectionKey = "AccessConnectionString";
         private static string _connectionString;
-        
+
         /// <summary> Data source for MS Access </summary>
         private static OleDbConnection _oleDbConnection;
 
@@ -30,10 +26,12 @@ namespace SQLNs
         public AccessDB()
         {
             if (string.IsNullOrEmpty(_connectionString))
-            { 
+            {
                 if (string.IsNullOrEmpty(Config.ReadSettings(connectionKey)))
                 {
+#if DEBUG
                     Debug.WriteLine("Отсутствует путь к файлу MS Access");
+#endif
                     return;
                 }
             }
@@ -59,7 +57,7 @@ namespace SQLNs
             get { return _connectionString; }
             set
             {
-                _connectionString= $"Provider=Microsoft.Jet.OLEDB.4.0; Data source= {value};";
+                _connectionString = $"Provider=Microsoft.Jet.OLEDB.4.0; Data source= {value};";
                 Config.AddUpdateAppSettings(connectionKey, _connectionString);
             }
         }
@@ -76,7 +74,7 @@ namespace SQLNs
             catch (OleDbException ex) { Debug.WriteLine(ex.Message); return; }
         }
 
-        /// <summary> NOT USE </summary>
+        /// <summary> NOT USABLE </summary>
         /// <param name="connection"></param>
         private static void CreateBaseTable(OleDbConnection connection)
         {
@@ -94,7 +92,7 @@ namespace SQLNs
 
         /// <summary> Выполнение запроса к БД</summary>
         /// <param name="args"> Массив строк со значениями </param>
-        /// <param name="Company_key_id">Код компании (по-умолчанию 1) </param>
+        /// <param name="Company_key_id">Код компании (по-умолчанию = 1) </param>
         public void ExecuteToDB(string[] args, int Company_key_id)
         {
             var insertCommand = $"INSERT INTO ExchED" +
@@ -109,7 +107,7 @@ namespace SQLNs
                         return;
 
                     connection.Open();
-                    using (var command = new OleDbCommand(insertCommand, connection))
+                    using (var command = new OleDbCommand(insertCommand, _oleDbConnection))
                         command.ExecuteNonQuery();
                 }
             }
@@ -118,7 +116,7 @@ namespace SQLNs
 
         /// <summary> Выполнить запрос </summary>
         /// <param name="args"> Массив данных типа string </param>
-        public void Execute(string[] args)
+        public void ExecuteToDB(string[] args)
         {
             var insertCommand = $"INSERT INTO ExchED" +
                 "(InnerID, MessageType, EnvelopeID, CompanySet_key_id, DocumentID, DocName, DocNum, DocCode, ArchFileName) " +
@@ -127,10 +125,19 @@ namespace SQLNs
 
             try
             {
+                if (ConnectionString is null)
+                    return;
+
                 using (var command = new OleDbCommand(insertCommand, _oleDbConnection))
                     command.ExecuteNonQuery();
             }
-            catch (Exception ex) { Debug.WriteLine(ex.Message); return; }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Debug.WriteLine(ex.Message);
+#endif
+                return;
+            }
         }
 
         /// <summary> Тестовый запрос на добавление и удаление данных в таблицу </summary>
@@ -149,21 +156,30 @@ namespace SQLNs
                 {
                     if (ConnectionString is null)
                         return false;
-    
+
                     connection.Open();
                     using (var command = new OleDbCommand(insertCommand, connection))
                         command.ExecuteNonQuery();
+#if DEBUG
                     Debug.WriteLine("Insert testing is DONE!");
+#endif
 
                     using (var command = new OleDbCommand(deleteCommand, connection))
                         command.ExecuteNonQuery();
+#if DEBUG
                     Debug.WriteLine("Delete testing is DONE!");
-
+#endif
                     connection.Close();
                     return true;
                 }
             }
-            catch (Exception ex) { Debug.WriteLine(ex.Message); return false; }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Debug.WriteLine(ex.Message);
+#endif
+                return false;
+            }
         }
 
         /// <summary> Полная очистка данный в БД </summary>
@@ -176,7 +192,13 @@ namespace SQLNs
             {
                 using (var connection = new OleDbConnection(ConnectionString))
                 {
-                    if (ConnectionString is null) { Debug.WriteLine("Connection string is Null."); return; }
+                    if (ConnectionString is null)
+                    {
+#if DEBUG
+                        Debug.WriteLine("Connection string is Null.");
+#endif
+                        return;
+                    }
 
                     connection.Open();
                     using (var command = new OleDbCommand(clearData, connection))
@@ -186,11 +208,17 @@ namespace SQLNs
                     return;
                 }
             }
-            catch (Exception ex) { Debug.WriteLine(ex.Message); return; }
+            catch (Exception ex) 
+            {
+#if DEBUG
+                Debug.WriteLine(ex.Message);
+#endif
+                return;
+            }
         }
 
         /// <summary> Удаление всех данных из всех таблиц. Структура таблиц и сами таблицы остаються. </summary>
-        public static void DeleteAllDataFromTables()
+        private static void DeleteAllDataFromTables()
         {
             string query = "SELECT MSysObjects.Name AS table_name FROM MSysObjects WHERE (((Left([Name],1))<>\"~\") " +
                 "AND ((Left([Name],4))<>\"MSys\") AND ((MSysObjects.Type) In (1,4,6))) ORDER BY MSysObjects.Name";
@@ -200,7 +228,13 @@ namespace SQLNs
             {
                 using (var connection = new OleDbConnection(ConnectionString))
                 {
-                    if (ConnectionString is null) { Debug.WriteLine("Connection string is Null."); return; }
+                    if (ConnectionString is null)
+                    {
+#if DEBUG
+                        Debug.WriteLine("Connection string is Null.");
+#endif
+                        return;
+                    }
 
                     connection.Open();
                     using (var command = new OleDbCommand(query, connection))
@@ -210,7 +244,13 @@ namespace SQLNs
                     return;
                 }
             }
-            catch (Exception ex) { Debug.WriteLine(ex.Message); return; }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Debug.WriteLine(ex.Message);
+#endif
+                return;
+            }
         }
 
         /// <summary> Не доделано </summary>
@@ -222,7 +262,13 @@ namespace SQLNs
                 string commandString = "";
                 using (var dbCommand = new OleDbCommand(commandString, connection)) { }
             }
-            catch (Exception ex) { Console.WriteLine(ex.Message); }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Debug.WriteLine(ex.Message);
+#endif
+                return;
+            }
         }
 
         /// <summary> Access test connection with ACE Provider </summary>
@@ -238,15 +284,19 @@ namespace SQLNs
 
                     if (conn.State == ConnectionState.Open)
                     {
-                        Console.WriteLine($"Test connection => Open\nProvider={conn.Provider}");
+#if DEBUG
+                        Debug.WriteLine($"Test connection => Open\nProvider={conn.Provider}");
+#endif
                         conn.Close();
                     }
 
                     else
-                        Console.WriteLine("Test connection => ERROR");
+#if DEBUG
+                        Debug.WriteLine("Test connection => ERROR");
+#endif
                 }
             }
-            catch (Exception ex) { Console.WriteLine($"Failed to connect to data source\n{ex.Message}"); }
+            catch (Exception ex) { Debug.WriteLine($"Failed to connect to data source\n{ex.Message}"); }
         }
 
         /// <summary> Access test connection with Jet Provider </summary>
@@ -261,14 +311,23 @@ namespace SQLNs
                     conn.Open();
                     if (conn.State == ConnectionState.Open)
                     {
-                        Console.WriteLine($"Test connection => Open\nProvider={conn.Provider}");
+#if DEBUG
+                        Debug.WriteLine($"Test connection => Open\nProvider={conn.Provider}");
+#endif
                         conn.Close();
                     }
                     else
-                        Console.WriteLine("Test connection => ERROR");
+#if DEBUG
+                        Debug.WriteLine("Test connection => ERROR");
+#endif
                 }
             }
-            catch (Exception ex) { Console.WriteLine($"Failed to connect to data source\n{ex.Message}"); }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Debug.WriteLine($"Failed to connect to data source\n{ex.Message}");
+#endif
+            }
         }
 
         public void Dispose()

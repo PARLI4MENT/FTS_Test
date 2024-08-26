@@ -15,11 +15,13 @@ namespace XMLSigner
     {
         static void Main(string[] args)
         {
+            Config.BaseConfiguration("C:\\_test");
 
-            Config.BaseConfiguration();
+            Console.WriteLine(Config.GetAppConfigLocation);
             
             Console.WriteLine("Start MSSQL");
-            Console.WriteLine($"Rows files: {Directory.GetFiles("C:\\_test\\rawFiles", "*.xml", SearchOption.AllDirectories).Count()}");
+            Console.WriteLine($"Rows files: {Directory.GetFiles(StaticPathConfiguration.PathRawFolder, "*.xml", SearchOption.AllDirectories).Count()}");
+
 
             var swTotal = new Stopwatch();
             var swCurrent = new Stopwatch();
@@ -68,11 +70,11 @@ namespace XMLSigner
         /// <param name="element"></param>
         public static void GetTree(XmlElement element)
         {
-            if (element.GetType().Equals(typeof(System.Xml.XmlElement)))
+            if (element.GetType().Equals(typeof(XmlElement)))
             {
                 foreach (var node in element.ChildNodes)
                 {
-                    if (node.GetType().Equals(typeof(System.Xml.XmlElement)))
+                    if (node.GetType().Equals(typeof(XmlElement)))
                     {
                         var elem = (XmlElement)node;
                         Console.WriteLine($"\t{elem.Name}");
@@ -86,7 +88,6 @@ namespace XMLSigner
         public static void VB()
         {
             string pathToXml = ("Resource/test.xml");
-
 
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.Load(new StringReader(File.ReadAllText(pathToXml)));

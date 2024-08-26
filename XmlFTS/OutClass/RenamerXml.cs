@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using XmlFTS.OutClass;
 
 namespace FileNs
 {
@@ -26,7 +27,7 @@ namespace FileNs
         /// <summary> Линейное переименование и перемещение сырых Xml-файлов </summary>
         /// <param name="rawFolders"> </param>
         /// <param name="_MaxDegreeOfParallelism"></param>
-        public static void RenameMove(string[] rawFolders, int _MaxDegreeOfParallelism = -1)
+        public static void RenameMove(string[] rawFolders)
         {
             foreach (var rawFolder in rawFolders)
             {
@@ -36,22 +37,21 @@ namespace FileNs
                 foreach (string file in filesSubfolder)
                 {
                     // Combine Xml
-                    string tmpPathCombine = Path.Combine("C:\\_test\\intermidateFiles", string.Concat(Path.GetFileName(rawFolder), ".", Path.GetFileName(file)));
+                    string tmpPathCombine = Path.Combine(StaticPathConfiguration.PathIntermidateFolder, string.Concat(Path.GetFileName(rawFolder), ".", Path.GetFileName(file)));
                     File.Copy(file, tmpPathCombine);
                 }
             }
         }
 
         /// <summary> Распраллеленое переименование и перемещение "сырых" Xml-файлов </summary>
+        /// <remarks>
+        /// Максимальная степень распалаллеленности определяется в файле конфигурации (По-умолчанию = 4)
+        /// </remarks>
         /// <param name="rawFolders"> Set array with raw files </param>
-        /// <param name="_MaxDegreeOfParallelism"> Limit parallel threading operation (-1 unlimited - default) </param>
-        public static void RenameMoveParallel(string[] rawFolders, int _MaxDegreeOfParallelism = -1)
+        public static void RenameMoveParallel(string[] rawFolders)
         {
-            if (_MaxDegreeOfParallelism < -1)
-                _MaxDegreeOfParallelism = -1;
-
             Parallel.ForEach(rawFolders,
-                new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
+                new ParallelOptions { MaxDegreeOfParallelism = Config.MaxDegreeOfParallelism },
                 rawFolder =>
                 {
                     string[] subDir = Directory.GetDirectories(Path.Combine(rawFolder, "files"));
@@ -86,15 +86,11 @@ namespace FileNs
 
         /// <summary> Параллельное переименование и перемещение сырых Xml-файлов </summary>
         /// <param name="pathRawFiles"> Set folder with raw files </param>
-        /// <param name="_MaxDegreeOfParallelism"> Limit parallel threading operation (-1 unlimited - default) </param>
-        public static void RenameMoveParallel(string pathRawFiles, int _MaxDegreeOfParallelism = -1)
+        public static void RenameMoveParallel(string pathRawFiles)
         {
-            if (_MaxDegreeOfParallelism < -1)
-                _MaxDegreeOfParallelism = -1;
-
             var rawFolder = Directory.GetDirectories(pathRawFiles);
             Parallel.ForEach(rawFolder,
-                new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
+                new ParallelOptions { MaxDegreeOfParallelism = Config.MaxDegreeOfParallelism },
                 rawFile =>
                 {
                     string[] subDir = Directory.GetDirectories(Path.Combine(rawFile, "files"));
