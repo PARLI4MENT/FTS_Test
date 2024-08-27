@@ -10,9 +10,9 @@ namespace XmlNs
 {
     public class ImplementateToXml
     {
-        public static string FilesIntermidate { get; private set; } = "C:\\_test\\intermidateFiles";
-        public static string FileOutFolder { get; private set; } = "C:\\_test\\implementFiles";
-        public static string FileTemplate { get; private set; } = "C:\\_test\\create_doc_in_arch.xml";
+        public static string FilesIntermidate { get; private set; } = StaticPathConfiguration.PathIntermidateFolder;
+        public static string FileOutFolder { get; private set; } = StaticPathConfiguration.PathImplementFolder;
+        public static string FileTemplate { get; private set; } = StaticPathConfiguration.TemplateXML;
 
         public static string ExtractId(string pathToXML)
         {
@@ -72,10 +72,8 @@ namespace XmlNs
             }
         }
 
-        public static string[] ImplementLinear(string intermidateFile, bool deletedInputFile = false)
+        public static string ImplementLinear(string intermidateFile)
         {
-            int Company_key_id = 1;
-
             string DateStr = intermidateFile + ";";
 
             //File.AppendAllText("C:\\_test\\Arch_docs.log", Environment.NewLine + "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
@@ -86,9 +84,8 @@ namespace XmlNs
 
             string PrDocumentName = "", PrDocumentNumber = "", PrDocumentDate = "", DocCode = "", DocName = "";
 
-            string NewDocToArchName = Path.Combine(StaticPathConfiguration.PathIntermidateFolder, Path.GetFileName(intermidateFile));
+            //string NewDocToArchName = Path.Combine(StaticPathConfiguration.PathIntermidateFolder, Path.GetFileName(intermidateFile));
             File.Copy(FileTemplate, NewDocToArchName, true);
-
 
             file_xml.Load(new StringReader(File.ReadAllText(intermidateFile)));
             switch (file_xml.DocumentElement.GetAttribute("DocumentModeID"))
@@ -206,7 +203,7 @@ namespace XmlNs
                     break;
             }
 
-            doc_to_arch.Load(NewDocToArchName);
+            doc_to_arch.Load(intermidateFile);
 
             var temp_node = doc_to_arch.ImportNode(file_xml.DocumentElement, true);
             doc_to_arch.GetElementsByTagName("Object")[1].AppendChild(temp_node);
@@ -248,16 +245,13 @@ namespace XmlNs
             // Query to PostgresSql DB
             new PgSql().ExecuteToDB(new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName });
 
-            string[] doneData;
-            doneData = new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName };
-
-            if (deletedInputFile)
+            if (Config.DeleteSourceFiles)
             {
                 File.Delete(intermidateFile);
                 File.Delete(NewDocToArchName);
             }
 
-            return doneData;
+            return FileNs. ;
         }
 
         /// <summary> Извлечение данные из промежуточных XML-файлов, вставка в шаблонный XML и сохранение в папку (implementFiles по-умолчанию)</summary>
@@ -265,7 +259,7 @@ namespace XmlNs
         /// <param name="_MaxDegreeOfParallelism"> Лимит параллельных операций (По-умолчанию -1 (ограничение отсутствует)) </param>
         /// <param name="deletedInputFile"> Удалять исходные XML-файлы (по-умолчанию false) </param>
         /// <returns></returns>
-        public static List<string[]> ImplementParallel(string[] intermidateFiles, bool deletedInputFile = false)
+        public static List<string[]> ImplementParallel(string[] intermidateFiles)
         {
             List<string[]> doneData = new List<string[]>();
             Parallel.ForEach(
@@ -449,7 +443,7 @@ namespace XmlNs
 
                     doneData.Add(new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName });
 
-                    if (deletedInputFile)
+                    if (Config.DeleteSourceFiles)
                     {
                         File.Delete(intermidateFile);
                         File.Delete(NewDocToArchName);
@@ -462,7 +456,7 @@ namespace XmlNs
         /// <param name="intermidateFiles"> Set intermidate array files</param>
         /// <param name="_MaxDegreeOfParallelism"> Лимит параллельных операций (По-умолчанию -1 (ограничение отсутсвует)) </param>
         /// <param name="deletedInputFile">Delete src XML-file</param>
-        public static void ImplementParallel(string intermidateFolder, bool deletedInputFile = false)
+        public static void ImplementParallel(string intermidateFolder)
         {
             string[] intermidateFiles = Directory.GetFiles(intermidateFolder, "*.xml", SearchOption.AllDirectories);
             Parallel.ForEach(intermidateFiles,
@@ -642,7 +636,7 @@ namespace XmlNs
 
                 new PgSql().ExecuteToDB(new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName });
 
-                if (deletedInputFile)
+                if (Config.DeleteSourceFiles)
                 {
                     File.Delete(intermidateFile);
                     File.Delete(NewDocToArchName);
