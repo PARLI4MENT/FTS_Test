@@ -6,6 +6,5 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PostgresSQL_Test\SQL_Test.csproj" />
   </ItemGroup>
 </Project>

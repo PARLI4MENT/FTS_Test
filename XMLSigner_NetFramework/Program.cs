@@ -23,9 +23,7 @@ namespace XMLSigner
             //var cert = store.Certificates.Find(X509FindType.FindBySubjectName, "", true)[0];
             //Console.WriteLine(cert.SerialNumber);
 
-            var temp = Registry.GetValue("", "", null);
-
-
+            /// Базовая инициализация конфигурации
             Config.BaseConfiguration();
             Console.WriteLine();
 

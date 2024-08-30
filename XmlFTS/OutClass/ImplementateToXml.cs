@@ -10,9 +10,9 @@ namespace XmlNs
 {
     public class ImplementateToXml
     {
-        public static string FilesIntermidate { get; private set; } = StaticPathConfiguration.PathIntermidateFolder;
-        public static string FileOutFolder { get; private set; } = StaticPathConfiguration.PathImplementFolder;
-        public static string FileTemplate { get; private set; } = StaticPathConfiguration.TemplateXML;
+        public static string filesIntermidateFolder { get; private set; } = StaticPathConfiguration.PathIntermidateFolder;
+        public static string filesImplementFolder { get; private set; } = StaticPathConfiguration.PathImplementFolder;
+        public static string fileTemplate { get; private set; } = StaticPathConfiguration.TemplateXML;
 
         public static string ExtractId(string pathToXML)
         {
@@ -84,8 +84,8 @@ namespace XmlNs
 
             string PrDocumentName = "", PrDocumentNumber = "", PrDocumentDate = "", DocCode = "", DocName = "";
 
-            //string NewDocToArchName = Path.Combine(StaticPathConfiguration.PathIntermidateFolder, Path.GetFileName(intermidateFile));
-            File.Copy(FileTemplate, NewDocToArchName, true);
+            string NewDocToArchName = Path.Combine(StaticPathConfiguration.PathIntermidateFolder, Path.GetFileName(intermidateFile));
+            File.Copy(fileTemplate, NewDocToArchName, true);
 
             file_xml.Load(new StringReader(File.ReadAllText(intermidateFile)));
             switch (file_xml.DocumentElement.GetAttribute("DocumentModeID"))
@@ -238,7 +238,7 @@ namespace XmlNs
 
             doc_to_arch.Save(NewDocToArchName);
 
-            File.Copy(NewDocToArchName, Path.Combine(FileOutFolder, Path.GetFileName(intermidateFile)), true);
+            File.Copy(NewDocToArchName, Path.Combine(filesImplementFolder, Path.GetFileName(intermidateFile)), true);
 
             //File.AppendAllText("C:\\_test\\Arch_docs.log", "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
 
@@ -251,7 +251,7 @@ namespace XmlNs
                 File.Delete(NewDocToArchName);
             }
 
-            return FileNs. ;
+            return string.Empty;
         }
 
         /// <summary> Извлечение данные из промежуточных XML-файлов, вставка в шаблонный XML и сохранение в папку (implementFiles по-умолчанию)</summary>
@@ -279,8 +279,8 @@ namespace XmlNs
 
                     string PrDocumentName = "", PrDocumentNumber = "", PrDocumentDate = "", DocCode = "", DocName = "";
 
-                    string NewDocToArchName = Path.Combine(FilesIntermidate, Path.GetFileName(intermidateFile));
-                    File.Copy(FileTemplate, NewDocToArchName, true);
+                    string NewDocToArchName = Path.Combine(filesIntermidateFolder, Path.GetFileName(intermidateFile));
+                    File.Copy(fileTemplate, NewDocToArchName, true);
 
 
                     file_xml.Load(new StringReader(File.ReadAllText(intermidateFile)));
@@ -434,7 +434,7 @@ namespace XmlNs
 
                     doc_to_arch.Save(NewDocToArchName);
 
-                    File.Copy(NewDocToArchName, Path.Combine(FileOutFolder, Path.GetFileName(intermidateFile)), true);
+                    File.Copy(NewDocToArchName, Path.Combine(filesImplementFolder, Path.GetFileName(intermidateFile)), true);
 
                     //File.AppendAllText("C:\\_test\\Arch_docs.log", "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
 
@@ -476,7 +476,7 @@ namespace XmlNs
                 string PrDocumentName = "", PrDocumentNumber = "", PrDocumentDate = "", DocCode = "", DocName = "";
 
                 string NewDocToArchName = Path.Combine(StaticPathConfiguration.PathIntermidateFolder, Path.GetFileName(intermidateFile));
-                File.Copy(FileTemplate, NewDocToArchName, true);
+                File.Copy(fileTemplate, NewDocToArchName, true);
 
 
                 file_xml.Load(new StringReader(File.ReadAllText(intermidateFile)));
@@ -630,7 +630,7 @@ namespace XmlNs
 
                 doc_to_arch.Save(NewDocToArchName);
 
-                File.Copy(NewDocToArchName, Path.Combine(FileOutFolder, Path.GetFileName(intermidateFile)), true);
+                File.Copy(NewDocToArchName, Path.Combine(filesImplementFolder, Path.GetFileName(intermidateFile)), true);
 
                 //File.AppendAllText("C:\\_test\\Arch_docs.log", "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
 
