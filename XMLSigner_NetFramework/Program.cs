@@ -10,7 +10,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Xml;
 using XmlFTS.OutClass;
-using XMLSigner.OutClass;
 
 namespace XMLSigner
 {
@@ -18,39 +17,62 @@ namespace XMLSigner
     {
         static void Main(string[] args)
         {
+            /*
             //X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
             //store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
             //var cert = store.Certificates.Find(X509FindType.FindBySubjectName, "", true)[0];
             //Console.WriteLine(cert.SerialNumber);
+            */
 
-            /// Базовая инициализация конфигурации
-            Config.BaseConfiguration();
-            Console.WriteLine();
-
-            var rawFolder = Directory.GetDirectories(StaticPathConfiguration.PathRawFolder);
-
-            Parallel.ForEach(rawFolder,
-                new ParallelOptions { MaxDegreeOfParallelism = Config.MaxDegreeOfParallelism },
-                rawFile =>
+            /// Открытие файла
+            /*
+            if (File.Exists(Config.GetAppConfigLocation))
+            {
+                ProcessStartInfo processStartInfo = new ProcessStartInfo
                 {
-                    string[] xmlFiles = Directory.GetFiles(rawFile, "*.xml", SearchOption.AllDirectories);
+                    Arguments = Path.GetDirectoryName(Config.GetAppConfigLocation),
+                    FileName = Path.GetFileName(Config.GetAppConfigLocation)
+                };
+                Process.Start(processStartInfo);
+            }
+            Console.WriteLine();
+            */
 
-                    foreach (string xmlFile in xmlFiles)
-                    {
-                        // Combine Xml
-                        string tmpPathCombine = Path.Combine(StaticPathConfiguration.PathIntermidateFolder, string.Concat(Path.GetFileName(rawFile), ".", Path.GetFileName(xmlFile)));
-                        File.Copy(xmlFile, tmpPathCombine, true);
-
-
-                    }
-                });
+            ProcessStart();
 
             Console.Write("\nPress any key...");
             Console.ReadKey();
             Console.ReadKey();
         }
 
-        /// <summary> Возвращает  </summary>
+        private static void ProcessStart()
+        {
+            /// Базовая инициализация конфигурации
+            Config.BaseConfiguration("C:\\_test");
+            Console.WriteLine();
+
+            var rawSrcFolder = Directory.GetDirectories(StaticPathConfiguration.PathRawFolder);
+
+            Parallel.ForEach(rawSrcFolder,
+                new ParallelOptions { MaxDegreeOfParallelism = Config.MaxDegreeOfParallelism },
+                rawFolder =>
+                {
+                    string[] xmlFiles = Directory.GetFiles(rawFolder, "*.xml", SearchOption.AllDirectories);
+
+                    foreach (string xmlFile in xmlFiles)
+                    {
+                        // Combine Xml
+                        string tmpPathCombine = Path.Combine(StaticPathConfiguration.PathIntermidateFolder, string.Concat(Path.GetFileName(rawFolder), ".", Path.GetFileName(xmlFile)));
+                        File.Copy(xmlFile, tmpPathCombine, true);
+
+
+                    }
+                });
+        }
+
+        /// <summary> Возвращает xml-элементы включая входящий элемент, с его дочерними элементами в виде древа </summary>
+        /// <remarks>
+        /// </remarks>
         /// <param name="element"></param>
         public static void GetTree(XmlElement element)
         {
