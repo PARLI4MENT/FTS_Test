@@ -12,9 +12,9 @@ namespace SQLNs
 {
     public class PgSql
     {
-        private string connectionKey = "PgConnectionString";
+        private static string connectionKey = "PgConnectionString";
 
-        private static string _Server = "192.168.0.142";
+        private static string _Server = "localhost";
         public void SetServer(string _server) => _Server = _server;
 
         private static string _Port = "5438";
@@ -31,7 +31,7 @@ namespace SQLNs
 
         public static string ConnectionString { get; private set; }
 
-        public void SetConnectionString(string Server, string Port, string Uid, string Password, [Optional]string Database)
+        public static void SetConnectionString(string Server, string Port, string Uid, string Password, [Optional]string Database)
         {
             if (string.IsNullOrEmpty(Server) || string.IsNullOrEmpty(Port) || string.IsNullOrEmpty(Uid) || string.IsNullOrEmpty(Password))
             {
@@ -39,6 +39,8 @@ namespace SQLNs
                 return;
             }
 
+
+            /// Сделать If с тестовым соединением и последующим сохранением в статические поля и файл конфигурации
             if (string.IsNullOrEmpty(Database))
             {
                 Config.AddUpdateAppSettings(connectionKey, $"Server={_Server};Port={_Port};Uid={_Uid};Pwd={_Password};");

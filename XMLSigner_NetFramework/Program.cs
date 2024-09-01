@@ -38,7 +38,11 @@ namespace XMLSigner
             Console.WriteLine();
             */
 
-            ProcessStart();
+            //ProcessStart();
+            Config.BaseConfiguration("C:\\_test");
+            Config.DeleteSourceFiles = false;
+            Console.WriteLine();
+            XmlNs.ImplementateToXml.ImplementLinear("C:\\_test\\intermidateFiles\\2a7f4ca8-ae0a-454c-9091-e915f15879ae.filesList.xml");
 
             Console.Write("\nPress any key...");
             Console.ReadKey();
@@ -68,17 +72,15 @@ namespace XMLSigner
 
 
                         /// Implement
-                        var tempImplement = XmlNs.ImplementateToXml.ImplementLinear(tmpPathCombine);
+                        //var tempImplement = XmlNs.ImplementateToXml.ImplementLinear(tmpPathCombine);
 
                     }
                 });
             Console.WriteLine();
-
         }
 
         /// <summary> Возвращает xml-элементы включая входящий элемент, с его дочерними элементами в виде древа </summary>
-        /// <remarks>
-        /// </remarks>
+        /// <remarks> </remarks>
         /// <param name="element"></param>
         public static void GetTree(XmlElement element)
         {
