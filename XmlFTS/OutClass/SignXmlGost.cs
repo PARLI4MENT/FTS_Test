@@ -136,14 +136,12 @@ namespace XMLSigner
                 });
         }
 
-        /// <summary>
-        /// Получение объекта сертификата из хранилища
-        /// </summary>
+        /// <summary> Получение объекта сертификата из хранилища </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public static X509Certificate2 FindGostCertificate(StoreLocation storeLocation = StoreLocation.CurrentUser, Predicate<X509Certificate2> filter = null)
+        public static X509Certificate2 FindGostCertificate(Predicate<X509Certificate2> filter = null)
         {
-            var store = new X509Store(StoreName.My, storeLocation);
+            var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
             store.Open(OpenFlags.OpenExistingOnly | OpenFlags.ReadOnly);
 
             try
@@ -158,9 +156,9 @@ namespace XMLSigner
 
             return null;
         }
-        public static X509Certificate2 FindGostCertificateCurrent(StoreLocation storeLocation = StoreLocation.CurrentUser)
+        public static X509Certificate2 FindGostCertificateCurrent()
         {
-            var store = new X509Store(StoreName.My, storeLocation);
+            var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
             store.Open(OpenFlags.OpenExistingOnly | OpenFlags.ReadOnly);
             return store.Certificates[1];
         }

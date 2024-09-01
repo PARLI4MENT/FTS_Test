@@ -83,7 +83,7 @@
     <Compile Include="Database\ISql.cs" />
     <Compile Include="Database\MsSql.cs" />
     <Compile Include="Database\PgSql.cs" />
-    <Compile Include="Database\ProcessXML.cs" />
+    <Compile Include="ProcessXML.cs" />
     <Compile Include="Fields\ECD_list.cs" />
     <Compile Include="Fields\ExchED.cs" />
     <Compile Include="OutClass\Config.cs" />

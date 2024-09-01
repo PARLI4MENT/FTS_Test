@@ -8,7 +8,8 @@ namespace XmlFTS.OutClass
 {
     public static class Config
     {
-        public static int MaxDegreeOfParallelism {
+        public static int MaxDegreeOfParallelism
+        {
             get { return Convert.ToInt32(ReadSettings("MaxDegreeOfParallelism")); }
             set { AddUpdateAppSettings("MaxDegreeOfParallelism", value.ToString()); }
         }
@@ -27,6 +28,7 @@ namespace XmlFTS.OutClass
         /// Если файл с шаблоном отсутсвует, то вызвается окно выбора файла, затем файл копируется в корневую базовую папку
         /// </remarks>
         /// <param name="basePath"> Путь к базовой папке, в которой будут располагаться необходимые папки для работы</param>
+        /// <param name="deleteFile"> Удалять файлы после обработки </param>
         public static void BaseConfiguration([Optional]string basePath)
         {
             if (string.IsNullOrEmpty(basePath))
@@ -84,6 +86,7 @@ namespace XmlFTS.OutClass
             AddUpdateAppSettings("TemplateXML", StaticPathConfiguration.TemplateXML);
 
             MaxDegreeOfParallelism = 4;
+
             DeleteSourceFiles = false;
 
 #if DEBUG
