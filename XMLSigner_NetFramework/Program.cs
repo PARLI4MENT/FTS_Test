@@ -17,13 +17,6 @@ namespace XMLSigner
     {
         static void Main(string[] args)
         {
-            /*
-            //X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
-            //store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
-            //var cert = store.Certificates.Find(X509FindType.FindBySubjectName, "", true)[0];
-            //Console.WriteLine(cert.SerialNumber);
-            */
-
             /// Открытие файла
             /*
             if (File.Exists(Config.GetAppConfigLocation))
@@ -37,8 +30,8 @@ namespace XMLSigner
             }
             Console.WriteLine();
             */
-
-            //ProcessStart();
+            
+            ProcessStart();
             Config.BaseConfiguration("C:\\_test");
             Config.DeleteSourceFiles = false;
             Console.WriteLine();

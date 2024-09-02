@@ -13,13 +13,6 @@ namespace FileNs
 {
     public class RenamerXML
     {
-        static string _rootDir = "C:\\_test";
-        public static string RootDir { get { return _rootDir; } set { _rootDir = value; } }
-
-        private static string _dirInput = Path.Combine(_rootDir, "rawFiles");
-
-        private static string _dirDestination = Path.Combine(_rootDir, "inputFiles");
-
         private static long _elapsedMilliseconds { get; set; }
         private static int _countRawFiles { get; set; }
         private static int _subFolder { get; set; }
@@ -224,14 +217,14 @@ namespace FileNs
         //}
 
         /// <summary> Удаление подпапок из исходной папки </summary>
-        private void Delete()
+        private void Delete(string inputDir)
         {
-            foreach (var item in Directory.GetDirectories(_dirInput))
+            foreach (var item in Directory.GetDirectories(inputDir))
                 Directory.Delete(item);
         }
 
-        /// <summary> Для личных нужд </summary>
-        /// <param name="lists"></param>
+        /// <summary>Для внутренего использования</summary>
+        /// <param name="lists">Массив с абсолютными путями к файлам</param>
         protected static void OutFilePath(List<string> lists)
         {
             foreach (var item in lists)

@@ -16,7 +16,7 @@ namespace FilesWatcher
             var sw = new Stopwatch();
             sw.Start();
             //XmlFTS.OutClass.ArchiveWorker.ExtractArchive("C:\\Dekl\\SEND DATA\\0a742265-fc35-4517-ad52-2e88cfa1a1d0\\0c289cc4-b89e-4ce5-9f38-b0a17b7380f8.zip");
-            XMLSigner.SignXmlGost.FindGostCurrentCertificate("");
+            XMLSigner.SignXmlGost.FindGostCurrentCertificate("", "", "");
             sw.Stop();
             Console.WriteLine(sw.ElapsedTicks);
             Console.WriteLine();

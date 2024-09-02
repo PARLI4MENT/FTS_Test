@@ -17,7 +17,7 @@ namespace XMLSigner
 {
     public class SignXmlGost
     {
-        public static X509Certificate2 Certificate = FindGostCertificateCurrent();
+        public static X509Certificate2 Certificate;
 
         /// <summary> Вычисление хэша по ГОСТ Р 34.11-2012/256 </summary>
         /// <param name="DataForHash"></param>
@@ -157,21 +157,36 @@ namespace XMLSigner
 
             return null;
         }
-        public static X509Certificate2 FindGostCurrentCertificate(string surname, string name)
+        /// <summary>Ищет по ФИО и возвращает объект сертификата из хранилища</summary>
+        /// <remarks>Если найти соотвествие не удалось, то возвращает null</remarks>
+        /// <param name="surname">Фамилия</param>
+        /// <param name="name">Имя</param>
+        /// <param name="lastname">Отчество</param>
+        /// <returns>Возвращает объект сертификата из хранилища в формате X509Certificate2</returns>
+        public static X509Certificate2 FindGostCurrentCertificate(string surname, string name, string lastname)
         {
             var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
             store.Open(OpenFlags.OpenExistingOnly | OpenFlags.ReadOnly);
             foreach (X509Certificate2 cert in store.Certificates)
             {
+                Console.WriteLine();
 
+                string certSurname, certName, CN = string.Empty;
+
+                var fio = cert.Subject.Split('=')[5].Split(' ');
+                Console.WriteLine();
+                if (fio[0] == surname && fio[1] == name && fio[2] == lastname)
+                    return cert;
             }
+
+            return null;
         }
 
 
         /// <summary> Ищет по серийному номеру и возвращает объект сертификата из хранилища</summary>
-        /// <remarks> Если Сертификат не найдет, возвращает null </remarks>
-        /// <param name="serialNumber"></param>
-        /// <returns></returns>
+        /// <remarks>Если найти соотвествие не удалось, то возвращает null</remarks>
+        /// <param name="serialNumber">Серийный номер в виде строки (string)</param>
+        /// <returns>Возвращает объект сертификата из хранилища в формате X509Certificate2</returns>
         public static X509Certificate2 FindGostCurrentCertificate(string serialNumber)
         {
             var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
