@@ -8,21 +8,26 @@ namespace XmlFTS.OutClass
     {
         /// <summary> Извлечение файлов из архива</summary>
         /// <param name="pathToZip"></param>
-        /// <param name="destinationDirectory">Папка назначения</param>
-        public static void ExtractZipArchive(string pathToZip, string destinationDirectory)
+        /// <param name="dirDestination">Папка назначения</param>
+        /// <remarks> Папка назначения содержит папку "code" </remarks>
+        public static void ExtractZipArchive(string pathToZip, string dirDestination = "C:\\_2\\ExtractionFiles")
         {
-            if (!Directory.Exists(destinationDirectory))
-                Directory.CreateDirectory(destinationDirectory);
-
             if (File.Exists(pathToZip))
+            {
+                string code = Path.GetDirectoryName(pathToZip);
+
+                if (!Directory.Exists(Path.Combine(dirDestination, code)))
+                    Directory.CreateDirectory(Path.Combine(dirDestination, code));
+
                 using (ZipArchive zipArch = new ZipArchive(File.OpenRead(pathToZip)))
                 {
                     foreach (ZipArchiveEntry entry in zipArch.Entries)
                     {
                         if (entry.FullName.Contains("xml"))
-                            entry.ExtractToFile(Path.Combine(destinationDirectory, entry.Name), true);
+                            entry.ExtractToFile(Path.Combine(dirDestination, code, string.Concat(code, ".", entry.Name)), true);
                     }
                 }
+            }
         }
     }
 }

@@ -32,11 +32,10 @@ namespace XMLSigner
             */
             
             ProcessStart();
-            Config.BaseConfiguration("C:\\_test");
-            Config.DeleteSourceFiles = false;
             Console.WriteLine();
 
-            SignXmlGost.FindGostCurrentCertificate(string.Empty);
+            /// Поиск сертификата
+            //SignXmlGost.FindGostCurrentCertificate(string.Empty);
 
             //XmlNs.ImplementateToXml.ImplementLinear("C:\\_test\\intermidateFiles\\2a7f4ca8-ae0a-454c-9091-e915f15879ae.filesList.xml");
 
@@ -47,20 +46,42 @@ namespace XMLSigner
 
         private static void ProcessStart()
         {
-            /// Базовая инициализация конфигурации
-            Config.BaseConfiguration("C:\\_test");
-            Config.DeleteSourceFiles = false;
-            Console.WriteLine();
-
             var rawSrcFolder = Directory.GetDirectories("C:\\Dekl\\SEND DATA");
 
             Parallel.ForEach(rawSrcFolder,
                 new ParallelOptions { MaxDegreeOfParallelism = Config.MaxDegreeOfParallelism },
                 rawFolder =>
                 {
-                    
+                    /// #1 Extraction ZIP
+                    Console.WriteLine();
+                    ArchiveWorker.ExtractZipArchive(Directory.GetFiles(rawFolder, "*.zip")[0], "");
+
+                    /// #2 Rename Move
+                    RenameMoveFileOnly(rawFolder, "");
+
+
+                    /// #3
+                    Console.WriteLine();
                 });
+
             Console.WriteLine();
+        }
+
+        /// <summary>Переименование и перемещение</summary>
+        /// <param name="pathRawFile">Путь к файлу</param>
+        public static void RenameMoveFileOnly(string pathRawFile, string dirDestination = "C:\\_2\\ExtractionFiles")
+        {
+            string code = Path.GetDirectoryName(pathRawFile);
+            if (!Directory.Exists(Path.Combine(dirDestination, code)))
+                Directory.CreateDirectory(Path.Combine(dirDestination, code));
+
+            if (File.Exists(pathRawFile))
+            {
+                string tmpPathCombine = Path.Combine(dirDestination, string.Concat(code, ".", Path.GetFileName(pathRawFile)));
+                File.Copy(pathRawFile, tmpPathCombine, true);
+            }
+
+            return;
         }
 
         /// <summary> Возвращает xml-элементы включая входящий элемент, с его дочерними элементами в виде древа </summary>

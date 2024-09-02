@@ -25,21 +25,7 @@ namespace FileNs
         private static int _countRawFiles { get; set; }
         private static int _subFolder { get; set; }
 
-        /// <summary> </summary>
-        /// <param name="pathRawFiles"></param>
-        /// <returns></returns>
-        public static string RenameFileOnly(string pathRawFile, string code, string dirDestination)
-        {
-            if (!Directory.Exists(dirDestination))
-                Directory.CreateDirectory(dirDestination);
-
-            if (File.Exists(pathRawFile))
-            {
-                string tmpPathCombine = Path.Combine(dirDestination, string.Concat(code, ".", Path.GetFileName(pathRawFile)));
-                File.Copy(pathRawFile, tmpPathCombine, true);
-            }
-            return null;
-        }
+        
 
         /// <summary> Линейное переименование и перемещение сырых Xml-файлов </summary>
         /// <param name="rawFolders"> </param>
