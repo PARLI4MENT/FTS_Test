@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlFTS", "XmlFTS\XmlFTS.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigurationTest", "ConsoleApp1\ConfigurationTest.csproj", "{9136CD0D-4537-4959-9A5E-EB14806FE11F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilesWatcher", "FilesWatcher\FilesWatcher.csproj", "{8E2FEB8E-7DCA-41F3-8A42-CA6D6665FDEE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{9136CD0D-4537-4959-9A5E-EB14806FE11F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9136CD0D-4537-4959-9A5E-EB14806FE11F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9136CD0D-4537-4959-9A5E-EB14806FE11F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E2FEB8E-7DCA-41F3-8A42-CA6D6665FDEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E2FEB8E-7DCA-41F3-8A42-CA6D6665FDEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E2FEB8E-7DCA-41F3-8A42-CA6D6665FDEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E2FEB8E-7DCA-41F3-8A42-CA6D6665FDEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,6 +85,7 @@ Global
 		{DD75F69A-26EE-42D4-96A0-855A8728115C} = {54B7577E-DCA1-4504-B507-487676BD3B3C}
 		{8E0BE1D3-BE4B-4881-B3A7-1428E5EA19BA} = {C3FC2636-E63D-4FA3-969C-E06291660C76}
 		{9136CD0D-4537-4959-9A5E-EB14806FE11F} = {BD923331-910F-4784-BF14-6CBEEB48809D}
+		{8E2FEB8E-7DCA-41F3-8A42-CA6D6665FDEE} = {BD923331-910F-4784-BF14-6CBEEB48809D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC034BBC-14CD-404E-946C-0EFA12833581}

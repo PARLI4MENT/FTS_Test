@@ -3,6 +3,7 @@ using GostCryptography.Gost_R3411;
 using GostCryptography.Pkcs;
 using GostCryptography.Xml;
 using System;
+using System.Configuration;
 using System.IO;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
@@ -73,68 +74,68 @@ namespace XMLSigner
             return true;
         }
 
-        public static void SignFullXml(string xmlFile, X509Certificate2 certificate, bool deleteSourceFile = false)
-        {
-            var xmlDocument = new XmlDocument();
-            xmlDocument.Load(new StringReader(File.ReadAllText(xmlFile)));
+        //public static void SignFullXml(string xmlFile, X509Certificate2 certificate, bool deleteSourceFile = false)
+        //{
+        //    var xmlDocument = new XmlDocument();
+        //    xmlDocument.Load(new StringReader(File.ReadAllText(xmlFile)));
 
-            var signedXml = new GostSignedXml(xmlDocument);
-            signedXml.SetSigningCertificate(Certificate);
+        //    var signedXml = new GostSignedXml(xmlDocument);
+        //    signedXml.SetSigningCertificate(Certificate);
 
-            var dataReference = new Reference { Uri = "", DigestMethod = GetDigestMethod(Certificate) };
-            dataReference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
+        //    var dataReference = new Reference { Uri = "", DigestMethod = GetDigestMethod(Certificate) };
+        //    dataReference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
 
-            signedXml.AddReference(dataReference); ;
+        //    signedXml.AddReference(dataReference); ;
 
-            var keyInfo = new KeyInfo();
-            keyInfo.AddClause(new KeyInfoX509Data(Certificate));
-            signedXml.KeyInfo = keyInfo;
+        //    var keyInfo = new KeyInfo();
+        //    keyInfo.AddClause(new KeyInfoX509Data(Certificate));
+        //    signedXml.KeyInfo = keyInfo;
 
-            signedXml.ComputeSignature();
+        //    signedXml.ComputeSignature();
 
-            var signatureXml = signedXml.GetXml();
+        //    var signatureXml = signedXml.GetXml();
 
-            xmlDocument.DocumentElement.AppendChild(xmlDocument.ImportNode(signatureXml, true));
+        //    xmlDocument.DocumentElement.AppendChild(xmlDocument.ImportNode(signatureXml, true));
 
-            xmlDocument.Save(Path.Combine("C:\\_test\\signedFiles", ("Signed." + Path.GetFileName(xmlFile))));
+        //    xmlDocument.Save(Path.Combine("C:\\_test\\signedFiles", ("Signed." + Path.GetFileName(xmlFile))));
 
-            if (deleteSourceFile)
-                File.Delete(Path.GetFullPath(xmlFile));
-        }
+        //    if (deleteSourceFile)
+        //        File.Delete(Path.GetFullPath(xmlFile));
+        //}
 
-        public static void SignFullXml(string[] arrXmlFiles, X509Certificate2 certificate, bool deleteSourceFile = false)
-        {
-            Parallel.ForEach(arrXmlFiles,
-                new ParallelOptions { MaxDegreeOfParallelism = -1 },
-                xmlFile =>
-                {
-                    var xmlDocument = new XmlDocument();
-                    xmlDocument.Load(new StringReader(File.ReadAllText(xmlFile)));
+        //public static void SignFullXml(string[] arrXmlFiles, X509Certificate2 certificate, bool deleteSourceFile = false)
+        //{
+        //    Parallel.ForEach(arrXmlFiles,
+        //        new ParallelOptions { MaxDegreeOfParallelism = -1 },
+        //        xmlFile =>
+        //        {
+        //            var xmlDocument = new XmlDocument();
+        //            xmlDocument.Load(new StringReader(File.ReadAllText(xmlFile)));
 
-                    var signedXml = new GostSignedXml(xmlDocument);
-                    signedXml.SetSigningCertificate(Certificate);
+        //            var signedXml = new GostSignedXml(xmlDocument);
+        //            signedXml.SetSigningCertificate(Certificate);
 
-                    var dataReference = new Reference { Uri = "", DigestMethod = GetDigestMethod(Certificate) };
-                    dataReference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
+        //            var dataReference = new Reference { Uri = "", DigestMethod = GetDigestMethod(Certificate) };
+        //            dataReference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
 
-                    signedXml.AddReference(dataReference); ;
+        //            signedXml.AddReference(dataReference); ;
 
-                    var keyInfo = new KeyInfo();
-                    keyInfo.AddClause(new KeyInfoX509Data(Certificate));
-                    signedXml.KeyInfo = keyInfo;
+        //            var keyInfo = new KeyInfo();
+        //            keyInfo.AddClause(new KeyInfoX509Data(Certificate));
+        //            signedXml.KeyInfo = keyInfo;
 
-                    signedXml.ComputeSignature();
+        //            signedXml.ComputeSignature();
 
-                    var signatureXml = signedXml.GetXml();
+        //            var signatureXml = signedXml.GetXml();
 
-                    xmlDocument.DocumentElement.AppendChild(xmlDocument.ImportNode(signatureXml, true));
+        //            xmlDocument.DocumentElement.AppendChild(xmlDocument.ImportNode(signatureXml, true));
 
-                    xmlDocument.Save(Path.Combine(StaticPathConfiguration.PathSignedFolder, ("Signed." + Path.GetFileName(xmlFile))));
+        //            xmlDocument.Save(Path.Combine(StaticPathConfiguration.PathSignedFolder, ("Signed." + Path.GetFileName(xmlFile))));
 
-                    if (deleteSourceFile)
-                        File.Delete(Path.GetFullPath(xmlFile));
-                });
-        }
+        //            if (deleteSourceFile)
+        //                File.Delete(Path.GetFullPath(xmlFile));
+        //        });
+        //}
 
         /// <summary> Получение объекта сертификата из хранилища </summary>
         /// <param name="filter"></param>
@@ -156,11 +157,31 @@ namespace XMLSigner
 
             return null;
         }
-        public static X509Certificate2 FindGostCertificateCurrent()
+        public static X509Certificate2 FindGostCurrentCertificate(string surname, string name)
         {
             var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
             store.Open(OpenFlags.OpenExistingOnly | OpenFlags.ReadOnly);
-            return store.Certificates[1];
+            foreach (X509Certificate2 cert in store.Certificates)
+            {
+
+            }
+        }
+
+
+        /// <summary> Ищет по серийному номеру и возвращает объект сертификата из хранилища</summary>
+        /// <remarks> Если Сертификат не найдет, возвращает null </remarks>
+        /// <param name="serialNumber"></param>
+        /// <returns></returns>
+        public static X509Certificate2 FindGostCurrentCertificate(string serialNumber)
+        {
+            var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+            store.Open(OpenFlags.OpenExistingOnly | OpenFlags.ReadOnly);
+
+            foreach (X509Certificate2 cert in store.Certificates)
+                if (cert.SerialNumber == serialNumber)
+                    return cert;
+
+            return null;
         }
 
         /// <summary> Получение имени алгоритма </summary>
