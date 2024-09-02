@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using XmlFTS.OutClass;
+using System.Security.Cryptography.X509Certificates;
 
 namespace XMLSigner.OutClass
 {
@@ -40,7 +41,7 @@ namespace XMLSigner.OutClass
         /// <summary> Сделать автопоиск по элементу Reference </summary>
         /// <param name="xmlEdit"></param>
         /// <param name="xmlOrig"></param>
-        private void FindElements(XmlElement xmlEdit, XmlElement xmlOrig)
+        public static void FindElements(XmlElement xmlEdit, XmlElement xmlOrig)
         {
             var objEditNodes = xmlEdit.GetElementsByTagName("Object");
             var objOrigNodes = xmlOrig.GetElementsByTagName("Object");
@@ -98,7 +99,7 @@ namespace XMLSigner.OutClass
         /// <param name="xmlNode"></param>
         /// <param name="prefix"></param>
         /// <param name="rootNode"></param>
-        public void Normalization(XmlNode xmlNode, string prefix = "n1")
+        public static void Normalization(XmlNode xmlNode, string prefix = "n1")
         {
             if (xmlNode.GetType().Equals(typeof(XmlElement)))
             {
@@ -131,7 +132,7 @@ namespace XMLSigner.OutClass
         /// <param name="OuterXml"></param>
         /// <param name="disableFormating"></param>
         /// <returns></returns>
-        private string SwapAttributes(string OuterXml, bool disableFormating = true)
+        private static string SwapAttributes(string OuterXml, bool disableFormating = true)
         {
             XDocument xDoc = XDocument.Parse(OuterXml);
             XElement xElement = xDoc.Root;
