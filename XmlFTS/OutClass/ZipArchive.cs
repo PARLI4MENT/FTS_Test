@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.IO.Pipes;
+using System.Windows.Documents;
 
 namespace XmlFTS.OutClass
 {
@@ -10,24 +13,31 @@ namespace XmlFTS.OutClass
         /// <param name="pathToZip"></param>
         /// <param name="dirDestination">Папка назначения</param>
         /// <remarks> Папка назначения содержит папку "code" </remarks>
-        public static void ExtractZipArchive(string pathToZip, string dirDestination = "C:\\_2\\ExtractionFiles")
+        public static List<string> ExtractZipArchive(string pathToZip, string dirDestination = "C:\\_2\\ExtractionFiles")
         {
             if (File.Exists(pathToZip))
             {
-                string code = Path.GetDirectoryName(pathToZip);
+                string code = Path.GetFileName(Path.GetDirectoryName(pathToZip));
+                var listXmlPaths = new List<string>();
 
-                if (!Directory.Exists(Path.Combine(dirDestination, code)))
-                    Directory.CreateDirectory(Path.Combine(dirDestination, code));
+                if (!Directory.Exists(Path.Combine(dirDestination)))
+                    Directory.CreateDirectory(Path.Combine(dirDestination));
 
                 using (ZipArchive zipArch = new ZipArchive(File.OpenRead(pathToZip)))
                 {
                     foreach (ZipArchiveEntry entry in zipArch.Entries)
                     {
                         if (entry.FullName.Contains("xml"))
-                            entry.ExtractToFile(Path.Combine(dirDestination, code, string.Concat(code, ".", entry.Name)), true);
+                        {
+                            string pathDest = Path.Combine(dirDestination, string.Concat(code, ".", entry.Name));
+                            entry.ExtractToFile(pathDest, true);
+                            listXmlPaths.Add(pathDest);
+                        }
                     }
                 }
+                return listXmlPaths;
             }
+            return null;
         }
     }
 }

@@ -32,10 +32,7 @@ namespace XmlFTS.OutClass
                 Debug.WriteLine("{0}={1}", key, map[key].ToString());
         }
 
-        public static void BaseInitialize()
-        {
-
-        }
+        public static void BaseInitialize() { }
 
         /// <summary> Путь к XML шаблону </summary>
         public static string TemplateXML { get; set; }

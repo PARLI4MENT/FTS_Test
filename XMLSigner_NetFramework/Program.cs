@@ -3,9 +3,11 @@
 using FileNs;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Metadata;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Xml;
@@ -13,7 +15,7 @@ using XmlFTS.OutClass;
 
 namespace XMLSigner
 {
-    internal static class Program
+    public static class Program
     {
         static void Main(string[] args)
         {
@@ -30,14 +32,13 @@ namespace XMLSigner
             }
             Console.WriteLine();
             */
-            
+
             ProcessStart();
             Console.WriteLine();
 
             /// Поиск сертификата
             //SignXmlGost.FindGostCurrentCertificate(string.Empty);
 
-            //XmlNs.ImplementateToXml.ImplementLinear("C:\\_test\\intermidateFiles\\2a7f4ca8-ae0a-454c-9091-e915f15879ae.filesList.xml");
 
             Console.Write("\nPress any key...");
             Console.ReadKey();
@@ -48,40 +49,82 @@ namespace XMLSigner
         {
             var rawSrcFolder = Directory.GetDirectories("C:\\Dekl\\SEND DATA");
 
-            Parallel.ForEach(rawSrcFolder,
-                new ParallelOptions { MaxDegreeOfParallelism = Config.MaxDegreeOfParallelism },
-                rawFolder =>
-                {
-                    /// #1 Extraction ZIP
-                    Console.WriteLine();
-                    ArchiveWorker.ExtractZipArchive(Directory.GetFiles(rawFolder, "*.zip")[0], "");
+            var sw = new Stopwatch();
+            sw.Start();
 
-                    /// #2 Rename Move
-                    RenameMoveFileOnly(rawFolder, "");
+            foreach (var rawFolder in rawSrcFolder)
+            {
+                /// #1 Extraction ZIP
+                var listXml = ArchiveWorker.ExtractZipArchive(Directory.GetFiles(rawFolder, "*.zip")[0]);
 
+                /// #2 Rename Move
+                string[] xmlFiles = Directory.GetFiles(rawFolder, "*.xml");
+                foreach (var xmlFile in xmlFiles)
+                    listXml.Add(RenameMoveFileOnly(xmlFile));
 
-                    /// #3
-                    Console.WriteLine();
-                });
+                /// #3 Sort
+                SortXml(listXml);
+            }
+
+            sw.Stop();
+            Console.WriteLine();
+            Console.WriteLine($"General => {sw.ElapsedMilliseconds / 1000} sec.");
 
             Console.WriteLine();
         }
 
         /// <summary>Переименование и перемещение</summary>
         /// <param name="pathRawFile">Путь к файлу</param>
-        public static void RenameMoveFileOnly(string pathRawFile, string dirDestination = "C:\\_2\\ExtractionFiles")
+        public static string RenameMoveFileOnly(string pathRawFile, string dirDestination = "C:\\_2\\ExtractionFiles")
         {
-            string code = Path.GetDirectoryName(pathRawFile);
-            if (!Directory.Exists(Path.Combine(dirDestination, code)))
-                Directory.CreateDirectory(Path.Combine(dirDestination, code));
+            string code = Path.GetFileName(Path.GetDirectoryName(pathRawFile));
+
+            if (!Directory.Exists(Path.Combine(dirDestination)))
+                Directory.CreateDirectory(Path.Combine(dirDestination));
 
             if (File.Exists(pathRawFile))
             {
                 string tmpPathCombine = Path.Combine(dirDestination, string.Concat(code, ".", Path.GetFileName(pathRawFile)));
-                File.Copy(pathRawFile, tmpPathCombine, true);
+                if (!File.Exists(tmpPathCombine))
+                {
+                    File.Move(pathRawFile, tmpPathCombine);
+                    return tmpPathCombine;
+                }
             }
+            return null;
+        }
 
-            return;
+        public static void SortXml(List<string> filesXMl)
+        {
+            foreach (string xmlFile in filesXMl)
+            {
+                if (File.Exists(xmlFile))
+                {
+                    XmlDocument xmlDoc = new XmlDocument();
+                    xmlDoc.Load(new StringReader(File.ReadAllText(xmlFile)));
+
+                    switch (xmlDoc.DocumentElement.GetAttribute("DocumentModeID"))
+                    {
+                        /// ПТД ExpressCargoDeclaration
+                        case "1006275E":
+                            {
+                                var tmpFilePath = Path.Combine("C:\\_2\\Sorted\\ptd", Path.GetFileName(xmlFile));
+                                if (!File.Exists(tmpFilePath))
+                                    File.Move(xmlFile, tmpFilePath);
+                            }
+                            break;
+
+                        /// В архив Остальное
+                        default:
+                            {
+                                var tmpFilePath = Path.Combine("C:\\_2\\Sorted\\toArchive", Path.GetFileName(xmlFile));
+                                if (!File.Exists(tmpFilePath))
+                                    File.Move(xmlFile, tmpFilePath);
+                            }
+                            break;
+                    }
+                }
+            }
         }
 
         /// <summary> Возвращает xml-элементы включая входящий элемент, с его дочерними элементами в виде древа </summary>
