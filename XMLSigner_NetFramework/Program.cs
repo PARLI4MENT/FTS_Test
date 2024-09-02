@@ -52,25 +52,13 @@ namespace XMLSigner
             Config.DeleteSourceFiles = false;
             Console.WriteLine();
 
-            var rawSrcFolder = Directory.GetDirectories(StaticPathConfiguration.PathRawFolder);
+            var rawSrcFolder = Directory.GetDirectories("C:\\Dekl\\SEND DATA");
 
             Parallel.ForEach(rawSrcFolder,
                 new ParallelOptions { MaxDegreeOfParallelism = Config.MaxDegreeOfParallelism },
                 rawFolder =>
                 {
-                    string[] xmlFiles = Directory.GetFiles(rawFolder, "*.xml", SearchOption.AllDirectories);
-
-                    foreach (string xmlFile in xmlFiles)
-                    {
-                        // Combine Xml
-                        string tmpPathCombine = Path.Combine(StaticPathConfiguration.PathIntermidateFolder, string.Concat(Path.GetFileName(rawFolder), ".", Path.GetFileName(xmlFile)));
-                        File.Copy(xmlFile, tmpPathCombine, true);
-
-
-                        /// Implement
-                        //var tempImplement = XmlNs.ImplementateToXml.ImplementLinear(tmpPathCombine);
-
-                    }
+                    
                 });
             Console.WriteLine();
         }

@@ -13,9 +13,33 @@ namespace FileNs
 {
     public class RenamerXML
     {
+        static string _rootDir = "C:\\_test";
+        public static string RootDir { get { return _rootDir; } set { _rootDir = value; } }
+
+        private static string _dirInput = Path.Combine(_rootDir, "rawFiles");
+
+        private static string _dirDestination = Path.Combine(_rootDir, "inputFiles");
+
+
         private static long _elapsedMilliseconds { get; set; }
         private static int _countRawFiles { get; set; }
         private static int _subFolder { get; set; }
+
+        /// <summary> </summary>
+        /// <param name="pathRawFiles"></param>
+        /// <returns></returns>
+        public static string RenameFileOnly(string pathRawFile, string code, string dirDestination)
+        {
+            if (!Directory.Exists(dirDestination))
+                Directory.CreateDirectory(dirDestination);
+
+            if (File.Exists(pathRawFile))
+            {
+                string tmpPathCombine = Path.Combine(dirDestination, string.Concat(code, ".", Path.GetFileName(pathRawFile)));
+                File.Copy(pathRawFile, tmpPathCombine, true);
+            }
+            return null;
+        }
 
         /// <summary> Линейное переименование и перемещение сырых Xml-файлов </summary>
         /// <param name="rawFolders"> </param>
@@ -153,14 +177,14 @@ namespace FileNs
 
             // Delete non usable base folder
             if (deletedRawFolder)
-                Task.Run(() => Delete());
+                Task.Run(() => Delete(""));
         }
 
         /// <summary> Паралельное перемещение и переименование Xml-файлов по маске </summary>
         /// <param name="rawFile">Путь к папке с исходными файлами</param>
         /// <param name="destinationPath">Путь к папке назначения</param>
         /// <param name="deletedRawFolder">Удалять исходную папку</param>
-        public void RenameAndMoveParallel([Optional] string rawFile, [Optional] string destinationPath, bool deletedRawFolder = false)
+        public void RenameAndMoveParallel([Optional] string rawFile, [Optional] string destinationPath)
         {
             var inputFiles = Directory.GetFiles(_dirDestination);
             if (inputFiles.Count() != 0)
@@ -198,9 +222,8 @@ namespace FileNs
             _countRawFiles = baseFolder.Count();
 #endif
             // Delete non usable base folder
-            if (deletedRawFolder)
-                if (deletedRawFolder)
-                    Task.Run(() => Delete());
+            if (Config.DeleteSourceFiles)
+                Task.Run(() => Delete(""));
         }
 
         //public static void GetLastStatistics()
