@@ -319,7 +319,6 @@ namespace XMLSigner
 
             var implXml = Path.Combine(Path.GetDirectoryName(intermidateFile), Path.GetFileName(intermidateFile));
 
-
             //// ERROR
             File.Copy(NewDocToArchName, implXml, true);
 
