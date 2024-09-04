@@ -323,6 +323,7 @@ namespace XMLSigner
             File.Copy(NewDocToArchName, implXml, true);
 
             return implXml;
+
         }
 
         public static void NormalizationXml(string pathToXml, X509Certificate2 cert)
