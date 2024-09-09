@@ -18,9 +18,11 @@ namespace XMLSigner
     {
         static string PathToTemplate = "C:\\_2\\template.xml";
 
-        static string MchdId = "e7d94ee1-33d4-4b95-a27d-07896fdc00e0".ToUpper();
+        static string MchdId = "e7d94ee1-33d4-4b95-a27d-07896fdc00e0";
         static string MchdINN = "250908790897";
-
+        
+        static X509Certificate2 cert = SignXmlGost.FindGostCurrentCertificate("01DA FCE9 BC8E 41B0 0008 7F5E 381D 0002");
+        
         static void Main(string[] args)
         {
             /// Открытие файла
@@ -39,6 +41,15 @@ namespace XMLSigner
 
             ProcessStart();
             Console.WriteLine();
+
+            /// Certificate
+            //{
+            //    var cert = SignXmlGost.FindGostCurrentCertificate("01DA FCE9 BC8E 41B0 0008 7F5E 381D 0002");
+            //    var pubKey = Convert.ToBase64String(cert.PublicKey.EncodedKeyValue.RawData);
+            //    var tmp1 = Convert.ToBase64String(cert.RawData);
+            //    Console.WriteLine();
+            //}
+
 
             Console.Write("\nPress any key...");
             Console.ReadKey();
@@ -130,7 +141,6 @@ namespace XMLSigner
 
         public static void SortXml(string[] xmlFiles)
         {
-            var cert = SignXmlGost.FindGostCurrentCertificate("01DA FCE9 BC8E 41B0 0008 7F5E 381D 0002");
 
             Parallel.ForEach
                 (xmlFiles,
@@ -346,7 +356,7 @@ namespace XMLSigner
             //doc_to_arch.GetElementsByTagName("X509Certificate")[0].InnerText = "X509Certificate_TEMP";
             var x509Certs = doc_to_arch.GetElementsByTagName("X509Certificate");
             foreach (XmlNode x509Cert in x509Certs)
-                x509Cert.InnerText = "X509Certificate_TEMP";
+                x509Cert.InnerText = Convert.ToBase64String(cert.RawData);
             //doc_to_arch.GetElementsByTagName("ct:DocumentID")[0].InnerText = (Guid.NewGuid().ToString()).ToUpper();
             var ctDocIds = doc_to_arch.GetElementsByTagName("ct:DocumentID");
             foreach (XmlNode ctDocId in ctDocIds)
@@ -367,7 +377,7 @@ namespace XMLSigner
             //doc_to_arch.GetElementsByTagName("X509Certificate", "*")[0].InnerText = "X509Certificate_TEMP *";
             var x509CertTemps = doc_to_arch.GetElementsByTagName("X509Certificate", "*");
             foreach (XmlNode x509CertTemp in x509CertTemps)
-                x509CertTemp.InnerText = "X509Certificate_TEMP *";
+                x509CertTemp.InnerText = Convert.ToBase64String(cert.RawData);
 
             ((XmlElement)doc_to_arch.GetElementsByTagName("DocBaseInfo", "*")[0]).GetElementsByTagName("PrDocumentName", "*")[0].InnerText = PrDocumentName;
 
@@ -387,10 +397,10 @@ namespace XMLSigner
                 foreach (XmlElement KeyInfo in KeyInfos)
                 {
                     var xmlMCDid = doc_to_arch.CreateElement("MCDId", KeyInfo.NamespaceURI);
-                    KeyInfo.AppendChild(xmlMCDid).InnerText = MchdId;
+                    KeyInfo.AppendChild(xmlMCDid).InnerText = MchdId.ToUpper();
 
                     var xmlINNPrincipal = doc_to_arch.CreateElement("INNPrincipal", KeyInfo.NamespaceURI);
-                    KeyInfo.AppendChild(xmlINNPrincipal).InnerText = MchdINN;
+                    KeyInfo.AppendChild(xmlINNPrincipal).InnerText = MchdINN.ToUpper();
                 }
             }
             doc_to_arch.Save(NewDocToArchName);

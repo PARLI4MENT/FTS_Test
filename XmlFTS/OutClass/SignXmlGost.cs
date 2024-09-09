@@ -1,17 +1,11 @@
 ﻿using GostCryptography.Base;
 using GostCryptography.Gost_R3411;
 using GostCryptography.Pkcs;
-using GostCryptography.Xml;
 using System;
-using System.Configuration;
 using System.IO;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography.Xml;
 using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using XmlFTS.OutClass;
 
 namespace XMLSigner
 {
@@ -158,7 +152,10 @@ namespace XMLSigner
             return null;
         }
         /// <summary>Ищет по ФИО и возвращает объект сертификата из хранилища</summary>
-        /// <remarks>Если найти соотвествие не удалось, то возвращает null</remarks>
+        /// <remarks>
+        /// Если найти соотвествие не удалось, то возвращает null
+        ///  NON USABLE
+        /// </remarks>
         /// <param name="surname">Фамилия</param>
         /// <param name="name">Имя</param>
         /// <param name="lastname">Отчество</param>
@@ -183,7 +180,7 @@ namespace XMLSigner
         }
 
 
-        /// <summary> Ищет по серийному номеру и возвращает объект сертификата из хранилища</summary>
+        /// <summary> Ищет сертификат по серийному номеру и возвращает объект сертификата из хранилища</summary>
         /// <remarks>Если найти соотвествие не удалось, то возвращает null</remarks>
         /// <param name="serialNumber">Серийный номер в виде строки (string)</param>
         /// <returns>Возвращает объект сертификата из хранилища в формате X509Certificate2</returns>
