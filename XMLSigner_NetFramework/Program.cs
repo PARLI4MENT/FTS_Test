@@ -1,22 +1,26 @@
 ﻿#define TEST
+///5.23.0/3.4.16
 
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using XmlFTS.OutClass;
-using XmlNs;
-using XMLSigner.OutClass;
 
 namespace XMLSigner
 {
     public static class Program
     {
-        static string PathToTemplate = "C:\\_test\\template.xml";
+        static string PathToTemplate = "C:\\_2\\template.xml";
+
+        static string MchdId = "e7d94ee1-33d4-4b95-a27d-07896fdc00e0".ToUpper();
+        static string MchdINN = "250908790897";
+
         static void Main(string[] args)
         {
             /// Открытие файла
@@ -36,10 +40,6 @@ namespace XMLSigner
             ProcessStart();
             Console.WriteLine();
 
-            /// Поиск сертификата
-            //SignXmlGost.FindGostCurrentCertificate(string.Empty);
-
-
             Console.Write("\nPress any key...");
             Console.ReadKey();
             Console.ReadKey();
@@ -47,26 +47,26 @@ namespace XMLSigner
 
         private static void ProcessStart()
         {
-            //var rawSrcFolder = Directory.GetDirectories("C:\\Dekl\\SEND DATA");
-            //foreach (var rawFolder in rawSrcFolder)
-            //{
-            //    /// #1 Extraction ZIP
-            //    ArchiveWorker.ExtractZipArchive(Directory.GetFiles(rawFolder, "*.zip")[0]);
-
-            //    /// #2 Rename Copy
-            //    string[] xmlFiles = Directory.GetFiles(rawFolder, "*.xml");
-            //    foreach (var xmlFile in xmlFiles)
-            //        RenameMoveFileOnly(xmlFile);
-            //}
-
             var sw = new Stopwatch();
             sw.Start();
             int SummaryFiles = 0;
+            Console.WriteLine("Start...");
 
-            //foreach (var rawFolder in rawSrcFolder)
-            string[] notSortedFiles = Directory.GetFiles("C:\\_2\\ExtractionFiles", "*.xml");
+            var rawSrcFolders = Directory.GetDirectories("C:\\Dekl\\SEND DATA");
+            foreach (var rawSrcFolder in rawSrcFolders)
+            {
+                /// #1 Extraction ZIP
+                ArchiveWorker.ExtractZipArchive(Directory.GetFiles(rawSrcFolder, "*.zip")[0]);
 
-            /// #3 Sort
+                /// #2 Rename Copy
+                string[] xmlFiles = Directory.GetFiles(rawSrcFolder, "*.xml");
+                RenameMoveFileOnly(xmlFiles);
+            }
+
+            Console.WriteLine("Sort start");
+
+            ///// #3 Sort
+            string[] notSortedFiles = Directory.GetFiles("C:\\_2\\ExtractionFiles", "*.xml");   
             SortXml(notSortedFiles);
 
             SummaryFiles += Directory.GetFiles("C:\\_2\\ExtractionFiles", "*.xml").Count();
@@ -74,23 +74,25 @@ namespace XMLSigner
             sw.Stop();
             Console.WriteLine();
             Console.WriteLine($"General => {SummaryFiles} count || {sw.ElapsedMilliseconds / 1000} sec.");
-            Console.WriteLine($"AVG => {SummaryFiles / (sw.ElapsedMilliseconds / 1000)} sec.");
+            //Console.WriteLine($"AVG => {SummaryFiles / (sw.ElapsedMilliseconds / 1000)} sec.");
 
             Console.WriteLine();
+            Console.Write("Press any key...");
+            Thread.Sleep(3000);
         }
 
         /// <summary>Переименование и перемещение</summary>
         /// <param name="pathRawFile">Путь к файлу</param>
-        public static string RenameMoveFileOnly(string pathRawFile, string dirDestination = "C:\\_2\\ExtractionFiles")
+        public static string RenameMoveFileOnly(string pathRawFile)
         {
             string code = Path.GetFileName(Path.GetDirectoryName(pathRawFile));
 
-            if (!Directory.Exists(Path.Combine(dirDestination)))
-                Directory.CreateDirectory(Path.Combine(dirDestination));
+            if (!Directory.Exists(Path.Combine("C:\\_2\\ExtractionFiles")))
+                Directory.CreateDirectory(Path.Combine("C:\\_2\\ExtractionFiles"));
 
             if (File.Exists(pathRawFile))
             {
-                string tmpPathCombine = Path.Combine(dirDestination, string.Concat(code, ".", Path.GetFileName(pathRawFile)));
+                string tmpPathCombine = Path.Combine("C:\\_2\\ExtractionFiles", string.Concat(code, ".", Path.GetFileName(pathRawFile)));
                 if (!File.Exists(tmpPathCombine))
                 {
                     File.Copy(pathRawFile, tmpPathCombine, true);
@@ -100,10 +102,40 @@ namespace XMLSigner
             return null;
         }
 
+        /// <summary> Переименование и перемещение </summary>
+        /// <remarks>НЕ ИСПОЛЬЗОВАТЬ</remarks>
+        /// <param name="xmlFiles">Массив строк путей к файлам</param>
+        /// <returns></returns>
+        private static string RenameMoveFileOnly(string[] xmlFiles)
+        {
+            foreach (var xmlFile in xmlFiles)
+            {
+                string code = Path.GetFileName(Path.GetDirectoryName(xmlFile));
+
+                if (!Directory.Exists(Path.Combine("C:\\_2\\ExtractionFiles")))
+                    Directory.CreateDirectory(Path.Combine("C:\\_2\\ExtractionFiles"));
+
+                if (File.Exists(xmlFile))
+                {
+                    string tmpPathCombine = Path.Combine("C:\\_2\\ExtractionFiles", string.Concat(code, ".", Path.GetFileName(xmlFile)));
+                    if (!File.Exists(tmpPathCombine))
+                    {
+                        File.Copy(xmlFile, tmpPathCombine, true);
+                        return tmpPathCombine;
+                    }
+                }
+            }
+            return null;
+        }
+
         public static void SortXml(string[] xmlFiles)
         {
+            var cert = SignXmlGost.FindGostCurrentCertificate("01DA FCE9 BC8E 41B0 0008 7F5E 381D 0002");
+
             Parallel.ForEach
-                (xmlFiles, xmlFile =>
+                (xmlFiles,
+                new ParallelOptions { MaxDegreeOfParallelism = 4 },
+                xmlFile =>
                 {
                     if (File.Exists(xmlFile))
                     {
@@ -118,15 +150,18 @@ namespace XMLSigner
                             case "1006275E":
                                 {
                                     tmpFilePath = Path.Combine("C:\\_2\\Sorted\\ptd", Path.GetFileName(xmlFile));
-                                    if (!File.Exists(tmpFilePath))
-                                        File.Move(xmlFile, tmpFilePath);
+                                    //if (!File.Exists(tmpFilePath))
+                                    //{
+                                        File.Copy(xmlFile, tmpFilePath, true);
+                                        
+                                        // Шаблонизация
+                                        var tmp = ImplementLinear(tmpFilePath, true);
 
-                                    /// Шаблонизация
-                                    var tmp = ImplementLinear(tmpFilePath);
+                                        /// выбрать серификат Конкретного человека
 
-                                    /// выбрать серификат Конкретного человека
-                                    //var cert = SignXmlGost.FindGostCurrentCertificate("", "", "");
-                                    NormalizationXml(tmp, null);
+                                        /// Нормализация и подписание
+                                        NormalizationXml(tmp, cert);
+                                    //}
                                 }
                                 break;
 
@@ -134,15 +169,18 @@ namespace XMLSigner
                             default:
                                 {
                                     tmpFilePath = Path.Combine("C:\\_2\\Sorted\\toArchive", Path.GetFileName(xmlFile));
-                                    if (!File.Exists(tmpFilePath))
-                                        File.Move(xmlFile, tmpFilePath);
+                                    //if (!File.Exists(tmpFilePath))
+                                    //{
+                                        File.Copy(xmlFile, tmpFilePath, true);
 
-                                    /// Шаблонизация
-                                    var tmp = ImplementLinear(tmpFilePath);
+                                        /// Шаблонизация
+                                        var tmp = ImplementLinear(tmpFilePath, true);
 
-                                    /// выбрать серификат Компании
-                                    var cert = SignXmlGost.FindGostCurrentCertificate("");
-                                    NormalizationXml(tmp, cert);
+                                        /// выбрать серификат (Компании) ///Пока индивидуальный
+
+                                        /// Нормализация и подписание
+                                        NormalizationXml(tmp, cert);
+                                    //}
                                 }
                                 break;
                         }
@@ -150,14 +188,9 @@ namespace XMLSigner
                 });
         }
 
-        public static string ImplementLinear(string intermidateFile)
+        public static string ImplementLinear(string intermidateFile, bool isMCHD = false)
         {
-
-            string DateStr = intermidateFile + ";";
-
-            //File.AppendAllText("C:\\_test\\Arch_docs.log", Environment.NewLine + "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
-
-            string NameArray = (string)Path.GetFileName(intermidateFile).Split('.')[0]; // Можно упростить
+            string NameArray = (string)Path.GetFileName(intermidateFile).Split('.')[0];
             var file_xml = new XmlDocument();
             var doc_to_arch = new XmlDocument();
 
@@ -290,18 +323,51 @@ namespace XMLSigner
             string EnvelopeID = Guid.NewGuid().ToString().ToUpper();
             string DocumentID = Guid.NewGuid().ToString().ToUpper();
 
-            doc_to_arch.GetElementsByTagName("EnvelopeID", "*")[0].InnerText = EnvelopeID;
-            doc_to_arch.GetElementsByTagName("roi:SenderInformation")[0].InnerText = "SenderInformation_TEMP";
-            doc_to_arch.GetElementsByTagName("roi:PreparationDateTime")[0].InnerText = DateTime.Now.ToString("s") + DateTime.Now.ToString("zzz");
-            doc_to_arch.GetElementsByTagName("ParticipantID")[0].InnerText = "ParticipantID";
-            doc_to_arch.GetElementsByTagName("CustomsCode")[0].InnerText = "10000000";
-            doc_to_arch.GetElementsByTagName("X509Certificate")[0].InnerText = "X509Certificate_TEMP";
-            doc_to_arch.GetElementsByTagName("ct:DocumentID")[0].InnerText = (Guid.NewGuid().ToString()).ToUpper();
-            doc_to_arch.GetElementsByTagName("ct:ArchDeclID")[0].InnerText = "ArchDeclID_TEMP";
-            doc_to_arch.GetElementsByTagName("ct:ArchID")[0].InnerText = "ArchID_TEMP";
+            //doc_to_arch.GetElementsByTagName("EnvelopeID", "*")[0].InnerText = EnvelopeID;
+            var envelopIds = doc_to_arch.GetElementsByTagName("EnvelopeID", "*");
+            foreach (XmlNode envelopId in envelopIds)
+                envelopId.InnerText = EnvelopeID;
+            //doc_to_arch.GetElementsByTagName("roi:SenderInformation")[0].InnerText = "smpt://eps.customs.ru/nts102773904741735";
+            var senderInfos = doc_to_arch.GetElementsByTagName("roi:SenderInformation");
+            foreach (XmlNode senderInfo in senderInfos)
+                senderInfo.InnerText = "smpt://eps.customs.ru/nts102773904741735";
+            //doc_to_arch.GetElementsByTagName("roi:PreparationDateTime")[0].InnerText = DateTime.Now.ToString("s") + DateTime.Now.ToString("zzz");
+            var preparationDataTimes = doc_to_arch.GetElementsByTagName("roi:PreparationDateTime");
+            foreach (XmlNode preparationDataTime in preparationDataTimes)
+                preparationDataTime.InnerText = DateTime.Now.ToString("s") + DateTime.Now.ToString("zzz");
+            //doc_to_arch.GetElementsByTagName("ParticipantID")[0].InnerText = "102773904741735";
+            var participantIds = doc_to_arch.GetElementsByTagName("ParticipantID");
+            foreach (XmlNode participantId in participantIds)
+                participantId.InnerText = "102773904741735";
+            //doc_to_arch.GetElementsByTagName("CustomsCode")[0].InnerText = "10000000";
+            var customsCodes = doc_to_arch.GetElementsByTagName("CustomsCode");
+            foreach (XmlNode customsCode in customsCodes)
+                customsCode.InnerText = "10000000";
+            //doc_to_arch.GetElementsByTagName("X509Certificate")[0].InnerText = "X509Certificate_TEMP";
+            var x509Certs = doc_to_arch.GetElementsByTagName("X509Certificate");
+            foreach (XmlNode x509Cert in x509Certs)
+                x509Cert.InnerText = "X509Certificate_TEMP";
+            //doc_to_arch.GetElementsByTagName("ct:DocumentID")[0].InnerText = (Guid.NewGuid().ToString()).ToUpper();
+            var ctDocIds = doc_to_arch.GetElementsByTagName("ct:DocumentID");
+            foreach (XmlNode ctDocId in ctDocIds)
+                ctDocId.InnerText = (Guid.NewGuid().ToString()).ToUpper();
+            //doc_to_arch.GetElementsByTagName("ct:ArchDeclID")[0].InnerText = "ArchDeclID_TEMP";
+            var archDeclIds = doc_to_arch.GetElementsByTagName("ct:ArchDeclID");
+            foreach (XmlNode archDeclId in archDeclIds)
+                archDeclId.InnerText = "ArchDeclID_TEMP";
+            //doc_to_arch.GetElementsByTagName("ct:ArchID")[0].InnerText = "ArchID_TEMP";
+            var archIds = doc_to_arch.GetElementsByTagName("ct:ArchID");
+            foreach (XmlNode archId in archIds)
+                archId.InnerText = "ArchID_TEMP";
             doc_to_arch.GetElementsByTagName("DocumentID", "*")[1].InnerText = DocumentID;
-            doc_to_arch.GetElementsByTagName("DocCode", "*")[0].InnerText = DocCode;
-            doc_to_arch.GetElementsByTagName("X509Certificate", "*")[0].InnerText = "X509Certificate_TEMP *";
+            //doc_to_arch.GetElementsByTagName("DocCode", "*")[0].InnerText = DocCode;
+            var docCodes = doc_to_arch.GetElementsByTagName("DocCode", "*");
+            foreach (XmlNode docCode in docCodes)
+                docCode.InnerText = DocCode;
+            //doc_to_arch.GetElementsByTagName("X509Certificate", "*")[0].InnerText = "X509Certificate_TEMP *";
+            var x509CertTemps = doc_to_arch.GetElementsByTagName("X509Certificate", "*");
+            foreach (XmlNode x509CertTemp in x509CertTemps)
+                x509CertTemp.InnerText = "X509Certificate_TEMP *";
 
             ((XmlElement)doc_to_arch.GetElementsByTagName("DocBaseInfo", "*")[0]).GetElementsByTagName("PrDocumentName", "*")[0].InnerText = PrDocumentName;
 
@@ -315,15 +381,25 @@ namespace XMLSigner
             else
                 ((XmlElement)doc_to_arch.GetElementsByTagName("DocBaseInfo", "*")[0]).GetElementsByTagName("PrDocumentDate", "*")[0].InnerText = PrDocumentDate;
 
+            if (isMCHD)
+            {
+                var KeyInfos = doc_to_arch.GetElementsByTagName("KeyInfo", "*");
+                foreach (XmlElement KeyInfo in KeyInfos)
+                {
+                    var xmlMCDid = doc_to_arch.CreateElement("MCDId", KeyInfo.NamespaceURI);
+                    KeyInfo.AppendChild(xmlMCDid).InnerText = MchdId;
+
+                    var xmlINNPrincipal = doc_to_arch.CreateElement("INNPrincipal", KeyInfo.NamespaceURI);
+                    KeyInfo.AppendChild(xmlINNPrincipal).InnerText = MchdINN;
+                }
+            }
             doc_to_arch.Save(NewDocToArchName);
 
-            var implXml = Path.Combine(Path.GetDirectoryName(intermidateFile), Path.GetFileName(intermidateFile));
+            //var implXml = Path.Combine(Path.GetDirectoryName(intermidateFile), Path.GetFileName(intermidateFile));
+            ////// ERROR
+            //File.Copy(NewDocToArchName, implXml, true);
 
-            //// ERROR
-            File.Copy(NewDocToArchName, implXml, true);
-
-            return implXml;
-
+            return NewDocToArchName;
         }
 
         public static void NormalizationXml(string pathToXml, X509Certificate2 cert)

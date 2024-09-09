@@ -39,5 +39,28 @@ namespace XmlFTS.OutClass
             }
             return null;
         }
+
+        public static void ExtractZipArchive(string pathToZip)
+        {
+            if (File.Exists(pathToZip))
+            {
+                string code = Path.GetFileName(Path.GetDirectoryName(pathToZip));
+
+                if (!Directory.Exists(Path.Combine("C:\\_2\\ExtractionFiles")))
+                    Directory.CreateDirectory(Path.Combine("C:\\_2\\ExtractionFiles"));
+
+                using (ZipArchive zipArch = new ZipArchive(File.OpenRead(pathToZip)))
+                {
+                    foreach (ZipArchiveEntry entry in zipArch.Entries)
+                    {
+                        if (entry.FullName.Contains("xml"))
+                        {
+                            string pathDest = Path.Combine("C:\\_2\\ExtractionFiles", string.Concat(code, ".", entry.Name));
+                            entry.ExtractToFile(pathDest, true);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

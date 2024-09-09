@@ -211,7 +211,7 @@ namespace XmlNs
             string DocumentID = Guid.NewGuid().ToString().ToUpper();
 
             doc_to_arch.GetElementsByTagName("EnvelopeID", "*")[0].InnerText = EnvelopeID;
-            doc_to_arch.GetElementsByTagName("roi:SenderInformation")[0].InnerText = "SenderInformation_TEMP";
+            doc_to_arch.GetElementsByTagName("roi:SenderInformation")[0].InnerText = "smpt://eps.customs.ru/nts102773904741735";
             doc_to_arch.GetElementsByTagName("roi:PreparationDateTime")[0].InnerText = DateTime.Now.ToString("s") + DateTime.Now.ToString("zzz");
             doc_to_arch.GetElementsByTagName("ParticipantID")[0].InnerText = "ParticipantID";
             doc_to_arch.GetElementsByTagName("CustomsCode")[0].InnerText = "10000000";
@@ -255,6 +255,7 @@ namespace XmlNs
         }
 
         /// <summary> Извлечение данные из промежуточных XML-файлов, вставка в шаблонный XML и сохранение в папку (implementFiles по-умолчанию)</summary>
+        /// <remarks> Remark </remarks>
         /// <param name="intermidateFiles"> Принимает массив строк (string[]) с путями к файлам </param>
         /// <param name="_MaxDegreeOfParallelism"> Лимит параллельных операций (По-умолчанию -1 (ограничение отсутствует)) </param>
         /// <param name="deletedInputFile"> Удалять исходные XML-файлы (по-умолчанию false) </param>

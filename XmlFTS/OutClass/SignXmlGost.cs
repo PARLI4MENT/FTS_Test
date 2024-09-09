@@ -193,7 +193,7 @@ namespace XMLSigner
             store.Open(OpenFlags.OpenExistingOnly | OpenFlags.ReadOnly);
 
             foreach (X509Certificate2 cert in store.Certificates)
-                if (cert.SerialNumber == serialNumber)
+                if (cert.SerialNumber.ToLower() == serialNumber.Replace(" ", "").ToLower())
                     return cert;
 
             return null;
