@@ -44,9 +44,13 @@ namespace XMLSigner
 
             /// Certificate
             //{
-            //    var cert = SignXmlGost.FindGostCurrentCertificate("01DA FCE9 BC8E 41B0 0008 7F5E 381D 0002");
             //    var pubKey = Convert.ToBase64String(cert.PublicKey.EncodedKeyValue.RawData);
+            //    Console.WriteLine(pubKey);
+            //    Console.WriteLine();
             //    var tmp1 = Convert.ToBase64String(cert.RawData);
+
+            //    Console.WriteLine();
+
             //    Console.WriteLine();
             //}
 
@@ -144,7 +148,7 @@ namespace XMLSigner
 
             Parallel.ForEach
                 (xmlFiles,
-                new ParallelOptions { MaxDegreeOfParallelism = 4 },
+                new ParallelOptions { MaxDegreeOfParallelism = 1 },
                 xmlFile =>
                 {
                     if (File.Exists(xmlFile))
@@ -330,54 +334,52 @@ namespace XMLSigner
             var temp_node = doc_to_arch.ImportNode(file_xml.DocumentElement, true);
             doc_to_arch.GetElementsByTagName("Object")[1].AppendChild(temp_node);
 
-            string EnvelopeID = Guid.NewGuid().ToString().ToUpper();
-            string DocumentID = Guid.NewGuid().ToString().ToUpper();
-
-            //doc_to_arch.GetElementsByTagName("EnvelopeID", "*")[0].InnerText = EnvelopeID;
-            var envelopIds = doc_to_arch.GetElementsByTagName("EnvelopeID", "*");
-            foreach (XmlNode envelopId in envelopIds)
-                envelopId.InnerText = EnvelopeID;
+            doc_to_arch.GetElementsByTagName("EnvelopeID", "*")[0].InnerText = Guid.NewGuid().ToString().ToUpper();
+            //var envelopIds = doc_to_arch.GetElementsByTagName("EnvelopeID", "*");
+            //foreach (XmlNode envelopId in envelopIds)
+            //    envelopId.InnerText = EnvelopeID;
             //doc_to_arch.GetElementsByTagName("roi:SenderInformation")[0].InnerText = "smpt://eps.customs.ru/nts102773904741735";
-            var senderInfos = doc_to_arch.GetElementsByTagName("roi:SenderInformation");
-            foreach (XmlNode senderInfo in senderInfos)
-                senderInfo.InnerText = "smpt://eps.customs.ru/nts102773904741735";
-            //doc_to_arch.GetElementsByTagName("roi:PreparationDateTime")[0].InnerText = DateTime.Now.ToString("s") + DateTime.Now.ToString("zzz");
-            var preparationDataTimes = doc_to_arch.GetElementsByTagName("roi:PreparationDateTime");
-            foreach (XmlNode preparationDataTime in preparationDataTimes)
-                preparationDataTime.InnerText = DateTime.Now.ToString("s") + DateTime.Now.ToString("zzz");
-            //doc_to_arch.GetElementsByTagName("ParticipantID")[0].InnerText = "102773904741735";
-            var participantIds = doc_to_arch.GetElementsByTagName("ParticipantID");
-            foreach (XmlNode participantId in participantIds)
-                participantId.InnerText = "102773904741735";
-            //doc_to_arch.GetElementsByTagName("CustomsCode")[0].InnerText = "10000000";
-            var customsCodes = doc_to_arch.GetElementsByTagName("CustomsCode");
-            foreach (XmlNode customsCode in customsCodes)
-                customsCode.InnerText = "10000000";
-            //doc_to_arch.GetElementsByTagName("X509Certificate")[0].InnerText = "X509Certificate_TEMP";
-            var x509Certs = doc_to_arch.GetElementsByTagName("X509Certificate");
-            foreach (XmlNode x509Cert in x509Certs)
-                x509Cert.InnerText = Convert.ToBase64String(cert.RawData);
-            //doc_to_arch.GetElementsByTagName("ct:DocumentID")[0].InnerText = (Guid.NewGuid().ToString()).ToUpper();
-            var ctDocIds = doc_to_arch.GetElementsByTagName("ct:DocumentID");
-            foreach (XmlNode ctDocId in ctDocIds)
-                ctDocId.InnerText = (Guid.NewGuid().ToString()).ToUpper();
-            //doc_to_arch.GetElementsByTagName("ct:ArchDeclID")[0].InnerText = "ArchDeclID_TEMP";
-            var archDeclIds = doc_to_arch.GetElementsByTagName("ct:ArchDeclID");
-            foreach (XmlNode archDeclId in archDeclIds)
-                archDeclId.InnerText = "ArchDeclID_TEMP";
-            //doc_to_arch.GetElementsByTagName("ct:ArchID")[0].InnerText = "ArchID_TEMP";
-            var archIds = doc_to_arch.GetElementsByTagName("ct:ArchID");
-            foreach (XmlNode archId in archIds)
-                archId.InnerText = "ArchID_TEMP";
-            doc_to_arch.GetElementsByTagName("DocumentID", "*")[1].InnerText = DocumentID;
-            //doc_to_arch.GetElementsByTagName("DocCode", "*")[0].InnerText = DocCode;
-            var docCodes = doc_to_arch.GetElementsByTagName("DocCode", "*");
-            foreach (XmlNode docCode in docCodes)
-                docCode.InnerText = DocCode;
-            //doc_to_arch.GetElementsByTagName("X509Certificate", "*")[0].InnerText = "X509Certificate_TEMP *";
-            var x509CertTemps = doc_to_arch.GetElementsByTagName("X509Certificate", "*");
-            foreach (XmlNode x509CertTemp in x509CertTemps)
-                x509CertTemp.InnerText = Convert.ToBase64String(cert.RawData);
+            doc_to_arch.GetElementsByTagName("roi:SenderInformation")[0].InnerText = "smtp://eps.customs.ru/nts102773904951145";
+            //var senderInfos = doc_to_arch.GetElementsByTagName("roi:SenderInformation");
+            //foreach (XmlNode senderInfo in senderInfos)
+            //    senderInfo.InnerText = "smpt://eps.customs.ru/nts102773904741735";
+            doc_to_arch.GetElementsByTagName("roi:PreparationDateTime")[0].InnerText = DateTime.Now.ToString("s") + DateTime.Now.ToString("zzz");
+            //var preparationDataTimes = doc_to_arch.GetElementsByTagName("roi:PreparationDateTime");
+            //foreach (XmlNode preparationDataTime in preparationDataTimes)
+            //    preparationDataTime.InnerText = DateTime.Now.ToString("s") + DateTime.Now.ToString("zzz");
+            doc_to_arch.GetElementsByTagName("ParticipantID")[0].InnerText = "102773904741735";
+            //var participantIds = doc_to_arch.GetElementsByTagName("ParticipantID");
+            //foreach (XmlNode participantId in participantIds)
+            //    participantId.InnerText = "102773904741735";
+            doc_to_arch.GetElementsByTagName("CustomsCode")[0].InnerText = "10000000";
+            //var customsCodes = doc_to_arch.GetElementsByTagName("CustomsCode");
+            //foreach (XmlNode customsCode in customsCodes)
+            //    customsCode.InnerText = "10000000";
+            //doc_to_arch.GetElementsByTagName("X509Certificate")[0].InnerText = Convert.ToBase64String(cert.RawData);
+            //var x509Certs = doc_to_arch.GetElementsByTagName("X509Certificate");
+            //foreach (XmlNode x509Cert in x509Certs)
+            //    x509Cert.InnerText = Convert.ToBase64String(cert.RawData);
+            doc_to_arch.GetElementsByTagName("ct:DocumentID")[0].InnerText = (Guid.NewGuid().ToString()).ToUpper();
+            //var ctDocIds = doc_to_arch.GetElementsByTagName("ct:DocumentID");
+            //foreach (XmlNode ctDocId in ctDocIds)
+            //    ctDocId.InnerText = (Guid.NewGuid().ToString()).ToUpper();
+            doc_to_arch.GetElementsByTagName("ct:ArchDeclID")[0].InnerText = "ArchDeclID_TEMP";
+            //var archDeclIds = doc_to_arch.GetElementsByTagName("ct:ArchDeclID");
+            //foreach (XmlNode archDeclId in archDeclIds)
+            //    archDeclId.InnerText = "ArchDeclID_TEMP";
+            doc_to_arch.GetElementsByTagName("ct:ArchID")[0].InnerText = "ArchID_TEMP";
+            //var archIds = doc_to_arch.GetElementsByTagName("ct:ArchID");
+            //foreach (XmlNode archId in archIds)
+            //    archId.InnerText = "ArchID_TEMP";
+            doc_to_arch.GetElementsByTagName("DocumentID", "*")[1].InnerText = Guid.NewGuid().ToString().ToUpper();
+            doc_to_arch.GetElementsByTagName("DocCode", "*")[0].InnerText = DocCode;
+            //var docCodes = doc_to_arch.GetElementsByTagName("DocCode", "*");
+            //foreach (XmlNode docCode in docCodes)
+            //    docCode.InnerText = DocCode;
+            doc_to_arch.GetElementsByTagName("X509Certificate", "*")[0].InnerText = Convert.ToBase64String(cert.RawData);
+            //var x509CertTemps = doc_to_arch.GetElementsByTagName("X509Certificate", "*");
+            //foreach (XmlNode x509CertTemp in x509CertTemps)
+            //    x509CertTemp.InnerText = Convert.ToBase64String(cert.RawData);
 
             ((XmlElement)doc_to_arch.GetElementsByTagName("DocBaseInfo", "*")[0]).GetElementsByTagName("PrDocumentName", "*")[0].InnerText = PrDocumentName;
 
