@@ -93,7 +93,7 @@ namespace XMLSigner
 
             Console.WriteLine();
             Console.Write("Press any key...");
-            Thread.Sleep(3000);
+            Console.ReadKey();
         }
 
         /// <summary>Переименование и перемещение</summary>
@@ -431,6 +431,21 @@ namespace XMLSigner
             var normXml = Path.Combine("C:\\_2\\SignedFiles", Path.GetFileName(pathToXml));
 
             xmlDocOrigin.Save(normXml);
+
+            /// Save without formating
+            var xDocument = XDocument.Load(normXml);
+            xDocument.Save(normXml, SaveOptions.DisableFormatting);
+        }
+
+        public static XmlNode OpenAutoClosed(XmlNode node)
+        {
+            if (String.IsNullOrEmpty(node.InnerText))
+            {
+
+            }
+
+
+            return null;
         }
 
         public static void FindElements(XmlElement xmlEdit, XmlElement xmlOrig, ref X509Certificate2 cert)
