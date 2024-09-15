@@ -90,6 +90,7 @@
     <Compile Include="Database\MsSql.cs" />
     <Compile Include="Database\PgSql.cs" />
     <Compile Include="OutClass\FileWatcher.cs" />
+    <Compile Include="OutClass\OpenExternalFile.cs" />
     <Compile Include="OutClass\ZipArchive.cs" />
     <Compile Include="ProcessXML.cs" />
     <Compile Include="Fields\ECD_list.cs" />

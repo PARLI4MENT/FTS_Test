@@ -18,42 +18,16 @@ namespace XMLSigner
     {
         static string PathToTemplate = "C:\\_2\\template.xml";
 
+        /// <summary> Это нужно будет удалить </summary>
         static string MchdId = "e7d94ee1-33d4-4b95-a27d-07896fdc00e0";
         static string MchdINN = "250908790897";
-        
         static X509Certificate2 cert = SignXmlGost.FindGostCurrentCertificate("01DA FCE9 BC8E 41B0 0008 7F5E 381D 0002");
         
         static void Main(string[] args)
         {
-            /// Открытие файла
-            /*
-            if (File.Exists(Config.GetAppConfigLocation))
-            {
-                ProcessStartInfo processStartInfo = new ProcessStartInfo
-                {
-                    Arguments = Path.GetDirectoryName(Config.GetAppConfigLocation),
-                    FileName = Path.GetFileName(Config.GetAppConfigLocation)
-                };
-                Process.Start(processStartInfo);
-            }
+            OpenExternalFile.Open(PathToTemplate);
+
             Console.WriteLine();
-            */
-
-            ProcessStart();
-            Console.WriteLine();
-
-            /// Certificate
-            //{
-            //    var pubKey = Convert.ToBase64String(cert.PublicKey.EncodedKeyValue.RawData);
-            //    Console.WriteLine(pubKey);
-            //    Console.WriteLine();
-            //    var tmp1 = Convert.ToBase64String(cert.RawData);
-
-            //    Console.WriteLine();
-
-            //    Console.WriteLine();
-            //}
-
 
             Console.Write("\nPress any key...");
             Console.ReadKey();

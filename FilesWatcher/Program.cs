@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OutClass;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -11,28 +12,37 @@ namespace FilesWatcher
 {
     internal class Program
     {
+        private static string Filter = "*.xml";
+        private static string InputFolder = "";
+        private static bool IsStarted;
+
         static void Main()
         {
-            var watcher = new FileSystemWatcher(@"C:\_1");
+            IsStarted = true;
 
-            watcher.NotifyFilter = NotifyFilters.Attributes
-                                 | NotifyFilters.CreationTime
-                                 | NotifyFilters.DirectoryName
-                                 | NotifyFilters.FileName
-                                 | NotifyFilters.LastAccess
-                                 | NotifyFilters.LastWrite
-                                 | NotifyFilters.Security
-                                 | NotifyFilters.Size;
+            while (true)
+            {
+                var watcher = new FileSystemWatcher(@"C:\_1");
 
-            watcher.Changed += OnChanged;
-            watcher.Created += OnCreated;
-            watcher.Deleted += OnDeleted;
-            watcher.Renamed += OnRenamed;
-            watcher.Error += OnError;
+                watcher.NotifyFilter = NotifyFilters.Attributes
+                                     | NotifyFilters.CreationTime
+                                     | NotifyFilters.DirectoryName
+                                     | NotifyFilters.FileName
+                                     | NotifyFilters.LastAccess
+                                     | NotifyFilters.LastWrite
+                                     | NotifyFilters.Security
+                                     | NotifyFilters.Size;
 
-            watcher.Filter = "*.xml";
-            watcher.IncludeSubdirectories = true;
-            watcher.EnableRaisingEvents = true;
+                watcher.Changed += OnChanged;
+                watcher.Created += OnCreated;
+                watcher.Deleted += OnDeleted;
+                watcher.Renamed += OnRenamed;
+                watcher.Error += OnError;
+
+                watcher.Filter = "*.xml";
+                watcher.IncludeSubdirectories = true;
+                watcher.EnableRaisingEvents = true;
+            }
 
             Console.WriteLine("Press enter to exit.");
             Console.ReadLine();
@@ -42,6 +52,7 @@ namespace FilesWatcher
         {
             if (e.ChangeType != WatcherChangeTypes.Changed)
             {
+                Console.WriteLine(e.FullPath);
                 return;
             }
             Console.WriteLine($"Changed: {e.FullPath}");
@@ -49,12 +60,17 @@ namespace FilesWatcher
 
         private static void OnCreated(object sender, FileSystemEventArgs e)
         {
-            string value = $"Created: {e.FullPath}";
-            Console.WriteLine(value);
+            if (e.ChangeType == WatcherChangeTypes.Created)
+            {
+
+            }
+            Console.WriteLine($"Created: { e.FullPath}");
         }
 
-        private static void OnDeleted(object sender, FileSystemEventArgs e) =>
+        private static void OnDeleted(object sender, FileSystemEventArgs e)
+        {
             Console.WriteLine($"Deleted: {e.FullPath}");
+        }
 
         private static void OnRenamed(object sender, RenamedEventArgs e)
         {
