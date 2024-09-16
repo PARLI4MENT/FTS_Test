@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.IO.Pipes;
-using System.Windows.Documents;
+using System.Runtime.InteropServices;
 
-namespace XmlFTS.OutClass
+namespace XmlFTS
 {
     public static class ArchiveWorker
     {
-        /// <summary> Извлечение файлов из архива</summary>
+        /// <summary>Извлекает из ZIP-архива XML-файлы в переименнованном виде</summary>
         /// <param name="pathToZip"></param>
         /// <param name="dirDestination">Папка назначения</param>
         /// <remarks> Папка назначения содержит папку "code" </remarks>
@@ -40,11 +39,14 @@ namespace XmlFTS.OutClass
             return null;
         }
 
-        public static void ExtractZipArchive(string pathToZip)
+        /// <summary>Извлекает из ZIP-архива XML-файлы в переименнованном виде</summary>
+        /// <param name="pathToZip">Путь к папке с архивами</param>
+        public static void ExtractZipArchive(string pathToZip, int Count)
         {
             if (File.Exists(pathToZip))
             {
                 string code = Path.GetFileName(Path.GetDirectoryName(pathToZip));
+                int count = 0;
 
                 if (!Directory.Exists(Path.Combine("C:\\_2\\ExtractionFiles")))
                     Directory.CreateDirectory(Path.Combine("C:\\_2\\ExtractionFiles"));

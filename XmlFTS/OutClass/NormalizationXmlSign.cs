@@ -10,38 +10,37 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace XMLSigner.OutClass
 {
-    public class NormalizationXmlSign
+    public static class NormalizationXmlSign
     {
-        /// <summary> Конструктор  </summary>
+        /// <summary></summary>
         /// <param name="pathToXmls"></param>
-        public NormalizationXmlSign(string pathToXmlsFolder, int _MaxDegreeOfParallelism = -1)
+        public static void NormalizationXml(string pathToXml, ref X509Certificate2 cert)
         {
-            string[] implementFiles = Directory.GetFiles(pathToXmlsFolder);
+            /// XML Document Orig
+            XmlDocument xmlDocOrigin = new XmlDocument();
+            xmlDocOrigin.Load(new StringReader(File.ReadAllText(pathToXml)));
+            XmlElement xmlRootOrigin = (XmlElement)xmlDocOrigin.GetElementsByTagName("Body")[0];
 
-            Parallel.ForEach(implementFiles,
-                new ParallelOptions { MaxDegreeOfParallelism = _MaxDegreeOfParallelism },
-                implementFile =>
-                {
-                    /// XML Document Orig
-                    XmlDocument xmlDocOrigin = new XmlDocument();
-                    xmlDocOrigin.Load(new StringReader(File.ReadAllText(implementFile)));
-                    XmlElement xmlRootOrigin = (XmlElement)xmlDocOrigin.GetElementsByTagName("Body")[0];
+            /// XML Document Editing
+            XmlDocument xmlDocEdit = new XmlDocument();
+            xmlDocEdit.Load(new StringReader(File.ReadAllText(pathToXml)));
+            XmlElement xmlRootEdit = (XmlElement)xmlDocEdit.GetElementsByTagName("Body")[0];
 
-                    /// XML Document Editing
-                    XmlDocument xmlDocEdit = new XmlDocument();
-                    xmlDocEdit.Load(new StringReader(File.ReadAllText(implementFile)));
-                    XmlElement xmlRootEdit = (XmlElement)xmlDocEdit.GetElementsByTagName("Body")[0];
+            FindElements(xmlRootEdit, xmlRootOrigin, ref cert);
 
-                    FindElements(xmlRootEdit, xmlRootOrigin);
+            var normXml = Path.Combine("C:\\_2\\SignedFiles", Path.GetFileName(pathToXml));
 
-                    xmlDocOrigin.Save(Path.Combine(StaticPathConfiguration.PathSignedFolder, Path.GetFileName(implementFile)));
-                });
+            xmlDocOrigin.Save(normXml);
+
+            /// Save without formating
+            var xDocument = XDocument.Load(normXml);
+            xDocument.Save(normXml, SaveOptions.DisableFormatting);
         }
 
         /// <summary> Сделать автопоиск по элементу Reference </summary>
         /// <param name="xmlEdit"></param>
         /// <param name="xmlOrig"></param>
-        public static void FindElements(XmlElement xmlEdit, XmlElement xmlOrig)
+        public static void FindElements(XmlElement xmlEdit, XmlElement xmlOrig, ref X509Certificate2 cert)
         {
             var objEditNodes = xmlEdit.GetElementsByTagName("Object");
             var objOrigNodes = xmlOrig.GetElementsByTagName("Object");
@@ -67,7 +66,7 @@ namespace XMLSigner.OutClass
                     /// Sign Object
                     Normalization(((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("SignedInfo", "*")[0]);
                     var swapSingedInfo = SwapAttributes(((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("SignedInfo", "*")[0].OuterXml);
-                    var strSignCms = SignXmlGost.SignCmsMessage(swapSingedInfo, SignXmlGost.Certificate);
+                    var strSignCms = SignXmlGost.SignCmsMessage(swapSingedInfo, cert);
                     ((XmlElement)objEditNodes.Item(i)).GetElementsByTagName("SignatureValue")[0].InnerText = strSignCms;
                     ((XmlElement)objOrigNodes.Item(i)).GetElementsByTagName("SignatureValue")[0].InnerText = strSignCms;
                 }
@@ -90,16 +89,17 @@ namespace XMLSigner.OutClass
             /// Sign Object
             Normalization(xmlEdit.GetElementsByTagName("SignedInfo", "*")[0]);
             var swapBodySingedInfo = SwapAttributes(((XmlElement)xmlEdit.GetElementsByTagName("SignedInfo", "*")[0]).OuterXml);
-            var strBodySignCms = SignXmlGost.SignCmsMessage(swapBodySingedInfo, SignXmlGost.Certificate);
+            var strBodySignCms = SignXmlGost.SignCmsMessage(swapBodySingedInfo, cert);
             ((XmlElement)xmlEdit.GetElementsByTagName("SignatureValue")[0]).InnerText = strBodySignCms;
             ((XmlElement)xmlOrig.GetElementsByTagName("SignatureValue")[0]).InnerText = strBodySignCms;
         }
 
-        /// <summary> Нормализация Xml документа</summary>
+        /// <summary> Нормализация XmlNode </summary>
         /// <param name="xmlNode"></param>
         /// <param name="prefix"></param>
         /// <param name="rootNode"></param>
-        public static void Normalization(XmlNode xmlNode, string prefix = "n1")
+        /// <remarks>Из VBasic (не используется)</remarks>
+        private static void Normalization(XmlNode xmlNode, string prefix = "n1")
         {
             if (xmlNode.GetType().Equals(typeof(XmlElement)))
             {
@@ -160,6 +160,37 @@ namespace XMLSigner.OutClass
             if (disableFormating)
                 return xElement.ToString(SaveOptions.DisableFormatting);
             return xElement.ToString();
+        }
+
+        /// <summary> "Открывает" автозакрытые элементы XML-документа </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        private static XmlNode OpenAutoClosed(XmlNode node)
+        {
+            if (String.IsNullOrEmpty(node.InnerText))
+            {
+
+            }
+            return null;
+        }
+
+        /// <summary> Возвращает xml-элементы включая входящий элемент, с его дочерними элементами в виде древа </summary>
+        /// <param name="element"></param>
+        public static void GetTree(XmlElement element)
+        {
+            if (element.GetType().Equals(typeof(XmlElement)))
+            {
+                foreach (var node in element.ChildNodes)
+                {
+                    if (node.GetType().Equals(typeof(XmlElement)))
+                    {
+                        var elem = (XmlElement)node;
+                        Console.WriteLine($"\t{elem.Name}");
+                        if (elem.InnerText == "" && elem.InnerText == null)
+                            GetTree(elem);
+                    }
+                }
+            }
         }
     }
 }
