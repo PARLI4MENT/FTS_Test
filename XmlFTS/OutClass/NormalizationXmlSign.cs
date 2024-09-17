@@ -28,7 +28,7 @@ namespace XMLSigner.OutClass
 
             FindElements(xmlRootEdit, xmlRootOrigin, ref cert);
 
-            var normXml = Path.Combine("C:\\_2\\SignedFiles", Path.GetFileName(pathToXml));
+            var normXml = Path.Combine(StaticPathConfiguration.PathSignedFolder, Path.GetFileName(pathToXml));
 
             xmlDocOrigin.Save(normXml);
 

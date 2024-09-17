@@ -9,16 +9,32 @@ namespace XmlFTS.OutClass
 {
     public static class Config
     {
+
+        /// <summary> Настройка => Максимальное кол-во потоков </summary>
+        /// <remarks>По-умолчанию => 2</remarks>
         public static int MaxDegreeOfParallelism
         {
-            get { return Convert.ToInt32(ReadSettings("MaxDegreeOfParallelism")); }
+            //get { return Convert.ToInt32(ReadSettings("MaxDegreeOfParallelism")); }
+            get { return 2; }
             set { AddUpdateAppSettings("MaxDegreeOfParallelism", value.ToString()); }
         }
 
+        /// <summary> Настройка => Удалять исходные файлы </summary>
+        /// <remarks>По-умолчанию => true</remarks>
         public static bool DeleteSourceFiles
         {
-            get { return Convert.ToBoolean(ReadSettings("DeleteSourceFiles")); }
+            //get { return Convert.ToBoolean(ReadSettings("DeleteSourceFiles")); }
+            get { return true; }
             set { AddUpdateAppSettings("DeleteSourceFiles", value.ToString()); }
+        }
+
+        /// <summary> Настройка => Делать резеврную копию </summary>
+        /// <remarks>не доделано</remarks>
+        public static bool EnableBackup
+        {
+            //get { return Convert.ToBoolean(ReadSettings("BackupEnable")); }
+            get { return true; }
+            set { AddUpdateAppSettings("BackupEnable", value.ToString()); }
         }
 
         /// <summary>
@@ -26,7 +42,6 @@ namespace XmlFTS.OutClass
         /// </summary>Инициализация базовой конфигурация. Пути к папкам, шаблонам итд.
         /// <remarks>
         /// Файл с XML шаблоном должен лежать в базовой папке и называться template.xml
-        /// Если файл с шаблоном отсутсвует, то вызвается окно выбора файла, затем файл копируется в корневую базовую папку
         /// </remarks>
         /// <param name="basePath"> Путь к базовой папке, в которой будут располагаться необходимые папки для работы</param>
         /// <param name="deleteFile"> Удалять файлы после обработки </param>
@@ -38,29 +53,35 @@ namespace XmlFTS.OutClass
             if (!Directory.Exists(basePath))
                 Directory.CreateDirectory(basePath);
 
+            /// Путь к папке с исходными файлами
+            StaticPathConfiguration.PathRawFolder = Path.Combine(basePath, "RawFolder");
+            if (!Directory.Exists(StaticPathConfiguration.PathRawFolder))
+                Directory.CreateDirectory(StaticPathConfiguration.PathRawFolder);
+            AddUpdateAppSettings("PathRawFolder", StaticPathConfiguration.PathRawFolder);
+
             /// Путь к папке с извлечёнными файлами
-            StaticPathConfiguration.PathExtractionFolder = Path.Combine(basePath, "rawFiles");
+            StaticPathConfiguration.PathExtractionFolder = Path.Combine(basePath, "ExtractionFolder");
             if (!Directory.Exists(StaticPathConfiguration.PathExtractionFolder))
                 Directory.CreateDirectory(StaticPathConfiguration.PathExtractionFolder);
-            AddUpdateAppSettings("PathExtractionFiles", StaticPathConfiguration.PathExtractionFolder);
-
-            /// Путь к папке с промежуточными файлами
-            StaticPathConfiguration.PathIntermidateFolder = Path.Combine(basePath, "intermidateFiles");
-            if (!Directory.Exists(StaticPathConfiguration.PathIntermidateFolder))
-                Directory.CreateDirectory(StaticPathConfiguration.PathIntermidateFolder);
-            AddUpdateAppSettings("PathIntermidateFolder", StaticPathConfiguration.PathIntermidateFolder);
+            AddUpdateAppSettings("PathExtractionFolder", StaticPathConfiguration.PathExtractionFolder);
 
             /// Путь к папке с шаблонными файлами
-            StaticPathConfiguration.PathImplementFolder = Path.Combine(basePath, "implementFiles");
-            if (!Directory.Exists(StaticPathConfiguration.PathImplementFolder))
-                Directory.CreateDirectory(StaticPathConfiguration.PathImplementFolder);
-            AddUpdateAppSettings("PathImplementFolder", StaticPathConfiguration.PathImplementFolder);
+            StaticPathConfiguration.PathTemplatedFolder = Path.Combine(basePath, "TemplatedFolder");
+            if (!Directory.Exists(StaticPathConfiguration.PathTemplatedFolder))
+                Directory.CreateDirectory(StaticPathConfiguration.PathTemplatedFolder);
+            AddUpdateAppSettings("PathTemplatedFolder", StaticPathConfiguration.PathTemplatedFolder);
 
             /// Путь к папке с подписанными файлами
-            StaticPathConfiguration.PathSignedFolder = Path.Combine(basePath, "signedFiles");
+            StaticPathConfiguration.PathSignedFolder = Path.Combine(basePath, "SignedFolder");
             if (!Directory.Exists(StaticPathConfiguration.PathSignedFolder))
                 Directory.CreateDirectory(StaticPathConfiguration.PathSignedFolder);
             AddUpdateAppSettings("PathSignedFolder", StaticPathConfiguration.PathSignedFolder);
+
+            /// Путь к папке с резервными файлами
+            StaticPathConfiguration.PathBackupFolder = Path.Combine(basePath, "BackupFolder");
+            if (!Directory.Exists(StaticPathConfiguration.PathBackupFolder))
+                Directory.CreateDirectory(StaticPathConfiguration.PathBackupFolder);
+            AddUpdateAppSettings("PathBackupFolder", StaticPathConfiguration.PathBackupFolder);
 
             // Путь к файлу шаблоном
             if (!File.Exists(Path.Combine(basePath, "template.xml")))
@@ -72,36 +93,40 @@ namespace XmlFTS.OutClass
 
             DeleteSourceFiles = false;
 
-#if DEBUG
-            Debug.WriteLine(string.Empty);
-#endif
+            EnableBackup = true;
         }
 
-        public static void BaseConfiguration(string PathExtractionFolder, string PathIntermidateFolder, string PathImplementFolder, string PathSignedFolder, string TemplateXML)
+        public static void BaseConfiguration(string PathRawFolder, string PathExtractionFolder, string PathIntermidateFolder, string PathTemplatedFolder, string PathSignedFolder, string PathBackupFolder, string TemplateXML)
         {
+            /// Путь к папке с исходными файлами
+            if (!Directory.Exists(PathRawFolder))
+                Directory.CreateDirectory(PathRawFolder);
+            StaticPathConfiguration.PathExtractionFolder = PathRawFolder;
+            AddUpdateAppSettings("PathRawFolder", StaticPathConfiguration.PathRawFolder);
+
             /// Путь к папке с извлечёнными файлами
             if (!Directory.Exists(PathExtractionFolder))
                 Directory.CreateDirectory(PathExtractionFolder);
             StaticPathConfiguration.PathExtractionFolder = PathExtractionFolder;
-            AddUpdateAppSettings("PathRawFolder", StaticPathConfiguration.PathExtractionFolder);
-
-            /// Путь к папке с промежуточными файлами
-            if (!Directory.Exists(PathIntermidateFolder))
-                Directory.CreateDirectory(PathIntermidateFolder);
-            StaticPathConfiguration.PathIntermidateFolder = PathIntermidateFolder;
-            AddUpdateAppSettings("PathIntermidateFolder", StaticPathConfiguration.PathIntermidateFolder);
+            AddUpdateAppSettings("PathExtractionFolder", StaticPathConfiguration.PathExtractionFolder);
 
             /// Путь к папке с шаблонными файлами
-            if (!Directory.Exists(PathImplementFolder))
-                Directory.CreateDirectory(PathImplementFolder);
-            StaticPathConfiguration.PathImplementFolder = PathImplementFolder;
-            AddUpdateAppSettings("PathImplementFolder", StaticPathConfiguration.PathImplementFolder);
+            if (!Directory.Exists(PathTemplatedFolder))
+                Directory.CreateDirectory(PathTemplatedFolder);
+            StaticPathConfiguration.PathTemplatedFolder = PathTemplatedFolder;
+            AddUpdateAppSettings("PathTemplatedFolder", StaticPathConfiguration.PathTemplatedFolder);
 
             /// Путь к папке с подписанными файлами
             if (!Directory.Exists(PathSignedFolder))
                 Directory.CreateDirectory(PathSignedFolder);
             StaticPathConfiguration.PathSignedFolder = PathSignedFolder;
             AddUpdateAppSettings("PathSignedFolder", StaticPathConfiguration.PathSignedFolder);
+
+            /// Путь к папке с резервными файлами
+            if (!Directory.Exists(PathBackupFolder))
+                Directory.CreateDirectory(PathBackupFolder);
+            StaticPathConfiguration.PathBackupFolder = PathBackupFolder;
+            AddUpdateAppSettings("PathBackupFolder", StaticPathConfiguration.PathBackupFolder);
 
             // Путь к файлу шаблоном
             if (!File.Exists(TemplateXML))
@@ -116,16 +141,16 @@ namespace XmlFTS.OutClass
             try
             {
                 var appSettings = ConfigurationManager.AppSettings;
-                if (appSettings != null)
-                    Debug.WriteLine("Настройки приложения пусты");
+                if (appSettings == null)
+                    Console.WriteLine("Настройки приложения пусты. Необходимо инициализировать базовые настройки.");
                 else
                     foreach (var key in appSettings.AllKeys)
-                        Debug.WriteLine($"Key: {key} => {appSettings[key]}");
+                        Console.WriteLine($"{key} => {appSettings[key]}");
             }
             catch (ConfigurationErrorsException ex)
             {
 #if DEBUG
-                Debug.WriteLine(ex.Message);
+                Console.WriteLine(ex.Message);
 #endif
                 return;
             }
@@ -179,10 +204,7 @@ namespace XmlFTS.OutClass
         /// <summary> Получение пути к файлу конфигурации </summary>
         public static string GetAppConfigLocation
         {
-            get
-            {
-                return AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
-            }
+            get { return AppDomain.CurrentDomain.SetupInformation.ConfigurationFile; }
         }
     }
 }

@@ -1,10 +1,12 @@
-﻿using System;
+﻿using SQLNs;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Xml;
+using XmlFTS.OutClass;
 using XMLSigner;
 using XMLSigner.OutClass;
 
@@ -24,16 +26,19 @@ namespace XmlFTS
 
         public static void StartProcess()
         {
+            /// Переделать бесконечный цикл
             while (true)
             {
                 /// Получение путей папок из исходной папки
-                var rawSrcFolders = Directory.GetDirectories("C:\\Dekl\\SEND DATA");
+                var rawSrcFolders = Directory.GetDirectories(StaticPathConfiguration.PathRawFolder);
 
                 if (rawSrcFolders != null)
                     foreach (var rawSrcFolder in rawSrcFolders)
                     {
-                        Console.WriteLine("Sort start...");
+                        Debug.WriteLine("Start main process...");
+
                         int SummaryFiles = 0;
+
                         var sw = new Stopwatch();
                         if (IsStatistics)
                             sw.Start();
@@ -49,12 +54,11 @@ namespace XmlFTS
                             RenamerXML.RenameMoveRawFiles(xmlFiles);
 
                         ///// #3 Сортировка
-                        string[] notSortedFiles = Directory.GetFiles("C:\\_2\\ExtractionFiles", "*.xml");
-                        SortXml(notSortedFiles);
+                        SortXml(Directory.GetFiles(StaticPathConfiguration.PathExtractionFolder, "*.xml"));
 
                         if (IsStatistics)
                         {
-                            SummaryFiles += Directory.GetFiles("C:\\_2\\ExtractionFiles", "*.xml").Count();
+                            SummaryFiles += Directory.GetFiles(StaticPathConfiguration.PathExtractionFolder, "*.xml").Count();
 
                             sw.Stop();
                             Console.WriteLine();
@@ -76,13 +80,11 @@ namespace XmlFTS
 
             Parallel.ForEach
                 (xmlFiles,
-                new ParallelOptions { MaxDegreeOfParallelism = 1 },
+                new ParallelOptions { MaxDegreeOfParallelism = Config.MaxDegreeOfParallelism },
                 xmlFile =>
                 {
                     if (File.Exists(xmlFile))
                     {
-                        string tmpFilePath;
-
                         XmlDocument xmlDoc = new XmlDocument();
                         xmlDoc.Load(new StringReader(File.ReadAllText(xmlFile)));
 
@@ -90,30 +92,32 @@ namespace XmlFTS
                         {
                             /// ПТД ExpressCargoDeclaration
                             case "1006275E":
-                                {
-                                    tmpFilePath = Path.Combine("C:\\_2\\Sorted\\ptd", Path.GetFileName(xmlFile));
-                                    //if (!File.Exists(tmpFilePath))
-                                    //{
-                                        File.Copy(xmlFile, tmpFilePath, true);
+                                // Шаблонизация + выбрать серификат Конкретного человека
+                                TemplatingXml.TemplatingLinear(xmlFile, ref cert, MchdId, MchdINN);
 
-                                        // Шаблонизация + выбрать серификат Конкретного человека
-                                        ImplementateToXml.ImplementLinear(tmpFilePath, ref cert, MchdId, MchdINN);
-                                    //}
-                                }
+                                //{
+                                //    tmpFilePath = Path.Combine("C:\\_2\\Sorted\\ptd", Path.GetFileName(xmlFile));
+                                //    //if (!File.Exists(tmpFilePath))
+                                //    //{
+                                //        File.Copy(xmlFile, tmpFilePath, true);
+
+                                //    //}
+                                //}
                                 break;
 
                             /// В архив Остальное
                             default:
-                                {
-                                    tmpFilePath = Path.Combine("C:\\_2\\Sorted\\toArchive", Path.GetFileName(xmlFile));
-                                    //if (!File.Exists(tmpFilePath))
-                                    //{
-                                        File.Copy(xmlFile, tmpFilePath, true);
+                                // Шаблонизация + выбрать серификат (Компании) ///Пока индивидуальный
+                                TemplatingXml.TemplatingLinear(xmlFile, ref cert, MchdId, MchdINN);
+                                
+                                //{
+                                //    tmpFilePath = Path.Combine("C:\\_2\\Sorted\\toArchive", Path.GetFileName(xmlFile));
+                                //    //if (!File.Exists(tmpFilePath))
+                                //    //{
+                                //        File.Copy(xmlFile, tmpFilePath, true);
 
-                                        /// Шаблонизация + выбрать серификат (Компании) ///Пока индивидуальный
-                                        ImplementateToXml.ImplementLinear(tmpFilePath, ref cert, MchdId, MchdINN);
-                                    //}
-                                }
+                                //    //}
+                                //}
                                 break;
                         }
                     }
@@ -173,8 +177,6 @@ namespace XmlFTS
             }
         }
     }
-
-
 }
 namespace FolderWatcher
 {

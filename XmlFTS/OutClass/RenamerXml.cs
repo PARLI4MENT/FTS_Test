@@ -28,45 +28,36 @@ namespace XmlFTS
         /// <summary> Линейное переименование и перемещение сырых Xml-файлов </summary>
         /// <param name="rawFolders"> </param>
         /// <param name="_MaxDegreeOfParallelism"></param>
-        public static string RenameMoveRawFiles(string[] xmlFiles)
+        public static void RenameMoveRawFiles(string[] xmlFiles)
         {
             foreach (var xmlFile in xmlFiles)
             {
                 string code = Path.GetFileName(Path.GetDirectoryName(xmlFile));
 
-                if (!Directory.Exists(Path.Combine("C:\\_2\\ExtractionFiles")))
-                    Directory.CreateDirectory(Path.Combine("C:\\_2\\ExtractionFiles"));
-
-                if (File.Exists(xmlFile))
-                {
-                    string tmpPathCombine = Path.Combine("C:\\_2\\ExtractionFiles", string.Concat(code, ".", Path.GetFileName(xmlFile)));
-                    if (!File.Exists(tmpPathCombine))
-                    {
-                        File.Copy(xmlFile, tmpPathCombine, true);
-                        return tmpPathCombine;
-                    }
-                }
-            }
-            return null;
-        }
-
-        public static string RenameMoveRawFiles(string xmlFiles)
-        {
-            string code = Path.GetFileName(Path.GetDirectoryName(xmlFiles));
-
-            if (!Directory.Exists(Path.Combine("C:\\_2\\ExtractionFiles")))
-                Directory.CreateDirectory(Path.Combine("C:\\_2\\ExtractionFiles"));
-
-            if (File.Exists(xmlFiles))
-            {
-                string tmpPathCombine = Path.Combine("C:\\_2\\ExtractionFiles", string.Concat(code, ".", Path.GetFileName(xmlFiles)));
+                string tmpPathCombine = Path.Combine(StaticPathConfiguration.PathExtractionFolder, string.Concat(code, ".", Path.GetFileName(xmlFile)));
+                
                 if (!File.Exists(tmpPathCombine))
                 {
-                    File.Copy(xmlFiles, tmpPathCombine, true);
-                    return tmpPathCombine;
+                    File.Copy(xmlFile, tmpPathCombine, true);
+
+                    if (Config.EnableBackup)
+                        File.Copy(xmlFile, Path.Combine(StaticPathConfiguration.PathBackupFolder, string.Concat(code, ".", Path.GetFileName(xmlFile))), true);
                 }
             }
-            return null;
+        }
+
+        public static void RenameMoveRawFiles(string xmlFile)
+        {
+            string code = Path.GetFileName(Path.GetDirectoryName(xmlFile));
+            string tmpPathExtraction = Path.Combine(StaticPathConfiguration.PathExtractionFolder, string.Concat(code, ".", Path.GetFileName(xmlFile)));
+            
+            if (!File.Exists(tmpPathExtraction))
+            {
+                File.Copy(xmlFile, tmpPathExtraction, true);
+
+                if (Config.EnableBackup)
+                    File.Copy(xmlFile, Path.Combine(StaticPathConfiguration.PathBackupFolder, string.Concat(code, ".", Path.GetFileName(xmlFile))), true);
+            }
         }
 
         /// <summary> Удаление подпапок из исходной папки </summary>
@@ -81,7 +72,7 @@ namespace XmlFTS
         protected static void OutFilePath(List<string> lists)
         {
             foreach (var item in lists)
-                Console.WriteLine($"[] => {item}");
+                Debug.WriteLine($"[] => {item}");
         }
     }
 }

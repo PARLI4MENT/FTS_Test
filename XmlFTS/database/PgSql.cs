@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using XmlFTS.OutClass;
-using XMLSigner.SQL;
 
 namespace SQLNs
 {
@@ -14,7 +13,7 @@ namespace SQLNs
     {
         private static string connectionKey = "PgConnectionString";
 
-        private static string _Server = "localhost";
+        private static string _Server = "192.168.0.142";
         public void SetServer(string _server) => _Server = _server;
 
         private static string _Port = "5438";
@@ -31,33 +30,10 @@ namespace SQLNs
 
         public static string ConnectionString { get; private set; }
 
-        public static void SetConnectionString(string Server, string Port, string Uid, string Password, [Optional]string Database)
-        {
-            if (string.IsNullOrEmpty(Server) || string.IsNullOrEmpty(Port) || string.IsNullOrEmpty(Uid) || string.IsNullOrEmpty(Password))
-            {
-                Debug.WriteLine("Один из входящих параметров пуст или null");
-                return;
-            }
-
-
-            /// Сделать If с тестовым соединением и последующим сохранением в статические поля и файл конфигурации
-            if (string.IsNullOrEmpty(Database))
-            {
-                Config.AddUpdateAppSettings(connectionKey, $"Server={_Server};Port={_Port};Uid={_Uid};Pwd={_Password};");
-                ConnectionString = Config.ReadSettings(connectionKey);
-                return;
-            }
-                Config.AddUpdateAppSettings(connectionKey, string.Concat(ConfigurationManager.ConnectionStrings[connectionKey].ConnectionString, "Database=", _Database, ";"));
-        }
-        public void SetConnectionString()
-        {
-            Config.AddUpdateAppSettings(connectionKey, $"Server={_Server};Port={_Port};Uid={_Uid};Pwd={_Password};");
-        }
-
         public PgSql()
         {
-            if (!string.IsNullOrEmpty(Config.ReadSettings(connectionKey)))
-                ConnectionString = Config.ReadSettings(connectionKey);
+            //if (!string.IsNullOrEmpty(Config.ReadSettings(connectionKey)))
+            //    ConnectionString = Config.ReadSettings(connectionKey);
         }
 
         public PgSql(string Server, string Port, string Uid, string Password, [Optional]string Database)
@@ -72,16 +48,40 @@ namespace SQLNs
             PgSqlCheckConnection();
         }
 
+        public static void SetConnectionString(string Server, string Port, string Uid, string Password, [Optional]string Database)
+        {
+            if (string.IsNullOrEmpty(Server) || string.IsNullOrEmpty(Port) || string.IsNullOrEmpty(Uid) || string.IsNullOrEmpty(Password))
+            {
+                Debug.WriteLine("Один из входящих параметров пуст или null");
+                return;
+            }
+
+            /// Сделать If с тестовым соединением и последующим сохранением в статические поля и файл конфигурации
+            if (string.IsNullOrEmpty(Database))
+            {
+                Config.AddUpdateAppSettings(connectionKey, $"Server={_Server};Port={_Port};Uid={_Uid};Pwd={_Password};");
+                ConnectionString = Config.ReadSettings(connectionKey);
+                return;
+            }
+                Config.AddUpdateAppSettings(connectionKey, string.Concat(ConfigurationManager.ConnectionStrings[connectionKey].ConnectionString, "Database=", _Database, ";"));
+        }
+        
+        public void SetConnectionString()
+        {
+            Config.AddUpdateAppSettings(connectionKey, $"Server={_Server};Port={_Port};Uid={_Uid};Pwd={_Password};");
+        }
+
         /// <summary> Выполнение запроса в PostgresSQL </summary>
         /// <remarks>
         /// string[0] NameArray, string[1] EnvelopeID, string[2] DocumentID, string[3] PrDocumentName
         /// string[4] PrDocumentNumber, string[5] DocCode, string[6] NewDocToArchName
         /// </remarks>
         /// <param name="args"> Массив значение типа string </param>
-        /// <param name="Company_key_id"></param>
+        /// <param name="Company_key_id">Уникальный ID компании</param>
         public void ExecuteToDB(string[] args, int Company_key_id)
         {
-            using (var sqlConn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings[connectionKey].ConnectionString))
+            //using (var sqlConn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings[connectionKey].ConnectionString))
+            using (var sqlConn = new NpgsqlConnection($"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;"))
             {
                 sqlConn.Open();
                 using (var sqlComm = new NpgsqlCommand())
@@ -107,7 +107,8 @@ namespace SQLNs
         /// <param name="args"> Массив значение типа string </param>
         public void ExecuteToDB(string[] args)
         {
-            using (var sqlConn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings[connectionKey].ConnectionString))
+            //using (var sqlConn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings[connectionKey].ConnectionString))
+            using (var sqlConn = new NpgsqlConnection($"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;"))
             {
                 sqlConn.Open();
                 using (var sqlComm = new NpgsqlCommand())
@@ -220,9 +221,7 @@ namespace SQLNs
             }
         }
 
-        /// <summary>
-        /// NOT A FINISHTED
-        /// </summary>
+        /// <summary> NOT A FINISHTED </summary>
         /// <param name="sqlConnection"></param>
         /// <param name="tableName"></param>
         /// <returns></returns>
@@ -266,78 +265,6 @@ namespace SQLNs
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); return false; }
         }
-
-        #region TEST INSERT && INSERT_PARALLEL
-        /*
-        public async void PgInsertData(int iteration = 100)
-        {
-            PgClearData(_tableName);
-#if DEBUG
-            var sw = new Stopwatch();
-            sw.Start();
-#endif
-            try
-            {
-                string strCommand = @$"INSERT INTO ""public"".""{_tableName}"" (
-                        test1, test2, test3, test4, test5, test6, test7, test8, test9)
-                        VALUES ({true}, 'c', {DateTime.Now.ToString("yyyy-MM-dd")}, 3.14, 3.14, 1, 'some_text', 'some_text', 'some_text');";
-
-                await using (var sqlConnection = new NpgsqlConnection(string.Concat(_strConnMain, "Database=", Database, ";")))
-                {
-                    await sqlConnection.OpenAsync();
-                    int i = 0;
-                    await using (var sqlCommand = new NpgsqlCommand(strCommand, sqlConnection))
-                    {
-                        while (i < iteration)
-                        {
-                            await sqlCommand.ExecuteNonQueryAsync();
-                            i++;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex) { Console.WriteLine(ex.Message); return; }
-#if DEBUG
-            sw.Stop();
-            Console.WriteLine("\nAsync requests:");
-            Console.WriteLine($"Requests => {iteration} units");
-            Console.WriteLine($"Total time => {sw.ElapsedMilliseconds / 1000} sec ({sw.ElapsedMilliseconds} ms)");
-            Console.WriteLine($"Average => {(long)iteration / (sw.ElapsedMilliseconds / 1000)} q/s");
-#endif
-        }
-
-        public void PgInsertDataParallel(int iteration)
-        {
-            #region
-            PgClearData();
-            #endregion
-#if DEBUG
-            var sw = new Stopwatch();
-            sw.Start();
-#endif
-            string strCommand = @$"INSERT INTO ""public"".""{_tableName}"" (
-                        test1, test2, test3, test4, test5, test6, test7, test8, test9)
-                        VALUES ({true}, 'c', {DateTime.Now.ToString("yyyy-MM-dd")}, 3.14, 3.14, 1, 'some_text', 'some_text', 'some_text');";
-
-            Parallel.For(0, iteration, i =>
-            {
-                using (var sqlConnection = new NpgsqlConnection(string.Concat(_strConnMain, "Database=", Database, ";")))
-                {
-                    sqlConnection.Open();
-                    using (var sqlCommand = new NpgsqlCommand(strCommand, sqlConnection))
-                        sqlCommand.ExecuteNonQuery();
-                }
-            });
-#if DEBUG
-            sw.Stop();
-            Console.WriteLine("\nParallels requests:");
-            Console.WriteLine($"Requests => {iteration} units");
-            Console.WriteLine($"Total time => {sw.ElapsedMilliseconds / 1000} sec ({sw.ElapsedMilliseconds} ms)");
-            Console.WriteLine($"Average => {(long)iteration / (sw.ElapsedMilliseconds / 1000)} q/s");
-#endif
-        }
-        */
-        #endregion
 
         /// <summary> Получение данных из </summary>
         /// <param name="sqlConnection">Объект подключения</param>

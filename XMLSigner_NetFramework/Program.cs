@@ -2,6 +2,7 @@
 ///5.23.0/3.4.16
 
 using System;
+using System.Configuration;
 using XmlFTS;
 using XmlFTS.OutClass;
 
@@ -11,8 +12,11 @@ namespace XMLSigner
     {       
         public static void Main(string[] args)
         {
-            StaticPathConfiguration.TemplateXML = "C:\\_2\\template.xml";
-            StaticPathConfiguration.PathImplementFolder = "C:\\_2\\ImplFiles";
+            Console.WriteLine();
+            Config.BaseConfiguration("C:\\_2");
+            Config.ReadAllSetting();
+            Config.EnableBackup = false;
+
             ProcessXML.StartProcess();
 
             Console.Write("\nPress any key...");

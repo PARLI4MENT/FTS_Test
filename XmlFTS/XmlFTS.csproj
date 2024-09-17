@@ -97,7 +97,7 @@
     <Compile Include="Fields\ECD_list.cs" />
     <Compile Include="Fields\ExchED.cs" />
     <Compile Include="OutClass\Config.cs" />
-    <Compile Include="OutClass\ImplementateToXml.cs" />
+    <Compile Include="OutClass\TemplatingXml.cs" />
     <Compile Include="OutClass\NormalizationXmlSign.cs" />
     <Compile Include="OutClass\RenamerXml.cs" />
     <Compile Include="OutClass\SignXmlGost.cs" />
@@ -107,9 +107,9 @@
   <ItemGroup />
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Configuration\Mssql.config" />
+    <None Include="ConfigurationDatabase\Mssql.config" />
     <None Include="packages.config" />
-    <None Include="Configuration\PgConfig.config" />
+    <None Include="ConfigurationDatabase\PgConfig.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

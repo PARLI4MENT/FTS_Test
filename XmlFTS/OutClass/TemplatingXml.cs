@@ -12,9 +12,8 @@ using XMLSigner.OutClass;
 
 namespace XmlFTS
 {
-    public static class ImplementateToXml
+    public static class TemplatingXml
     {
-        public static string PathToTemplate { get; set; }
 
         /// <summary> Извлекает уникальный ID (DocumentId) XML-документа </summary>
         /// <param name="pathToXML">Абсолютный путь к XML-документу</param>
@@ -58,20 +57,20 @@ namespace XmlFTS
         }
 
         /// <summary> Извлечение данные из промежуточных XML-файлов, вставка в шаблонный XML и сохранение в папку (по-умолчанию implementFiles ) </summary>
-        /// <param name="intermidateFile"> Путь к XML-файлу</param>
+        /// <param name="extractedFile"> Путь к XML-файлу</param>
         /// <returns></returns>
-        public static void ImplementLinear(string intermidateFile, ref X509Certificate2 cert, string MchdId = "", string MchdINN = "")
+        public static void TemplatingLinear(string extractedFile, ref X509Certificate2 cert, string MchdId = "", string MchdINN = "")
         {
-            string NameArray = (string)Path.GetFileName(intermidateFile).Split('.')[0];
+            string NameArray = (string)Path.GetFileName(extractedFile).Split('.')[0];
             var file_xml = new XmlDocument();
             var doc_to_arch = new XmlDocument();
 
             string PrDocumentName = "", PrDocumentNumber = "", PrDocumentDate = "", DocCode = "", DocName = "";
 
-            string NewDocToArchName = Path.Combine(Path.GetDirectoryName(intermidateFile), Path.GetFileName(intermidateFile));
+            string NewDocToArchName = Path.Combine(Path.GetDirectoryName(extractedFile), Path.GetFileName(extractedFile));
             File.Copy(StaticPathConfiguration.TemplateXML, NewDocToArchName, true);
 
-            file_xml.Load(new StringReader(File.ReadAllText(intermidateFile)));
+            file_xml.Load(new StringReader(File.ReadAllText(extractedFile)));
             switch (file_xml.DocumentElement.GetAttribute("DocumentModeID"))
             {
                 //Договор ТамПред
@@ -187,7 +186,7 @@ namespace XmlFTS
                     break;
             }
 
-            doc_to_arch.Load(intermidateFile);
+            doc_to_arch.Load(extractedFile);
 
             var temp_node = doc_to_arch.ImportNode(file_xml.DocumentElement, true);
             doc_to_arch.GetElementsByTagName("Object")[1].AppendChild(temp_node);
@@ -222,6 +221,7 @@ namespace XmlFTS
             else
                 ((XmlElement)doc_to_arch.GetElementsByTagName("DocBaseInfo", "*")[0]).GetElementsByTagName("PrDocumentDate", "*")[0].InnerText = PrDocumentDate;
 
+            /// Если использутся МЧД
             if (!string.IsNullOrEmpty(MchdId) && !string.IsNullOrEmpty(MchdINN))
             {
                 var KeyInfos = doc_to_arch.GetElementsByTagName("KeyInfo", "*");
@@ -236,21 +236,22 @@ namespace XmlFTS
             }
             doc_to_arch.Save(NewDocToArchName);
 
-            File.Copy(NewDocToArchName, Path.Combine(StaticPathConfiguration.PathImplementFolder, Path.GetFileName(intermidateFile)), true);
+            File.Copy(NewDocToArchName, Path.Combine(StaticPathConfiguration.PathTemplatedFolder, Path.GetFileName(extractedFile)), true);
 
             //File.AppendAllText("C:\\_test\\Arch_docs.log", "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
 
             // Query to PostgresSql DB
-            //new PgSql().ExecuteToDB(new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName });
+            new PgSql().ExecuteToDB(new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName });
+            
+            /// Нормализация и подписание
+            NormalizationXmlSign.NormalizationXml(NewDocToArchName, ref cert);
 
             if (Config.DeleteSourceFiles)
             {
-                File.Delete(intermidateFile);
+                File.Delete(extractedFile);
                 File.Delete(NewDocToArchName);
             }
 
-            /// Нормализация и подписание
-            NormalizationXmlSign.NormalizationXml(NewDocToArchName, ref cert);
         }
     }
 }

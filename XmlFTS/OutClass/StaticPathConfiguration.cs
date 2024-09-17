@@ -37,16 +37,19 @@ namespace XmlFTS.OutClass
         /// <summary> Путь к XML шаблону </summary>
         public static string TemplateXML { get; set; }
 
-        /// <summary> Путь к папке с исходными файлами (RowFolder) </summary>
+        /// <summary> Путь к папке с "сырыми" файлами (RawFolder) </summary>
+        public static string PathRawFolder { get; set; }
+
+        /// <summary> Путь к папке с извлечёнными файлами (ExtractionFolder) </summary>
         public static string PathExtractionFolder { get; set; }
 
-        /// <summary> Путь к промежуточной папке (IntermidateFolder) </summary>
-        public static string PathIntermidateFolder { get; set; }
-
         /// <summary> Путь к папке с шаблонными файлами (ImplementFolder) </summary>
-        public static string PathImplementFolder { get; set; }
+        public static string PathTemplatedFolder { get; set; }
 
         /// <summary> Путь к папке с подписанными файлами (SignedFolder) </summary>
         public static string PathSignedFolder { get; set; }
+
+        /// <summary> Путь к папке с резервными копиями файлов (BackupFolder) </summary>
+        public static string PathBackupFolder { get; set; }
     }
 }
