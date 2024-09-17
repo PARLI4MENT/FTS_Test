@@ -11,7 +11,8 @@ namespace XMLSigner
     {       
         public static void Main(string[] args)
         {
-
+            StaticPathConfiguration.TemplateXML = "C:\\_2\\template.xml";
+            StaticPathConfiguration.PathImplementFolder = "C:\\_2\\ImplFiles";
             ProcessXML.StartProcess();
 
             Console.Write("\nPress any key...");

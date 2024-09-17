@@ -26,38 +26,44 @@ namespace XmlFTS
         {
             while (true)
             {
-                var sw = new Stopwatch();
-                sw.Start();
-                int SummaryFiles = 0;
-                Console.WriteLine("Sort start...");
-
                 /// Получение путей папок из исходной папки
                 var rawSrcFolders = Directory.GetDirectories("C:\\Dekl\\SEND DATA");
-                foreach (var rawSrcFolder in rawSrcFolders)
-                {
-                    /// #1 Извлечение ZIP
-                    ArchiveWorker.ExtractZipArchive(Directory.GetFiles(rawSrcFolder, "*.zip")[0]);
 
-                    /// #2 Переименование и копирование
-                    string[] xmlFiles = Directory.GetFiles(rawSrcFolder, "*.xml");
-                    if (xmlFiles.Count() == 1)
-                        RenamerXML.RenameMoveRawFiles(xmlFiles[0]);
-                    if (xmlFiles.Count() > 1)
-                        RenamerXML.RenameMoveRawFiles(xmlFiles);
-                }
+                if (rawSrcFolders != null)
+                    foreach (var rawSrcFolder in rawSrcFolders)
+                    {
+                        Console.WriteLine("Sort start...");
+                        int SummaryFiles = 0;
+                        var sw = new Stopwatch();
+                        if (IsStatistics)
+                            sw.Start();
 
-                ///// #3 Сортировка
-                string[] notSortedFiles = Directory.GetFiles("C:\\_2\\ExtractionFiles", "*.xml");
-                SortXml(notSortedFiles);
+                        /// #1 Извлечение ZIP
+                        ArchiveWorker.ExtractZipArchive(Directory.GetFiles(rawSrcFolder, "*.zip")[0]);
 
-                SummaryFiles += Directory.GetFiles("C:\\_2\\ExtractionFiles", "*.xml").Count();
+                        /// #2 Переименование и копирование
+                        string[] xmlFiles = Directory.GetFiles(rawSrcFolder, "*.xml");
+                        if (xmlFiles.Count() == 1)
+                            RenamerXML.RenameMoveRawFiles(xmlFiles[0]);
+                        if (xmlFiles.Count() > 1)
+                            RenamerXML.RenameMoveRawFiles(xmlFiles);
 
-                sw.Stop();
-                Console.WriteLine();
-                Console.WriteLine($"General => {SummaryFiles} count || {sw.ElapsedMilliseconds / 1000} sec.");
-                //Console.WriteLine($"AVG => {SummaryFiles / (sw.ElapsedMilliseconds / 1000)} sec.");
+                        ///// #3 Сортировка
+                        string[] notSortedFiles = Directory.GetFiles("C:\\_2\\ExtractionFiles", "*.xml");
+                        SortXml(notSortedFiles);
 
+                        if (IsStatistics)
+                        {
+                            SummaryFiles += Directory.GetFiles("C:\\_2\\ExtractionFiles", "*.xml").Count();
+
+                            sw.Stop();
+                            Console.WriteLine();
+                            Console.WriteLine($"General => {SummaryFiles} count || {sw.ElapsedMilliseconds / 1000} sec.");
+                            //Console.WriteLine($"AVG => {SummaryFiles / (sw.ElapsedMilliseconds / 1000)} sec.");
+                        }
+                    }
             }
+
             Debug.WriteLine("Process stoped");
             Debug.WriteLine("Press any key...");
             return;
@@ -65,6 +71,8 @@ namespace XmlFTS
 
         public static void SortXml(string[] xmlFiles)
         {
+            if (xmlFiles == null)
+                return;
 
             Parallel.ForEach
                 (xmlFiles,

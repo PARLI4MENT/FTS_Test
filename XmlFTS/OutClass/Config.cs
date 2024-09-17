@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
@@ -37,11 +38,11 @@ namespace XmlFTS.OutClass
             if (!Directory.Exists(basePath))
                 Directory.CreateDirectory(basePath);
 
-            /// Путь к папке с исходными файлами
-            StaticPathConfiguration.PathRawFolder = Path.Combine(basePath, "rawFiles");
-            if (!Directory.Exists(StaticPathConfiguration.PathRawFolder))
-                Directory.CreateDirectory(StaticPathConfiguration.PathRawFolder);
-            AddUpdateAppSettings("PathRawFolder", StaticPathConfiguration.PathRawFolder);
+            /// Путь к папке с извлечёнными файлами
+            StaticPathConfiguration.PathExtractionFolder = Path.Combine(basePath, "rawFiles");
+            if (!Directory.Exists(StaticPathConfiguration.PathExtractionFolder))
+                Directory.CreateDirectory(StaticPathConfiguration.PathExtractionFolder);
+            AddUpdateAppSettings("PathExtractionFiles", StaticPathConfiguration.PathExtractionFolder);
 
             /// Путь к папке с промежуточными файлами
             StaticPathConfiguration.PathIntermidateFolder = Path.Combine(basePath, "intermidateFiles");
@@ -61,15 +62,13 @@ namespace XmlFTS.OutClass
                 Directory.CreateDirectory(StaticPathConfiguration.PathSignedFolder);
             AddUpdateAppSettings("PathSignedFolder", StaticPathConfiguration.PathSignedFolder);
 
-
-
             // Путь к файлу шаблоном
             if (!File.Exists(Path.Combine(basePath, "template.xml")))
                 Debug.WriteLine("Файла с шаблоном не существует");
             StaticPathConfiguration.TemplateXML = Path.Combine(basePath, "template.xml");
             AddUpdateAppSettings("TemplateXML", StaticPathConfiguration.TemplateXML);
 
-            MaxDegreeOfParallelism = 4;
+            MaxDegreeOfParallelism = 2;
 
             DeleteSourceFiles = false;
 
@@ -78,13 +77,13 @@ namespace XmlFTS.OutClass
 #endif
         }
 
-        public static void BaseConfiguration(string PathRawFolder, string PathIntermidateFolder, string PathImplementFolder, string PathSignedFolder, string TemplateXML)
+        public static void BaseConfiguration(string PathExtractionFolder, string PathIntermidateFolder, string PathImplementFolder, string PathSignedFolder, string TemplateXML)
         {
-            /// Путь к папке с исходными файлами
-            if (!Directory.Exists(PathRawFolder))
-                Directory.CreateDirectory(PathRawFolder);
-            StaticPathConfiguration.PathRawFolder = PathRawFolder;
-            AddUpdateAppSettings("PathRawFolder", StaticPathConfiguration.PathRawFolder);
+            /// Путь к папке с извлечёнными файлами
+            if (!Directory.Exists(PathExtractionFolder))
+                Directory.CreateDirectory(PathExtractionFolder);
+            StaticPathConfiguration.PathExtractionFolder = PathExtractionFolder;
+            AddUpdateAppSettings("PathRawFolder", StaticPathConfiguration.PathExtractionFolder);
 
             /// Путь к папке с промежуточными файлами
             if (!Directory.Exists(PathIntermidateFolder))
@@ -132,7 +131,9 @@ namespace XmlFTS.OutClass
             }
         }
 
-
+        /// <summary>Чтение и возвращение значения </summary>
+        /// <param name="key">Ключ настройки</param>
+        /// <returns>Возвращает значение по принимаемому ключу</returns>
         public static string ReadSettings(string key)
         {
             try

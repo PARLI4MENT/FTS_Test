@@ -38,7 +38,7 @@ namespace XmlFTS.OutClass
         public static string TemplateXML { get; set; }
 
         /// <summary> Путь к папке с исходными файлами (RowFolder) </summary>
-        public static string PathRawFolder { get; set; }
+        public static string PathExtractionFolder { get; set; }
 
         /// <summary> Путь к промежуточной папке (IntermidateFolder) </summary>
         public static string PathIntermidateFolder { get; set; }

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Runtime.InteropServices;
 
 namespace XmlFTS
 {
@@ -41,12 +39,11 @@ namespace XmlFTS
 
         /// <summary>Извлекает из ZIP-архива XML-файлы в переименнованном виде</summary>
         /// <param name="pathToZip">Путь к папке с архивами</param>
-        public static void ExtractZipArchive(string pathToZip, int Count)
+        public static void ExtractZipArchive(string pathToZip)
         {
             if (File.Exists(pathToZip))
             {
                 string code = Path.GetFileName(Path.GetDirectoryName(pathToZip));
-                int count = 0;
 
                 if (!Directory.Exists(Path.Combine("C:\\_2\\ExtractionFiles")))
                     Directory.CreateDirectory(Path.Combine("C:\\_2\\ExtractionFiles"));
