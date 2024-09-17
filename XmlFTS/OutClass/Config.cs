@@ -144,8 +144,12 @@ namespace XmlFTS.OutClass
                 if (appSettings == null)
                     Console.WriteLine("Настройки приложения пусты. Необходимо инициализировать базовые настройки.");
                 else
+                {
+                    Console.WriteLine("Setting:\n{");
                     foreach (var key in appSettings.AllKeys)
-                        Console.WriteLine($"{key} => {appSettings[key]}");
+                        Console.WriteLine($"\t{key} => {appSettings[key]}");
+                    Console.WriteLine("}");
+                }
             }
             catch (ConfigurationErrorsException ex)
             {
