@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilesWatcher", "FilesWatche
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XMLSigner_WPF", "XMLSigner_WPF\XMLSigner_WPF.csproj", "{C971939F-56E8-492A-8CE3-E70CCF873A04}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileWatcher", "FileWatcher\FileWatcher.csproj", "{6174DEF7-C593-4E13-BB8A-E73188A43EC9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{C971939F-56E8-492A-8CE3-E70CCF873A04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C971939F-56E8-492A-8CE3-E70CCF873A04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C971939F-56E8-492A-8CE3-E70CCF873A04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6174DEF7-C593-4E13-BB8A-E73188A43EC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6174DEF7-C593-4E13-BB8A-E73188A43EC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6174DEF7-C593-4E13-BB8A-E73188A43EC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6174DEF7-C593-4E13-BB8A-E73188A43EC9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -92,6 +98,7 @@ Global
 		{8E0BE1D3-BE4B-4881-B3A7-1428E5EA19BA} = {C3FC2636-E63D-4FA3-969C-E06291660C76}
 		{9136CD0D-4537-4959-9A5E-EB14806FE11F} = {BD923331-910F-4784-BF14-6CBEEB48809D}
 		{8E2FEB8E-7DCA-41F3-8A42-CA6D6665FDEE} = {BD923331-910F-4784-BF14-6CBEEB48809D}
+		{6174DEF7-C593-4E13-BB8A-E73188A43EC9} = {BD923331-910F-4784-BF14-6CBEEB48809D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC034BBC-14CD-404E-946C-0EFA12833581}

@@ -107,23 +107,28 @@ namespace SQLNs
         /// <param name="args"> Массив значение типа string </param>
         public void ExecuteToDB(string[] args)
         {
-            //using (var sqlConn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings[connectionKey].ConnectionString))
-            using (var sqlConn = new NpgsqlConnection($"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;"))
+            try
             {
-                sqlConn.Open();
-                using (var sqlComm = new NpgsqlCommand())
+
+
+                //using (var sqlConn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings[connectionKey].ConnectionString))
+                using (var sqlConn = new NpgsqlConnection($"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;"))
                 {
-                    sqlComm.CommandText = $@"INSERT INTO ""public"".""ExchED""
+                    sqlConn.Open();
+                    using (var sqlComm = new NpgsqlCommand())
+                    {
+                        sqlComm.CommandText = $@"INSERT INTO ""public"".""ExchED""
                                 (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
                                 ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
                                 VALUES ('{args[0]}', 'CMN.00202', '{args[1]}', 1, '{args[2]}',
                                 '{args[3]}', '{args[4]}', '{args[5]}', '{Path.GetFileName(args[6])}');";
-                    sqlComm.Connection = sqlConn;
-                    sqlComm.ExecuteNonQuery();
-                    // ArchivePathDoc ???
+                        sqlComm.Connection = sqlConn;
+                        sqlComm.ExecuteNonQuery();
+                        // ArchivePathDoc ???
+                    }
+                    sqlConn.Close();
                 }
-                sqlConn.Close();
-            }
+            } catch(PostgresException pEx) { Debug.WriteLine(pEx.Message);  }
         }
 
         public delegate void PgDataOut(string tableName, int iteration = 100);
@@ -191,16 +196,8 @@ namespace SQLNs
             /// Npgsql.PostgresException: '42P04: database "declarantplus" already exists'
         }
 
-        private void PgSqlBaseCreateTable()
+        public void PgSqlBaseCreateTable()
         {
-            /// NOT USE ONLY FOR TEST!
-            /*
-            string strCreateTable = @$"CREATE TABLE ""public"".""{_tableName}"" (
-                ""ID"" int4 NOT NULL GENERATED ALWAYS AS IDENTITY (INCREMENT 1), ""test1"" bool, ""test2"" char, ""test3"" varchar(255),
-                ""test4"" decimal(10,2), ""test5"" float8, ""test6"" int8, ""test7"" text, ""test8"" varchar(255), ""test9"" varchar(255),
-                PRIMARY KEY (""ID""));";
-            */
-
             try
             {
                 using (var sqlConn = new NpgsqlConnection(string.Concat(ConfigurationManager.ConnectionStrings["PgConnectionString"].ConnectionString, "Database=", _Database, ";")))
@@ -213,6 +210,8 @@ namespace SQLNs
                     /// Create table => ExchED
                     using (var sqlComm = new NpgsqlCommand(Fields.ExchED.GetSqlCommandCreator, sqlConn))
                         sqlComm.ExecuteNonQuery();
+
+                    sqlConn.Close();
                 }
             }
             catch (Exception ex)

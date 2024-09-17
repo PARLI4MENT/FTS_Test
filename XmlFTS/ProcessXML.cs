@@ -66,9 +66,9 @@ namespace XmlFTS
                             //Console.WriteLine($"AVG => {SummaryFiles / (sw.ElapsedMilliseconds / 1000)} sec.");
                         }
                     }
+                Debug.WriteLine("Process done!");
             }
 
-            Debug.WriteLine("Process stoped");
             Debug.WriteLine("Press any key...");
             return;
         }
