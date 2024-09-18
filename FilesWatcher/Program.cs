@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using FileWatching;
-using System;
 using System.Threading.Tasks;
 
 namespace FilesWatcher
@@ -19,7 +18,6 @@ namespace FilesWatcher
                 })
                 .Build();
             await host.RunAsync();
-
         }
     }
 }
