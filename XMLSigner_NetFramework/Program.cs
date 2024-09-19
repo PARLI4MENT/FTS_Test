@@ -21,6 +21,7 @@ namespace XMLSigner
             Config.ReadAllSetting();
 
             ProcessXML.ProcessStart();
+            //new PgSql().PgRetriveData("BD2D10AB-2871-4155-8F0A-2CE896EA880F", "BD2D10AB-2871-4155-8F0A-2CE896EA880F", "Общая ошибка при работе системы");
 
             Console.ReadKey();
         }

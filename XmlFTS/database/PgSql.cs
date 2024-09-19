@@ -109,8 +109,6 @@ namespace SQLNs
         {
             try
             {
-
-
                 //using (var sqlConn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings[connectionKey].ConnectionString))
                 using (var sqlConn = new NpgsqlConnection($"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;"))
                 {
@@ -128,7 +126,8 @@ namespace SQLNs
                     }
                     sqlConn.Close();
                 }
-            } catch(PostgresException pEx) { Debug.WriteLine(pEx.Message);  }
+            }
+            catch (PostgresException pEx) { Debug.WriteLine(pEx.Message); }
         }
 
         public delegate void PgDataOut(string tableName, int iteration = 100);
@@ -265,21 +264,39 @@ namespace SQLNs
             catch (Exception ex) { Console.WriteLine(ex.Message); return false; }
         }
 
-        /// <summary> Получение данных из </summary>
-        /// <param name="sqlConnection">Объект подключения</param>
-        private static void PgRetriveData(NpgsqlConnection sqlConnection)
+        ///<summary> Получение данных из </summary>
+        ///<param name="searchValue">Значение, которое ищем</param>
+        /// <param name="destEnvelopeID">Значение, которое будет "вставлено", в случае, если строка со значением существует</param>
+        /// <returns></returns>
+        public void PgRetriveData(string searchEnvelopeID, string destEnvelopeID, string status)
         {
-            using (var sqlComm = new NpgsqlCommand("SELECT * FROM \"public\".\"testTabel1\"", sqlConnection))
+            try
             {
-                using (NpgsqlDataReader reader = sqlComm.ExecuteReader())
+                using (var sqlConn = new NpgsqlConnection($"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;"))
                 {
-                    if (!reader.HasRows)
-                        return;
-
-                    while (reader.Read())
-                        Console.WriteLine(reader.GetString(0));
+                    sqlConn.Open();
+                    string strCommand = $@"SELECT COUNT(*) FROM ""public"".""ExchED"" WHERE ""EnvelopeID""='{searchEnvelopeID}';";
+                    using (var sqlComm = new NpgsqlCommand(strCommand, sqlConn))
+                    {
+                        var ExchEDCount = (Int64)sqlComm.ExecuteScalar();
+                        strCommand = $@"SELECT COUNT(*) FROM ""public"".""ECD_list"" WHERE ""InnerID""='{searchEnvelopeID}';";
+                        sqlComm.CommandText = strCommand;
+                        var ECD_listCount = (Int64)sqlComm.ExecuteScalar();
+                        if (ExchEDCount > 0 && ECD_listCount == 0)
+                        {
+                            sqlComm.CommandText = $@"INSERT INTO ""public"".""ECD_list""
+                                (""InnerID"", ""Status"", ""DocsSended"")
+                                VALUES ('{searchEnvelopeID}', '{status}', 1);";
+                            sqlComm.ExecuteNonQuery();
+                            sqlConn.Close();
+                        }
+                        else
+                            Debug.WriteLine("Запись существует");
+                        sqlConn.Close();
+                    }
                 }
             }
+            catch (NpgsqlException npgEx) { Debug.WriteLine(npgEx.Message); }
         }
 
         /// <summary> Полная очистка таблицы от данных PostgresSql</summary>

@@ -34,7 +34,7 @@ namespace XmlFTS.OutClass
 
         public static void BaseInitialize() { }
 
-        /// <summary> Путь к XML шаблону </summary>
+        /// <summary> Путь к XML шаблону (template.xml) </summary>
         public static string TemplateXML { get; set; }
 
         /// <summary> Путь к папке с "сырыми" файлами (RawFolder) </summary>
@@ -51,5 +51,8 @@ namespace XmlFTS.OutClass
 
         /// <summary> Путь к папке с резервными копиями файлов (BackupFolder) </summary>
         public static string PathBackupFolder { get; set; }
+
+        /// <summary> Путь к папке с принимаемыми файлами от ФТС (ReplyFTS) </summary>
+        public static string PathReplyFTS { get; set; }
     }
 }

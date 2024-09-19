@@ -1,12 +1,16 @@
-﻿using System;
+﻿using SQLNs;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Xml;
 using XmlFTS.OutClass;
 using XMLSigner;
+using Timer = System.Timers.Timer;
 
 namespace XmlFTS
 {
@@ -16,39 +20,53 @@ namespace XmlFTS
         public static bool LogsIsEnable { get; set; } = false;
 
         /// <summary> Это нужно будет удалить </summary>
-        static string MchdId = "e7d94ee1-33d4-4b95-a27d-07896fdc00e0";
-        static string MchdINN = "250908790897";
-        static X509Certificate2 cert = SignXmlGost.FindGostCurrentCertificate("01DA FCE9 BC8E 41B0 0008 7F5E 381D 0002");
+        private static string MchdId = "e7d94ee1-33d4-4b95-a27d-07896fdc00e0";
+        private static string MchdINN = "250908790897";
+        private static X509Certificate2 cert = SignXmlGost.FindGostCurrentCertificate("01DA FCE9 BC8E 41B0 0008 7F5E 381D 0002");
 
-        private static System.Timers.Timer timer;
+        private static Timer BaseProcessTimer;
+        private static Timer ReplyProcessTimer;
         private static DateTime lastWrite;
 
         public static void ProcessStart()
         {
+            AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
+
             /// Начальная обработка Xml-файлов
             var BaseProcess = Task.Run(() =>
             {
-                Console.WriteLine("BaseProcess => Started");
-                timer = new System.Timers.Timer();
-                timer.Interval = 1000;
-                timer.Elapsed += new System.Timers.ElapsedEventHandler(BaseTick);
-                timer.Start();
+                Console.WriteLine($"Base Process => Starting");
+                BaseProcessTimer = new Timer();
+                BaseProcessTimer.Interval = 500;
+                BaseProcessTimer.Elapsed += new ElapsedEventHandler(BaseTick);
+                BaseProcessTimer.Start();
             });
 
+            /// Обработка
+            var ReplyProcess = Task.Run(() =>
+            {
+                Console.WriteLine("Reply FTS Process => Starting");
+                ReplyProcessTimer = new System.Timers.Timer();
+                ReplyProcessTimer.Interval = 100;
+                ReplyProcessTimer.Elapsed += new ElapsedEventHandler(ReplyProcessTick);
+            });
         }
 
-        private static void BaseTick(object sender, System.Timers.ElapsedEventArgs e)
+        private static void CurrentDomain_ProcessExit(object sender, EventArgs e) { }
+
+        /// <summary>Задача => Начальная обработка </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void BaseTick(object sender, ElapsedEventArgs e)
         {
             FileInfo info = new FileInfo(StaticPathConfiguration.PathRawFolder);
 
             if (lastWrite == DateTime.MinValue)
-            {
                 lastWrite = info.LastWriteTime;
-            }
 
             if (lastWrite.CompareTo(info.LastWriteTime) == -1)
             {
-                timer.Stop();
+                BaseProcessTimer.Stop();
 
                 var rawSrcFolders = Directory.GetDirectories(StaticPathConfiguration.PathRawFolder);
 
@@ -68,8 +86,8 @@ namespace XmlFTS
                         if (IsStatistics)
                             SummaryFiles += Directory.GetFiles(StaticPathConfiguration.PathExtractionFolder, "*.xml").Count();
 
-                            /// #2 Переименование и копирование
-                            string[] xmlFiles = Directory.GetFiles(rawSrcFolder, "*.xml");
+                        /// #2 Переименование и копирование
+                        string[] xmlFiles = Directory.GetFiles(rawSrcFolder, "*.xml");
                         if (xmlFiles.Count() == 1)
                             RenamerXML.RenameMoveRawFiles(xmlFiles[0]);
                         if (xmlFiles.Count() > 1)
@@ -86,16 +104,62 @@ namespace XmlFTS
                             sw.Stop();
                             Console.WriteLine();
                             Console.WriteLine($"BaseProcess => {SummaryFiles} count || {sw.ElapsedMilliseconds / 1000} sec.");
-                            Console.WriteLine($"AVG => {SummaryFiles / (sw.ElapsedMilliseconds / 1000)} sec.");
+                            //Console.WriteLine($"AVG (кол-во файлов / кол-во сек.) => {SummaryFiles / (sw.ElapsedMilliseconds / 1000)}.");
                         }
+                        Debug.WriteLine("Process main done!");
                     }
 
-                timer.Start();
-                Debug.WriteLine("Process done!");
+                BaseProcessTimer.Start();
             }
         }
 
-        public static void SortXml(string[] xmlFiles)
+        /// <summary>Задача => Последующая обработка </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        private static void ReplyProcessTick(object sender, ElapsedEventArgs e)
+        {
+            FileInfo info = new FileInfo(StaticPathConfiguration.PathReplyFTS);
+
+            if (lastWrite == DateTime.MinValue)
+                lastWrite = info.LastWriteTime;
+
+            if (lastWrite.CompareTo(info.LastWriteTime) == -1)
+            {
+                var replyFiles = Directory.GetFiles(StaticPathConfiguration.PathReplyFTS);
+
+                if (replyFiles.Count() != 0)
+                {
+                    ReplyProcessTimer.Stop();
+
+                    int SummaryFiles = 0;
+
+                    var sw = new Stopwatch();
+                    if (IsStatistics)
+                        sw.Start();
+
+                    foreach (string replyFile in replyFiles)
+                    {
+                        SummaryFiles += replyFiles.Count();
+
+                        ReplyXml(replyFiles);
+                    }
+
+                    if (IsStatistics)
+                    {
+                        sw.Stop();
+                        Console.WriteLine();
+                        Console.WriteLine($"BaseProcess => {SummaryFiles} count || {sw.ElapsedMilliseconds / 1000} sec.");
+                        Console.WriteLine($"AVG (кол-во файлов / кол-во сек.) => {SummaryFiles / (sw.ElapsedMilliseconds / 1000)}.");
+                    }
+                    Debug.WriteLine("Process done!");
+
+                    ReplyProcessTimer.Stop();
+                }
+            }
+        }
+
+        private static void SortXml(string[] xmlFiles)
         {
             if (xmlFiles == null)
                 return;
@@ -105,26 +169,43 @@ namespace XmlFTS
                 new ParallelOptions { MaxDegreeOfParallelism = Config.MaxDegreeOfParallelism },
                 xmlFile =>
                 {
-                    if (File.Exists(xmlFile))
+                    XmlDocument xmlDoc = new XmlDocument();
+                    xmlDoc.Load(new StringReader(File.ReadAllText(xmlFile)));
+
+                    switch (xmlDoc.DocumentElement.GetAttribute("DocumentModeID"))
                     {
-                        XmlDocument xmlDoc = new XmlDocument();
-                        xmlDoc.Load(new StringReader(File.ReadAllText(xmlFile)));
+                        /// ПТД ExpressCargoDeclaration
+                        case "1006275E":
+                            // Шаблонизация + выбрать серификат Конкретного человека
+                            TemplatingXml.TemplatingLinear(xmlFile, ref cert, MchdId, MchdINN);
+                            break;
 
-                        switch (xmlDoc.DocumentElement.GetAttribute("DocumentModeID"))
-                        {
-                            /// ПТД ExpressCargoDeclaration
-                            case "1006275E":
-                                // Шаблонизация + выбрать серификат Конкретного человека
-                                TemplatingXml.TemplatingLinear(xmlFile, ref cert, MchdId, MchdINN);
-                                break;
-
-                            /// В архив Остальное
-                            default:
-                                // Шаблонизация + выбрать серификат (Компании) ///Пока индивидуальный
-                                TemplatingXml.TemplatingLinear(xmlFile, ref cert, MchdId, MchdINN);
-                                break;
-                        }
+                        /// В архив Остальное
+                        default:
+                            // Шаблонизация + выбрать серификат (Компании) ///Пока индивидуальный
+                            TemplatingXml.TemplatingLinear(xmlFile, ref cert, MchdId, MchdINN);
+                            break;
                     }
+                });
+        }
+
+        private static void ReplyXml(string[] xmlFiles)
+        {
+            Parallel.ForEach(xmlFiles,
+                new ParallelOptions { MaxDegreeOfParallelism = Config.MaxDegreeOfParallelism },
+                xmlFile =>
+                {
+                    XmlDocument xmlDoc = new XmlDocument();
+                    xmlDoc.Load(new StringReader(File.ReadAllText(xmlFile)));
+                    string InitialEnvelopeID = xmlDoc.DocumentElement.GetElementsByTagName("roi:InitialEnvelopeID")[0].InnerText.ToUpper();
+                    //string DocumentID = xmlDoc.DocumentElement.GetElementsByTagName("ct:DocumentID")[0].InnerText.ToUpper();
+                    string ResultDescription = xmlDoc.DocumentElement.GetElementsByTagName("rslt:ResultDescription")[0].InnerText;
+                    ///
+                    new PgSql().PgRetriveData(InitialEnvelopeID, InitialEnvelopeID, ResultDescription);
+
+                    if (Config.EnableBackup)
+                        File.Copy(xmlFile, Path.Combine("C:\\_2\\BackupReplyFTS", Path.GetFileName(xmlFile)));
+                    File.Delete(xmlFile);
                 });
         }
     }

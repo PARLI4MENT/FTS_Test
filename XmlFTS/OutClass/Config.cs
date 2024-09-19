@@ -84,6 +84,12 @@ namespace XmlFTS.OutClass
                 Directory.CreateDirectory(StaticPathConfiguration.PathBackupFolder);
             AddUpdateAppSettings("PathBackupFolder", StaticPathConfiguration.PathBackupFolder);
 
+            /// Путь к папке с принимаемыми файлами от ФТС
+            StaticPathConfiguration.PathReplyFTS = Path.Combine(basePath, "ReplyFTS");
+            if (!Directory.Exists(StaticPathConfiguration.PathReplyFTS))
+                Directory.CreateDirectory(StaticPathConfiguration.PathReplyFTS);
+            AddUpdateAppSettings("PathReplyFTS", StaticPathConfiguration.PathReplyFTS);
+
             // Путь к файлу шаблоном
             if (!File.Exists(Path.Combine(basePath, "template.xml")))
                 Debug.WriteLine("Файла с шаблоном не существует");
@@ -91,7 +97,7 @@ namespace XmlFTS.OutClass
             AddUpdateAppSettings("TemplateXML", StaticPathConfiguration.TemplateXML);
         }
 
-        public static void BaseConfiguration(string PathRawFolder, string PathExtractionFolder, string PathIntermidateFolder, string PathTemplatedFolder, string PathSignedFolder, string PathBackupFolder, string TemplateXML)
+        public static void BaseConfiguration(string PathRawFolder, string PathExtractionFolder, string PathIntermidateFolder, string PathTemplatedFolder, string PathSignedFolder, string PathBackupFolder, string PathReplyFTS, string TemplateXML)
         {
             /// Путь к папке с исходными файлами
             if (!Directory.Exists(PathRawFolder))
@@ -123,11 +129,18 @@ namespace XmlFTS.OutClass
             StaticPathConfiguration.PathBackupFolder = PathBackupFolder;
             AddUpdateAppSettings("PathBackupFolder", StaticPathConfiguration.PathBackupFolder);
 
+            /// Путь к папке с принимаемыми файлами от ФТС
+            if (!Directory.Exists(PathReplyFTS))
+                Directory.CreateDirectory(PathReplyFTS);
+            StaticPathConfiguration.PathReplyFTS = PathReplyFTS;
+            AddUpdateAppSettings("PathReplyFTS", StaticPathConfiguration.PathReplyFTS);
+
             // Путь к файлу шаблоном
             if (!File.Exists(TemplateXML))
                 Debug.WriteLine("Файла с шаблоном не существует");
             StaticPathConfiguration.TemplateXML = TemplateXML;
             AddUpdateAppSettings("TemplateXML", StaticPathConfiguration.TemplateXML);
+
         }
 
         /// <summary> Выводит все ключи и значения настроек в Debug консоли </summary>
