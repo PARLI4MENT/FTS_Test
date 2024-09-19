@@ -14,11 +14,10 @@ namespace XMLSigner
         public static void Main(string[] args)
         {
             Console.WriteLine();
+
             Config.BaseConfiguration("C:\\_2");
-            Config.ReadAllSetting();
             Config.EnableBackup = false;
             Config.DeleteSourceFiles = true;
-            Console.Clear();
             Config.ReadAllSetting();
 
             ProcessXML.ProcessStart();

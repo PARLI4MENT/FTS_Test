@@ -1,5 +1,4 @@
-﻿using SQLNs;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -8,7 +7,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using XmlFTS.OutClass;
 using XMLSigner;
-using XMLSigner.OutClass;
 
 namespace XmlFTS
 {
@@ -22,62 +20,12 @@ namespace XmlFTS
         static string MchdINN = "250908790897";
         static X509Certificate2 cert = SignXmlGost.FindGostCurrentCertificate("01DA FCE9 BC8E 41B0 0008 7F5E 381D 0002");
 
-        private ProcessXML() { }
-
-        public static void StartProcess()
-        {
-            /// Переделать бесконечный цикл
-            while (true)
-            {
-                /// Получение путей папок из исходной папки
-                var rawSrcFolders = Directory.GetDirectories(StaticPathConfiguration.PathRawFolder);
-
-                if (rawSrcFolders != null)
-                    foreach (var rawSrcFolder in rawSrcFolders)
-                    {
-                        Debug.WriteLine("Start main process...");
-
-                        int SummaryFiles = 0;
-
-                        var sw = new Stopwatch();
-                        if (IsStatistics)
-                            sw.Start();
-
-                        /// #1 Извлечение ZIP
-                        ArchiveWorker.ExtractZipArchive(Directory.GetFiles(rawSrcFolder, "*.zip")[0]);
-
-                        /// #2 Переименование и копирование
-                        string[] xmlFiles = Directory.GetFiles(rawSrcFolder, "*.xml");
-                        if (xmlFiles.Count() == 1)
-                            RenamerXML.RenameMoveRawFiles(xmlFiles[0]);
-                        if (xmlFiles.Count() > 1)
-                            RenamerXML.RenameMoveRawFiles(xmlFiles);
-
-                        ///// #3 Сортировка
-                        SortXml(Directory.GetFiles(StaticPathConfiguration.PathExtractionFolder, "*.xml"));
-
-                        if (IsStatistics)
-                        {
-                            SummaryFiles += Directory.GetFiles(StaticPathConfiguration.PathExtractionFolder, "*.xml").Count();
-
-                            sw.Stop();
-                            Console.WriteLine();
-                            Console.WriteLine($"General => {SummaryFiles} count || {sw.ElapsedMilliseconds / 1000} sec.");
-                            //Console.WriteLine($"AVG => {SummaryFiles / (sw.ElapsedMilliseconds / 1000)} sec.");
-                        }
-                    }
-                Debug.WriteLine("Process done!");
-            }
-
-            Debug.WriteLine("Press any key...");
-            return;
-        }
-
         private static System.Timers.Timer timer;
         private static DateTime lastWrite;
 
         public static void ProcessStart()
         {
+            /// Начальная обработка Xml-файлов
             var BaseProcess = Task.Run(() =>
             {
                 Console.WriteLine("BaseProcess => Started");
@@ -188,7 +136,7 @@ namespace FolderWatcher
         static void Main(string[] args)
         {
             // Путь к отслеживаемой папке
-            string path = @"C:\YourFolder";
+            string path = @"C:\_1";
 
             // Создаем объект FileSystemWatcher
             FileSystemWatcher watcher = new FileSystemWatcher();

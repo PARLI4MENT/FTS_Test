@@ -142,7 +142,7 @@ namespace XmlFTS.OutClass
                 {
                     Console.WriteLine("Setting:\n{");
                     foreach (var key in appSettings.AllKeys)
-                        Console.WriteLine($"\t{key} => {appSettings[key]}");
+                        Console.WriteLine($"   {key} => {appSettings[key]}");
                     Console.WriteLine("}");
                 }
             }
