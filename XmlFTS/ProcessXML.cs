@@ -73,6 +73,80 @@ namespace XmlFTS
             return;
         }
 
+        private static System.Timers.Timer timer;
+        private static DateTime lastWrite;
+
+        public static void ProcessStart()
+        {
+            var BaseProcess = Task.Run(() =>
+            {
+                Console.WriteLine("BaseProcess => Started");
+                timer = new System.Timers.Timer();
+                timer.Interval = 1000;
+                timer.Elapsed += new System.Timers.ElapsedEventHandler(BaseTick);
+                timer.Start();
+            });
+
+        }
+
+        private static void BaseTick(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            FileInfo info = new FileInfo(StaticPathConfiguration.PathRawFolder);
+
+            if (lastWrite == DateTime.MinValue)
+            {
+                lastWrite = info.LastWriteTime;
+            }
+
+            if (lastWrite.CompareTo(info.LastWriteTime) == -1)
+            {
+                timer.Stop();
+
+                var rawSrcFolders = Directory.GetDirectories(StaticPathConfiguration.PathRawFolder);
+
+                if (rawSrcFolders != null)
+                    foreach (var rawSrcFolder in rawSrcFolders)
+                    {
+                        Debug.WriteLine("Start main process...");
+
+                        int SummaryFiles = 0;
+
+                        var sw = new Stopwatch();
+                        if (IsStatistics)
+                            sw.Start();
+
+                        /// #1 Извлечение ZIP
+                        ArchiveWorker.ExtractZipArchive(Directory.GetFiles(rawSrcFolder, "*.zip")[0]);
+                        if (IsStatistics)
+                            SummaryFiles += Directory.GetFiles(StaticPathConfiguration.PathExtractionFolder, "*.xml").Count();
+
+                            /// #2 Переименование и копирование
+                            string[] xmlFiles = Directory.GetFiles(rawSrcFolder, "*.xml");
+                        if (xmlFiles.Count() == 1)
+                            RenamerXML.RenameMoveRawFiles(xmlFiles[0]);
+                        if (xmlFiles.Count() > 1)
+                            RenamerXML.RenameMoveRawFiles(xmlFiles);
+
+                        /// Remove srcFolder
+                        Directory.Delete(rawSrcFolder, true);
+
+                        ///// #3 Сортировка
+                        SortXml(Directory.GetFiles(StaticPathConfiguration.PathExtractionFolder, "*.xml"));
+
+                        if (IsStatistics)
+                        {
+                            sw.Stop();
+                            Console.WriteLine();
+                            Console.WriteLine($"BaseProcess => {SummaryFiles} count || {sw.ElapsedMilliseconds / 1000} sec.");
+                            Console.WriteLine($"AVG => {SummaryFiles / (sw.ElapsedMilliseconds / 1000)} sec.");
+                        }
+                    }
+
+                timer.Start();
+                Debug.WriteLine("Process done!");
+            }
+        }
+
         public static void SortXml(string[] xmlFiles)
         {
             if (xmlFiles == null)
@@ -94,87 +168,16 @@ namespace XmlFTS
                             case "1006275E":
                                 // Шаблонизация + выбрать серификат Конкретного человека
                                 TemplatingXml.TemplatingLinear(xmlFile, ref cert, MchdId, MchdINN);
-
-                                //{
-                                //    tmpFilePath = Path.Combine("C:\\_2\\Sorted\\ptd", Path.GetFileName(xmlFile));
-                                //    //if (!File.Exists(tmpFilePath))
-                                //    //{
-                                //        File.Copy(xmlFile, tmpFilePath, true);
-
-                                //    //}
-                                //}
                                 break;
 
                             /// В архив Остальное
                             default:
                                 // Шаблонизация + выбрать серификат (Компании) ///Пока индивидуальный
                                 TemplatingXml.TemplatingLinear(xmlFile, ref cert, MchdId, MchdINN);
-                                
-                                //{
-                                //    tmpFilePath = Path.Combine("C:\\_2\\Sorted\\toArchive", Path.GetFileName(xmlFile));
-                                //    //if (!File.Exists(tmpFilePath))
-                                //    //{
-                                //        File.Copy(xmlFile, tmpFilePath, true);
-
-                                //    //}
-                                //}
                                 break;
                         }
                     }
                 });
-        }
-
-        private static void OnChanged(object sender, FileSystemEventArgs e)
-        {
-            if (e.ChangeType != WatcherChangeTypes.Changed)
-            {
-                Debug.WriteLine(e.FullPath);
-                return;
-            }
-            Console.WriteLine($"Changed: {e.FullPath}");
-        }
-
-        private static void OnCreated(object sender, FileSystemEventArgs e)
-        {
-            if (e.ChangeType == WatcherChangeTypes.Created)
-            {
-                Console.WriteLine($"Created: {e.FullPath}");
-            }
-        }
-
-        private static void OnDeleted(object sender, FileSystemEventArgs e)
-        {
-            if (e.ChangeType == WatcherChangeTypes.Deleted)
-            {
-                Console.WriteLine($"Deleted: {e.FullPath}");
-            }
-        }
-
-        private static void OnRenamed(object sender, RenamedEventArgs e)
-        {
-            if (e.ChangeType == WatcherChangeTypes.Renamed)
-            {
-                Console.WriteLine($"Renamed:");
-                Console.WriteLine($"    Old: {e.OldFullPath}");
-                Console.WriteLine($"    New: {e.FullPath}");
-            }
-        }
-
-        private static void OnError(object sender, ErrorEventArgs e)
-        {
-            PrintException(e.GetException());
-        }
-
-        private static void PrintException(Exception ex)
-        {
-            if (ex != null)
-            {
-                Console.WriteLine($"Message: {ex.Message}");
-                Console.WriteLine("Stacktrace:");
-                Console.WriteLine(ex.StackTrace);
-                Console.WriteLine();
-                PrintException(ex.InnerException);
-            }
         }
     }
 }

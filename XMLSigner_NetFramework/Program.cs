@@ -17,10 +17,12 @@ namespace XMLSigner
             Config.BaseConfiguration("C:\\_2");
             Config.ReadAllSetting();
             Config.EnableBackup = false;
+            Config.DeleteSourceFiles = true;
+            Console.Clear();
+            Config.ReadAllSetting();
 
-            ProcessXML.StartProcess();
+            ProcessXML.ProcessStart();
 
-            Console.Write("\nPress any key...");
             Console.ReadKey();
         }
     }

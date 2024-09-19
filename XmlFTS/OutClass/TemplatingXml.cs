@@ -235,8 +235,8 @@ namespace XmlFTS
                 }
             }
             doc_to_arch.Save(NewDocToArchName);
-
-            File.Copy(NewDocToArchName, Path.Combine(StaticPathConfiguration.PathTemplatedFolder, Path.GetFileName(extractedFile)), true);
+            string templatePath = Path.Combine(StaticPathConfiguration.PathTemplatedFolder, Path.GetFileName(extractedFile));
+            File.Copy(NewDocToArchName, templatePath, true);
 
             //File.AppendAllText("C:\\_test\\Arch_docs.log", "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
 
@@ -249,9 +249,8 @@ namespace XmlFTS
             if (Config.DeleteSourceFiles)
             {
                 File.Delete(extractedFile);
-                File.Delete(NewDocToArchName);
+                File.Delete(templatePath);
             }
-
         }
     }
 }

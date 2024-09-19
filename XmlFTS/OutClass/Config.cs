@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace XmlFTS.OutClass
@@ -88,12 +89,6 @@ namespace XmlFTS.OutClass
                 Debug.WriteLine("Файла с шаблоном не существует");
             StaticPathConfiguration.TemplateXML = Path.Combine(basePath, "template.xml");
             AddUpdateAppSettings("TemplateXML", StaticPathConfiguration.TemplateXML);
-
-            MaxDegreeOfParallelism = 2;
-
-            DeleteSourceFiles = false;
-
-            EnableBackup = true;
         }
 
         public static void BaseConfiguration(string PathRawFolder, string PathExtractionFolder, string PathIntermidateFolder, string PathTemplatedFolder, string PathSignedFolder, string PathBackupFolder, string TemplateXML)
