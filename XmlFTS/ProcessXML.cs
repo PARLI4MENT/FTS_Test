@@ -149,7 +149,7 @@ namespace XmlFTS
                     {
                         sw.Stop();
                         Console.WriteLine();
-                        Console.WriteLine($"BaseProcess => {SummaryFiles} count || {sw.ElapsedMilliseconds / 1000} sec.");
+                        Console.WriteLine($"Reply FTS Process => {SummaryFiles} count || {sw.ElapsedMilliseconds / 1000} sec.");
                         Console.WriteLine($"AVG (кол-во файлов / кол-во сек.) => {SummaryFiles / (sw.ElapsedMilliseconds / 1000)}.");
                     }
                     Debug.WriteLine("Process done!");
