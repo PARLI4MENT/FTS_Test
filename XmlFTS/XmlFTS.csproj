@@ -89,7 +89,6 @@
     <Compile Include="Database\ISql.cs" />
     <Compile Include="Database\MsSql.cs" />
     <Compile Include="Database\PgSql.cs" />
-    <Compile Include="OutClass\FileWatcher.cs" />
     <Compile Include="OutClass\OpenExternalFile.cs" />
     <Compile Include="OutClass\SenderSettings.cs" />
     <Compile Include="OutClass\ZipArchive.cs" />

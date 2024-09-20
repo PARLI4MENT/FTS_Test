@@ -3,24 +3,17 @@
 
 using SQLNs;
 using System;
-using System.Configuration;
-using System.Globalization;
-using System.IO;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
-using System.Xml;
 using XmlFTS;
 using XmlFTS.OutClass;
-using XMLSigner.OutClass;
 
 namespace XMLSigner
 {
     public static class Program
     {
-        //private static string MchdId = "e7d94ee1-33d4-4b95-a27d-07896fdc00e0";
-        //private static string MchdINN = "250908790897";
-        private static string MchdId = "719f90af-f777-4c70-9a33-053958eacc65";
-        private static string INN = "2536287574";
+        private static string MchdId = "63afc9e5-db8e-46b9-9ee3-071df25b3eba".ToLower();
+        private static string INN = "2536331150";
+
         private static X509Certificate2 cert = SignXmlGost.FindGostCurrentCertificate("01DA FCE9 BC8E 41B0 0008 7F5E 381D 0002");
 
         public static void Main(string[] args)
@@ -39,7 +32,7 @@ namespace XMLSigner
 
             //new PgSql().PgSqlCreateDatabase(true);
 
-            //TemplatingXml.CreateArchive(MchdId, INN, cert);
+            TemplatingXml.CreateArchive(MchdId, INN, cert);
 
             Console.ReadKey();
         }

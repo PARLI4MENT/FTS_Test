@@ -178,8 +178,8 @@ namespace XMLSigner.OutClass
             FindElementsForArchive(xmlRootEdit, xmlRootOrigin, ref cert);
 
             if (String.IsNullOrEmpty(ArchiveName))
-                ArchiveName = DateTime.Now.ToString("H-mm-ss_dd.MM.yyyy");
-            var normXml = Path.Combine(StaticPathConfiguration.PathSignedFolder, $"Archive_{DateTime.Now.ToString("H-mm-ss_dd.MM.yyyy")}");
+                ArchiveName = DateTime.Now.ToString("H-mm-ss_dd.MM.yyyy") + ".xml";
+            var normXml = Path.Combine(StaticPathConfiguration.PathSignedFolder, $"Archive_{DateTime.Now.ToString("H-mm-ss_dd.MM.yyyy")}.xml");
 
             xmlDocOrigin.Save(normXml);
 

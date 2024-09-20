@@ -5,7 +5,6 @@ using System.Threading;
 
 namespace FileWatching
 {
-
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
@@ -20,10 +19,7 @@ namespace FileWatching
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _watcher.Start();
-            while (!stoppingToken.IsCancellationRequested)
-            {
-
-            }
+            while (!stoppingToken.IsCancellationRequested) { }
         }
     }
 }

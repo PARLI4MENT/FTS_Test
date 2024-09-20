@@ -9,7 +9,7 @@ namespace FileWatching
     public class MyFileWatcher
     {
         private string _directoryName = @"C:\\_1";
-        private string _fileFilter = "*.*";
+        private string _fileFilter = "*.xml";
 
         FileSystemWatcher _fileSystemWatcher;
 
@@ -42,7 +42,6 @@ namespace FileWatching
             _fileSystemWatcher.Renamed += _fileSystemWatcher_Renamed;
             _fileSystemWatcher.Error += _fileSystemWatcher_Error;
 
-
             _fileSystemWatcher.EnableRaisingEvents = true;
             _fileSystemWatcher.IncludeSubdirectories = true;
 
@@ -66,6 +65,7 @@ namespace FileWatching
 
         private void _fileSystemWatcher_Changed(object sender, FileSystemEventArgs e)
         {
+            _logger.LogInformation($"File changed event for file {e.FullPath}");
         }
 
         private void _fileSystemWatcher_Created(object sender, FileSystemEventArgs e)
