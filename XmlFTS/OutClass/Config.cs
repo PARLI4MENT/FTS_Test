@@ -34,7 +34,7 @@ namespace XmlFTS.OutClass
         public static bool EnableBackup
         {
             //get { return Convert.ToBoolean(ReadSettings("BackupEnable")); }
-            get { return true; }
+            get { return false; }
             set { AddUpdateAppSettings("BackupEnable", value.ToString()); }
         }
 

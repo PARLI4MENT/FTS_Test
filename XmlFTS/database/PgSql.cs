@@ -28,13 +28,10 @@ namespace SQLNs
         private static string _Database = "declarantplus";
         public string SetDatabase(string _database) => _Database = _database;
 
-        public static string ConnectionString { get; private set; }
+        private static string connStrWithoutDatabase = $"Server=localhost;Port=5438;Uid=postgres;Pwd=passwd0105;";
+        private static string connStrWithDatabase = $"Server=localhost;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
 
-        public PgSql()
-        {
-            //if (!string.IsNullOrEmpty(Config.ReadSettings(connectionKey)))
-            //    ConnectionString = Config.ReadSettings(connectionKey);
-        }
+        public PgSql() { }
 
         public PgSql(string Server, string Port, string Uid, string Password, [Optional]string Database)
         {
@@ -60,7 +57,7 @@ namespace SQLNs
             if (string.IsNullOrEmpty(Database))
             {
                 Config.AddUpdateAppSettings(connectionKey, $"Server={_Server};Port={_Port};Uid={_Uid};Pwd={_Password};");
-                ConnectionString = Config.ReadSettings(connectionKey);
+                //ConnectionString = Config.ReadSettings(connectionKey);
                 return;
             }
                 Config.AddUpdateAppSettings(connectionKey, string.Concat(ConfigurationManager.ConnectionStrings[connectionKey].ConnectionString, "Database=", _Database, ";"));
@@ -81,7 +78,7 @@ namespace SQLNs
         public void ExecuteToDB(string[] args, int Company_key_id)
         {
             //using (var sqlConn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings[connectionKey].ConnectionString))
-            using (var sqlConn = new NpgsqlConnection($"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;"))
+            using (var sqlConn = new NpgsqlConnection(connStrWithDatabase))
             {
                 sqlConn.Open();
                 using (var sqlComm = new NpgsqlCommand())
@@ -110,7 +107,7 @@ namespace SQLNs
             try
             {
                 //using (var sqlConn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings[connectionKey].ConnectionString))
-                using (var sqlConn = new NpgsqlConnection($"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;"))
+                using (var sqlConn = new NpgsqlConnection(connStrWithDatabase))
                 {
                     sqlConn.Open();
                     using (var sqlComm = new NpgsqlCommand())
@@ -130,13 +127,47 @@ namespace SQLNs
             catch (PostgresException pEx) { Debug.WriteLine(pEx.Message); }
         }
 
+        ///<summary> Получение данных из </summary>
+        ///<param name="searchValue">Значение, которое ищем</param>
+        /// <param name="destEnvelopeID">Значение, которое будет "вставлено", в случае, если строка со значением существует</param>
+        /// <returns></returns>
+        public void PgRetriveData(string searchEnvelopeID, string destEnvelopeID, string status)
+        {
+            try
+            {
+                using (var sqlConn = new NpgsqlConnection($"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;"))
+                {
+                    sqlConn.Open();
+                    string strCommand = $@"SELECT COUNT(*) FROM ""public"".""ExchED"" WHERE ""EnvelopeID""='{searchEnvelopeID}';";
+                    using (var sqlComm = new NpgsqlCommand(strCommand, sqlConn))
+                    {
+                        var ExchEDCount = (Int64)sqlComm.ExecuteScalar();
+                        strCommand = $@"SELECT COUNT(*) FROM ""public"".""ECD_list"" WHERE ""InnerID""='{searchEnvelopeID}';";
+                        sqlComm.CommandText = strCommand;
+                        var ECD_listCount = (Int64)sqlComm.ExecuteScalar();
+                        if (ExchEDCount > 0 && ECD_listCount == 0)
+                        {
+                            sqlComm.CommandText = $@"INSERT INTO ""public"".""ECD_list""
+                                (""InnerID"", ""Status"", ""DocsSended"")
+                                VALUES ('{searchEnvelopeID}', '{status}', 1);";
+                            sqlComm.ExecuteNonQuery();
+                            sqlConn.Close();
+                        }
+                        else
+                            Debug.WriteLine("Запись существует");
+                        sqlConn.Close();
+                    }
+                }
+            }
+            catch (NpgsqlException npgEx) { Debug.WriteLine(npgEx.Message); }
+        }
+
         public delegate void PgDataOut(string tableName, int iteration = 100);
 
         private static bool PgSqlCheckConnection()
         {
             try
             {
-
                 using (var sqlConnection = new NpgsqlConnection(ConfigurationManager.ConnectionStrings["PgConnectionString"].ConnectionString))
                 {
                     sqlConnection.Open();
@@ -170,27 +201,30 @@ namespace SQLNs
             return false;
         }
 
-        private void PgSqlCreateDatabase(bool CreateTable = false)
+        public void PgSqlCreateDatabase(bool CreateTable = false)
         {
-            string strComm = $@"CREATE DATABASE {_Database} WITH OWNER postgres ENCODING = 'UTF8' CONNECTION LIMIT = -1;";
-
-            using (var sqlConn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings["PgConnectionString"].ConnectionString))
+            try
             {
-                Debug.WriteLine(sqlConn.State.ToString());
-                sqlConn.Open();
+                string strComm = $@"CREATE DATABASE ""declarantplus"" WITH OWNER postgres ENCODING = 'UTF8' CONNECTION LIMIT = -1;";
 
-                Debug.WriteLine(sqlConn.State.ToString());
-                var sqlComm = new NpgsqlCommand(strComm, sqlConn);
-                sqlComm.ExecuteNonQuery();
+                using (var sqlConn = new NpgsqlConnection(connStrWithoutDatabase))
+                {
+                    sqlConn.Open();
 
-                Debug.WriteLine("Query is Done!");
-                sqlConn.Close();
+                    Debug.WriteLine(sqlConn.State.ToString());
+                    var sqlComm = new NpgsqlCommand(strComm, sqlConn);
+                    sqlComm.ExecuteNonQuery();
 
-                Debug.WriteLine(sqlConn.State.ToString());
+                    Debug.WriteLine("Query is Done!");
+                    sqlConn.Close();
 
-                if (CreateTable)
-                    PgSqlBaseCreateTable();
+                    Debug.WriteLine(sqlConn.State.ToString());
+
+                    if (CreateTable)
+                        PgSqlBaseCreateTable();
+                }
             }
+            catch (NpgsqlException npgEx) { Console.WriteLine(npgEx.Message); return; }
 
             /// Npgsql.PostgresException: '42P04: database "declarantplus" already exists'
         }
@@ -199,7 +233,7 @@ namespace SQLNs
         {
             try
             {
-                using (var sqlConn = new NpgsqlConnection(string.Concat(ConfigurationManager.ConnectionStrings["PgConnectionString"].ConnectionString, "Database=", _Database, ";")))
+                using (var sqlConn = new NpgsqlConnection(connStrWithDatabase))
                 {
                     sqlConn.Open();
                     /// Create table => ECD_list
@@ -213,9 +247,9 @@ namespace SQLNs
                     sqlConn.Close();
                 }
             }
-            catch (Exception ex)
+            catch (NpgsqlException npgEx)
             {
-                Debug.WriteLine(ex.ToString());
+                Debug.WriteLine(npgEx.ToString());
             }
         }
 
@@ -264,48 +298,15 @@ namespace SQLNs
             catch (Exception ex) { Console.WriteLine(ex.Message); return false; }
         }
 
-        ///<summary> Получение данных из </summary>
-        ///<param name="searchValue">Значение, которое ищем</param>
-        /// <param name="destEnvelopeID">Значение, которое будет "вставлено", в случае, если строка со значением существует</param>
-        /// <returns></returns>
-        public void PgRetriveData(string searchEnvelopeID, string destEnvelopeID, string status)
-        {
-            try
-            {
-                using (var sqlConn = new NpgsqlConnection($"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;"))
-                {
-                    sqlConn.Open();
-                    string strCommand = $@"SELECT COUNT(*) FROM ""public"".""ExchED"" WHERE ""EnvelopeID""='{searchEnvelopeID}';";
-                    using (var sqlComm = new NpgsqlCommand(strCommand, sqlConn))
-                    {
-                        var ExchEDCount = (Int64)sqlComm.ExecuteScalar();
-                        strCommand = $@"SELECT COUNT(*) FROM ""public"".""ECD_list"" WHERE ""InnerID""='{searchEnvelopeID}';";
-                        sqlComm.CommandText = strCommand;
-                        var ECD_listCount = (Int64)sqlComm.ExecuteScalar();
-                        if (ExchEDCount > 0 && ECD_listCount == 0)
-                        {
-                            sqlComm.CommandText = $@"INSERT INTO ""public"".""ECD_list""
-                                (""InnerID"", ""Status"", ""DocsSended"")
-                                VALUES ('{searchEnvelopeID}', '{status}', 1);";
-                            sqlComm.ExecuteNonQuery();
-                            sqlConn.Close();
-                        }
-                        else
-                            Debug.WriteLine("Запись существует");
-                        sqlConn.Close();
-                    }
-                }
-            }
-            catch (NpgsqlException npgEx) { Debug.WriteLine(npgEx.Message); }
-        }
+        
 
         /// <summary> Полная очистка таблицы от данных PostgresSql</summary>
         /// <param name="_tableName"></param>
-        private void PgClearData([Optional] string _tableName)
+        private void PgClearData(string _tableName)
         {
             string strCommand = $@"DELETE FROM""public"".""{_tableName}""";
 
-            using (var sqlConnection = new NpgsqlConnection(string.Concat(ConfigurationManager.ConnectionStrings["PgConnectionString"].ConnectionString, "Database=", _Database, ";")))
+            using (var sqlConnection = new NpgsqlConnection(connStrWithDatabase))
             {
                 try
                 {
@@ -313,11 +314,7 @@ namespace SQLNs
                     using (var sqlCommand = new NpgsqlCommand(strCommand, sqlConnection))
                         sqlCommand.ExecuteNonQuery();
                 }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex.Message);
-                    return;
-                }
+                catch (NpgsqlException npgEx) { Debug.WriteLine(npgEx.Message); return; }
                 finally
                 {
                     if (sqlConnection.State == ConnectionState.Open)
