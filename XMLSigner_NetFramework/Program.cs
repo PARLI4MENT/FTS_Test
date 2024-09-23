@@ -3,14 +3,7 @@
 
 using SQLNs;
 using System;
-<<<<<<< HEAD
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-=======
-using System.Configuration;
->>>>>>> 08ae8fc4289e84b4966bd79644624c6f4d3ae25a
 using XmlFTS;
 using XmlFTS.OutClass;
 
@@ -28,39 +21,15 @@ namespace XMLSigner
             Config.DeleteSourceFiles = true;
             Config.ReadAllSetting();
 
-<<<<<<< HEAD
+            Console.WriteLine(DateTime.Now.ToString("H-mm-ss_dd.MM.yyyy"));
 
-            var rawSrcFolders = Directory.GetDirectories("C:\\Test\\RawFolder");
-
-            int SummaryFiles = 0;
-
-            if (rawSrcFolders != null)
-            {
-                foreach (var rawSrcFolder in rawSrcFolders)
-                {
-                    /// #1 Извлечение ZIP
-                    foreach (string zipArchive in Directory.GetFiles(rawSrcFolder, "*.zip"))
-                        ArchiveWorker.ExtractZipArchive(zipArchive);
-
-                    /// #2 Переименование и копирование
-                    string[] xmlFiles = Directory.GetFiles(rawSrcFolder, "*.xml");
-                    if (xmlFiles.Count() == 1)
-                        RenamerXML.RenameMoveRawFiles(xmlFiles[0]);
-                    if (xmlFiles.Count() > 1)
-                        RenamerXML.RenameMoveRawFiles(xmlFiles);
-
-                    SummaryFiles += Directory.GetFiles(StaticPathConfiguration.PathExtractionFolder, "*.xml").Count();
-                    /// Remove srcFolder
-                    Directory.Delete(rawSrcFolder, true);
-
-                }
-            }
-            Console.WriteLine($@"Count: {SummaryFiles}");
-=======
-            ProcessXML.ProcessStart();
+            //ProcessXML.ProcessStart();
             //new PgSql().PgRetriveData("BD2D10AB-2871-4155-8F0A-2CE896EA880F", "BD2D10AB-2871-4155-8F0A-2CE896EA880F", "Общая ошибка при работе системы");
 
->>>>>>> 08ae8fc4289e84b4966bd79644624c6f4d3ae25a
+            //new PgSql().PgSqlCreateDatabase(true);
+
+            TemplatingXml.CreateArchive(MchdId, INN, cert);
+
             Console.ReadKey();
         }
     }
