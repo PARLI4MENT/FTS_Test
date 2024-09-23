@@ -30,61 +30,22 @@ namespace XmlFTS
 
         public static void ProcessStart()
         {
-<<<<<<< HEAD
-            //AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
-
-            /// Начальная обработка Xml-файлов
-            var BaseProcess = Task.Run(() =>
-            {
-                Console.WriteLine($"Base Process => Starting");
-                BaseProcessTimer = new Timer();
-                BaseProcessTimer.Interval = 500;
-                BaseProcessTimer.Elapsed += new ElapsedEventHandler(BaseTick);
-                BaseProcessTimer.Start();
-            });
-=======
-            ///// Начальная обработка Xml-файлов
-            //var BaseProcess = Task.Run(() =>
-            //{
-            //    Console.WriteLine($"Base Process => Starting");
-            //    BaseProcessTimer = new System.Timers.Timer();
-            //    BaseProcessTimer.Interval = 1000;
-            //    BaseProcessTimer.Elapsed += new ElapsedEventHandler(BaseProcessTick);
-            //    BaseProcessTimer.Start();
-            //});
->>>>>>> a7019b1c9a632e35e9b78a20cd1f75d39a2bcb55
+            AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
 
             /// Обработка
-            //var ReplyProcess = Task.Run(() =>
-            //{
-            //    Console.WriteLine("Reply FTS Process => Starting");
-<<<<<<< HEAD
-            //    ReplyProcessTimer = new System.Timers.Timer();
-            //    ReplyProcessTimer.Interval = 100;
-            //    ReplyProcessTimer.Elapsed += new ElapsedEventHandler(ReplyProcessTick);
-            //    ReplyProcessTimer.Start();
-            //});
-        }
-=======
-            //    ReplyProcessTimer = new Timer();
-            //    ReplyProcessTimer.Interval = 100;
-            //    ReplyProcessTimer.AutoReset = true;
-            //    ReplyProcessTimer.Elapsed += new ElapsedEventHandler(ReplyProcessTick);
-            //    ReplyProcessTimer.Start();
-            //});
->>>>>>> a7019b1c9a632e35e9b78a20cd1f75d39a2bcb55
-
-            BaseProcessTick();
+            var ReplyProcess = Task.Run(() =>
+            {
+                Console.WriteLine("Reply FTS Process => Starting");
+                ReplyProcessTimer = new System.Timers.Timer();
+                ReplyProcessTimer.Interval = 100;
+                ReplyProcessTimer.Elapsed += new ElapsedEventHandler(ReplyProcessTick);
+            });
         }
 
         /// <summary>Задача => Начальная обработка </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-<<<<<<< HEAD
-        public static void BaseTick(object sender, ElapsedEventArgs e)
-=======
-        private static void BaseProcessTick()
->>>>>>> a7019b1c9a632e35e9b78a20cd1f75d39a2bcb55
+        private static void BaseTick(object sender, ElapsedEventArgs e)
         {
             //FileInfo info = new FileInfo("C:\\Test\\RawFolder");
 
