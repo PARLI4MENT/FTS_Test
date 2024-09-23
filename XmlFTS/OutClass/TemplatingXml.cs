@@ -247,11 +247,11 @@ namespace XmlFTS
             /// Нормализация и подписание
             NormalizationXmlSign.NormalizationXml(NewDocToArchName, ref cert);
 
-            if (Config.DeleteSourceFiles)
-            {
-                File.Delete(extractedFile);
-                File.Delete(templatePath);
-            }
+            //if (Config.DeleteSourceFiles)
+            //{
+            //    File.Delete(extractedFile);
+            //    File.Delete(templatePath);
+            //}
         }
 
 
