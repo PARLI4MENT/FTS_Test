@@ -6,17 +6,17 @@ using Microsoft.Extensions.Logging;
 
 namespace FileWatching
 {
-    public class MyFileWatcher
+    public class StartOperation
     {
         private string _directoryName = @"C:\\_1";
         private string _fileFilter = "*.xml";
 
         FileSystemWatcher _fileSystemWatcher;
 
-        ILogger<MyFileWatcher> _logger;
+        ILogger<StartOperation> _logger;
         IServiceProvider _serviceProvider;
 
-        public MyFileWatcher(ILogger<MyFileWatcher> logger, IServiceProvider serviceProvider)
+        public StartOperation(ILogger<StartOperation> logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
             if (!Directory.Exists(_directoryName))
@@ -50,7 +50,7 @@ namespace FileWatching
 
         private void _fileSystemWatcher_Error(object sender, ErrorEventArgs e)
         {
-            _logger.LogInformation($"File error event {e.GetException().Message}");
+            _logger.LogError($"File error event {e.GetException().Message}");
         }
 
         private void _fileSystemWatcher_Renamed(object sender, RenamedEventArgs e)
@@ -70,6 +70,7 @@ namespace FileWatching
 
         private void _fileSystemWatcher_Created(object sender, FileSystemEventArgs e)
         {
+            _logger.LogInformation(e.FullPath);
             using (var scope = _serviceProvider.CreateScope())
             {
                 var consumerService = scope.ServiceProvider.GetRequiredService<FileConsumerService>();

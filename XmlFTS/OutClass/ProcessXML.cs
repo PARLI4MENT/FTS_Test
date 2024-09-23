@@ -13,7 +13,7 @@ using XMLSigner;
 
 namespace XmlFTS
 {
-    public class ProcessXML
+    public static class ProcessXML
     {
         public static bool IsStatistics { get; set; } = true;
         public static bool LogsIsEnable { get; set; } = false;

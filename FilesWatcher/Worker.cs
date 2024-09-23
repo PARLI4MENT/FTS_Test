@@ -8,9 +8,9 @@ namespace FileWatching
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-        private readonly MyFileWatcher _watcher;
+        private readonly StartOperation _watcher;
 
-        public Worker(ILogger<Worker> logger, MyFileWatcher watcher)
+        public Worker(ILogger<Worker> logger, StartOperation watcher)
         {
             _logger = logger;
             _watcher = watcher;

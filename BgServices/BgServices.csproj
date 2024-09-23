@@ -164,5 +164,11 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\XmlFTS\XmlFTS.csproj">
+      <Project>{6b5456b4-eef0-4872-9740-e5ea5a3a9a35}</Project>
+      <Name>XmlFTS</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

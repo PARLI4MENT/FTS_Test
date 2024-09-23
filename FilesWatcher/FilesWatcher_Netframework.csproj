@@ -177,7 +177,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileConsumerService.cs" />
-    <Compile Include="MyFileWatcher.cs" />
+    <Compile Include="StartOperation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Worker.cs" />

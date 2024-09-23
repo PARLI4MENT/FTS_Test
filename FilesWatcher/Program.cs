@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Hosting;
 using FileWatching;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using XmlFTS.OutClass;
 
 namespace FilesWatcher
 {
@@ -9,11 +11,16 @@ namespace FilesWatcher
     {
         public static async Task Main(string[] args)
         {
+            Config.BaseConfiguration("C:\\Test");
+            Config.EnableBackup = false;
+            Config.DeleteSourceFiles = true;
+            Config.ReadAllSetting();
+
             IHost host = Host.CreateDefaultBuilder(args)
                 .ConfigureServices(services =>
                 {
                     services.AddHostedService<Worker>();
-                    services.AddSingleton<MyFileWatcher, MyFileWatcher>();
+                    services.AddSingleton<StartOperation, StartOperation>();
                     services.AddScoped<FileConsumerService, FileConsumerService>();
                 })
                 .Build();

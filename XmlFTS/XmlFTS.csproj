@@ -92,7 +92,7 @@
     <Compile Include="OutClass\OpenExternalFile.cs" />
     <Compile Include="OutClass\SenderSettings.cs" />
     <Compile Include="OutClass\ZipArchive.cs" />
-    <Compile Include="ProcessXML.cs" />
+    <Compile Include="OutClass\ProcessXML.cs" />
     <Compile Include="Fields\ECD_list.cs" />
     <Compile Include="Fields\ExchED.cs" />
     <Compile Include="OutClass\Config.cs" />

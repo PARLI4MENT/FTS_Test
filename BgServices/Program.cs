@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.Hosting;
+using XmlFTS;
+using XmlFTS.OutClass;
 
 namespace BgServices
 {
@@ -30,10 +34,23 @@ namespace BgServices
     {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-                while (!stoppingToken.IsCancellationRequested)
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                var rawSrcFolders = Directory.GetDirectories(StaticPathConfiguration.PathExtractionFolder);
+
+                if (rawSrcFolders != null)
                 {
-                    Console.WriteLine($"watcher base: {DateTime.Now}");
-                    await Task.Delay(500);
+                    foreach (var rawSrcFolder in rawSrcFolders)
+                    {
+                        int SummaryFiles = 0;
+
+                        /// For statistics
+                        SummaryFiles += rawSrcFolder.Count();
+
+                        ///// #3 Сортировка
+                        SortXml(Directory.GetFiles(StaticPathConfiguration.PathExtractionFolder, "*.xml"));
+                    }
+                    Debug.WriteLine("Process main done!");
                 }
                 return;
         }
