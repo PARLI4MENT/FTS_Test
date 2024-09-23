@@ -30,7 +30,7 @@ namespace XmlFTS
 
         public static void ProcessStart()
         {
-            AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
+            //AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
 
             /// Начальная обработка Xml-файлов
             var BaseProcess = Task.Run(() =>
@@ -43,13 +43,14 @@ namespace XmlFTS
             });
 
             /// Обработка
-            var ReplyProcess = Task.Run(() =>
-            {
-                Console.WriteLine("Reply FTS Process => Starting");
-                ReplyProcessTimer = new System.Timers.Timer();
-                ReplyProcessTimer.Interval = 100;
-                ReplyProcessTimer.Elapsed += new ElapsedEventHandler(ReplyProcessTick);
-            });
+            //var ReplyProcess = Task.Run(() =>
+            //{
+            //    Console.WriteLine("Reply FTS Process => Starting");
+            //    ReplyProcessTimer = new System.Timers.Timer();
+            //    ReplyProcessTimer.Interval = 100;
+            //    ReplyProcessTimer.Elapsed += new ElapsedEventHandler(ReplyProcessTick);
+            //    ReplyProcessTimer.Start();
+            //});
         }
 
         private static void CurrentDomain_ProcessExit(object sender, EventArgs e) { }
@@ -57,7 +58,7 @@ namespace XmlFTS
         /// <summary>Задача => Начальная обработка </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private static void BaseTick(object sender, ElapsedEventArgs e)
+        public static void BaseTick(object sender, ElapsedEventArgs e)
         {
             FileInfo info = new FileInfo(StaticPathConfiguration.PathRawFolder);
 
