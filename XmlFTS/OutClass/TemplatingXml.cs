@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.ConstrainedExecution;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Xml;
@@ -251,6 +252,57 @@ namespace XmlFTS
             //    File.Delete(extractedFile);
             //    File.Delete(templatePath);
             //}
+        }
+
+
+        /// <summary>Создание XML-файла запроса на создание архива</summary>
+        /// <param name="MchdId">МЧД в виде строки</param>
+        /// <param name="INN">ИНН в виде строки</param>
+        /// <param name="cert">Объект сертификата класса X509Certificate2</param>
+        /// <param name="ArchiveName"></param>
+        public static void CreateArchive(string MchdId, string INN, X509Certificate2 cert, [Optional] string ArchiveName)
+        {
+            string pathToTemplate = "C:\\Test\\create_arch.xml";
+            string newArchivePath = Path.Combine("C:\\Test\\CreateArchive", Path.GetFileName(pathToTemplate));
+            File.Copy(pathToTemplate, newArchivePath, true);
+
+            /// XML
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load(new StringReader(File.ReadAllText(newArchivePath)));
+
+            string EnvelopeID = Guid.NewGuid().ToString().ToUpper();
+            string DocumentID = Guid.NewGuid().ToString().ToUpper();
+
+            xmlDoc.GetElementsByTagName("EnvelopeID", "*")[0].InnerText = EnvelopeID;
+            xmlDoc.GetElementsByTagName("roi:SenderInformation")[0].InnerText = "smtp://eps.customs.ru/nts102773904741735";
+            xmlDoc.GetElementsByTagName("roi:PreparationDateTime")[0].InnerText = DateTime.Now.ToString("s") + DateTime.Now.ToString("zzz");
+            xmlDoc.GetElementsByTagName("ParticipantID")[0].InnerText = "102773904741735";
+            xmlDoc.GetElementsByTagName("CustomsCode")[0].InnerText = "10000000";
+
+            xmlDoc.GetElementsByTagName("X509Certificate")[0].InnerText = Convert.ToBase64String(cert.RawData);
+            xmlDoc.GetElementsByTagName("ct:DocumentID")[0].InnerText = Guid.NewGuid().ToString().ToUpper();
+
+            if (String.IsNullOrEmpty(ArchiveName))
+                ArchiveName = DateTime.Now.ToString("H-mm-ss_dd.MM.yyyy");
+
+            xmlDoc.GetElementsByTagName("ArchiveName")[0].InnerText = ArchiveName;
+            xmlDoc.GetElementsByTagName("ArchDeclID")[0].InnerText = "102773904741735";
+
+            var KeyInfos = xmlDoc.GetElementsByTagName("KeyInfo", "*");
+            foreach (XmlElement KeyInfo in KeyInfos)
+            {
+                var xmlMCDid = xmlDoc.CreateElement("MCDId", KeyInfo.NamespaceURI);
+                KeyInfo.AppendChild(xmlMCDid).InnerText = MchdId.ToUpper();
+
+                var xmlINNPrincipal = xmlDoc.CreateElement("INNPrincipal", KeyInfo.NamespaceURI);
+                KeyInfo.AppendChild(xmlINNPrincipal).InnerText = INN.ToUpper();
+            }
+
+            Console.WriteLine();
+
+            xmlDoc.Save(newArchivePath);
+            NormalizationXmlSign.NormalizationXmlForArchive(newArchivePath, ref cert);
+            Console.WriteLine();
         }
     }
 }

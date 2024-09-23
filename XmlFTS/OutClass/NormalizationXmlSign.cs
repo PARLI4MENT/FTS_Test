@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using XmlFTS.OutClass;
 using System.Security.Cryptography.X509Certificates;
+using System.Runtime.InteropServices;
 
 namespace XMLSigner.OutClass
 {
@@ -162,9 +163,62 @@ namespace XMLSigner.OutClass
             return xElement.ToString();
         }
 
+        public static void NormalizationXmlForArchive(string pathToXml, ref X509Certificate2 cert, [Optional]string ArchiveName)
+        {
+            /// XML Document Orig
+            XmlDocument xmlDocOrigin = new XmlDocument();
+            xmlDocOrigin.Load(new StringReader(File.ReadAllText(pathToXml)));
+            XmlElement xmlRootOrigin = (XmlElement)xmlDocOrigin.GetElementsByTagName("Body")[0];
+
+            /// XML Document Editing
+            XmlDocument xmlDocEdit = new XmlDocument();
+            xmlDocEdit.Load(new StringReader(File.ReadAllText(pathToXml)));
+            XmlElement xmlRootEdit = (XmlElement)xmlDocEdit.GetElementsByTagName("Body")[0];
+
+            FindElementsForArchive(xmlRootEdit, xmlRootOrigin, ref cert);
+
+            if (String.IsNullOrEmpty(ArchiveName))
+                ArchiveName = DateTime.Now.ToString("H-mm-ss_dd.MM.yyyy") + ".xml";
+            var normXml = Path.Combine(StaticPathConfiguration.PathSignedFolder, $"Archive_{DateTime.Now.ToString("H-mm-ss_dd.MM.yyyy")}.xml");
+
+            xmlDocOrigin.Save(normXml);
+
+            /// Save without formating
+            var xDocument = XDocument.Load(normXml);
+            xDocument.Save(normXml, SaveOptions.DisableFormatting);
+        }
+        /// <summary> Сделать автопоиск по элементу Reference </summary>
+        /// <param name="xmlEdit"></param>
+        /// <param name="xmlOrig"></param>
+        public static void FindElementsForArchive(XmlElement xmlEdit, XmlElement xmlOrig, ref X509Certificate2 cert)
+        {
+
+            /// KeyInfo hash
+            Normalization(xmlEdit.GetElementsByTagName("KeyInfo", "*")[0]);
+            var swapBodyKey = SwapAttributes(((XmlElement)xmlEdit.GetElementsByTagName("KeyInfo", "*")[0]).OuterXml);
+            var strBodyKeyHash = SignXmlGost.HashGostR3411_2012_256(swapBodyKey);
+            ((XmlElement)xmlEdit.GetElementsByTagName("DigestValue")[0]).InnerText = strBodyKeyHash;
+            ((XmlElement)xmlOrig.GetElementsByTagName("DigestValue")[0]).InnerText = strBodyKeyHash;
+
+            /// Object hash
+            Normalization(xmlEdit.GetElementsByTagName("Object", "*")[0]);
+            var swapBodyObj = SwapAttributes(((XmlElement)xmlEdit.GetElementsByTagName("Object", "*")[0]).OuterXml);
+            var strBodyObjHash = SignXmlGost.HashGostR3411_2012_256(swapBodyObj);
+            ((XmlElement)xmlEdit.GetElementsByTagName("DigestValue")[1]).InnerText = strBodyObjHash;
+            ((XmlElement)xmlOrig.GetElementsByTagName("DigestValue")[1]).InnerText = strBodyObjHash;
+
+            /// Sign Object
+            Normalization(xmlEdit.GetElementsByTagName("SignedInfo", "*")[0]);
+            var swapBodySingedInfo = SwapAttributes(((XmlElement)xmlEdit.GetElementsByTagName("SignedInfo", "*")[0]).OuterXml);
+            var strBodySignCms = SignXmlGost.SignCmsMessage(swapBodySingedInfo, cert);
+            ((XmlElement)xmlEdit.GetElementsByTagName("SignatureValue")[0]).InnerText = strBodySignCms;
+            ((XmlElement)xmlOrig.GetElementsByTagName("SignatureValue")[0]).InnerText = strBodySignCms;
+        }
+
         /// <summary> "Открывает" автозакрытые элементы XML-документа </summary>
         /// <param name="node"></param>
         /// <returns></returns>
+        /// <remarks>Не реализованно</remarks>
         private static XmlNode OpenAutoClosed(XmlNode node)
         {
             if (String.IsNullOrEmpty(node.InnerText))

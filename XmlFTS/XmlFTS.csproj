@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>XmlFTS</RootNamespace>
     <AssemblyName>XmlFTS</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -89,7 +89,6 @@
     <Compile Include="Database\ISql.cs" />
     <Compile Include="Database\MsSql.cs" />
     <Compile Include="Database\PgSql.cs" />
-    <Compile Include="OutClass\FileWatcher.cs" />
     <Compile Include="OutClass\OpenExternalFile.cs" />
     <Compile Include="OutClass\SenderSettings.cs" />
     <Compile Include="OutClass\ZipArchive.cs" />
