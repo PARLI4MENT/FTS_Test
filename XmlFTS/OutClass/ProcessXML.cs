@@ -28,10 +28,8 @@ namespace XmlFTS
         private static DateTime lastWriteBase;
         private static DateTime lastWriteReply;
 
-        public static void ProcessStart()
+        public static void RunProcess()
         {
-            AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
-
             /// Обработка
             var ReplyProcess = Task.Run(() =>
             {
@@ -69,21 +67,6 @@ namespace XmlFTS
                     {
                         Debug.WriteLine("Start main process...");
 
-                        /// #1 Извлечение ZIP
-                        ArchiveWorker.ExtractZipArchive(Directory.GetFiles(rawSrcFolder, "*.zip")[0]);
-                        if (IsStatistics)
-                            SummaryFiles += Directory.GetFiles(StaticPathConfiguration.PathExtractionFolder, "*.xml").Count();
-
-                        /// #2 Переименование и копирование
-                        string[] xmlFiles = Directory.GetFiles(rawSrcFolder, "*.xml");
-                        if (xmlFiles.Count() == 1)
-                            RenamerXML.RenameMoveRawFiles(xmlFiles[0]);
-                        if (xmlFiles.Count() > 1)
-                            RenamerXML.RenameMoveRawFiles(xmlFiles);
-
-                        /// Remove srcFolder
-                        Directory.Delete(rawSrcFolder, true);
-
                         ///// #3 Сортировка
                         SortXml(Directory.GetFiles(StaticPathConfiguration.PathExtractionFolder, "*.xml"));
                     }
@@ -101,7 +84,7 @@ namespace XmlFTS
             //}
         }
 
-        /// <summary>Задача => Последующая обработка </summary>
+        /// <summary>Задача => Обработка присланных Xml-файлов  </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         /// <exception cref="NotImplementedException"></exception>

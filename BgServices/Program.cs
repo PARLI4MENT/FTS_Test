@@ -9,6 +9,7 @@ using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.Hosting;
 using XmlFTS;
 using XmlFTS.OutClass;
+using static BgServices.WatchBaseFolder;
 
 namespace BgServices
 {
@@ -48,26 +49,27 @@ namespace BgServices
                         SummaryFiles += rawSrcFolder.Count();
 
                         ///// #3 Сортировка
-                        SortXml(Directory.GetFiles(StaticPathConfiguration.PathExtractionFolder, "*.xml"));
+                        //SortXml(Directory.GetFiles(StaticPathConfiguration.PathExtractionFolder, "*.xml"));
                     }
                     Debug.WriteLine("Process main done!");
                 }
-                return;
-        }
-    }
 
-    /// <summary>Отслеживание приходящих файлов</summary>
-    public class MyProcessor2 : BackgroundService
-    {
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                /// Сюда
-                Console.WriteLine($"MyProcessor2: {DateTime.Now}");
-                await Task.Delay(500);
             }
-            return;
+        }
+
+        /// <summary>Отслеживание приходящих файлов</summary>
+        public class MyProcessor2 : BackgroundService
+        {
+            protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+            {
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    /// Сюда
+                    Console.WriteLine($"MyProcessor2: {DateTime.Now}");
+                    await Task.Delay(500);
+                }
+                return;
+            }
         }
     }
 }
