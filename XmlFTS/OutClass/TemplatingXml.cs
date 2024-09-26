@@ -246,10 +246,7 @@ namespace XmlFTS
             NormalizationXmlSign.NormalizationXml(NewDocToArchName, ref cert);
 
             if (Config.DeleteSourceFiles)
-            {
-                File.Delete(extractedFile);
                 File.Delete(templatePath);
-            }
         }
 
 

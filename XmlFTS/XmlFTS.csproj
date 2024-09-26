@@ -177,6 +177,7 @@
     <Compile Include="Database\PgSql.cs" />
     <Compile Include="OutClass\BackupFile.cs" />
     <Compile Include="OutClass\ChangeLogger.cs" />
+    <Compile Include="OutClass\IHostBackgroundService.cs" />
     <Compile Include="OutClass\OpenExternalFile.cs" />
     <Compile Include="OutClass\ProcessHostXml.cs" />
     <Compile Include="OutClass\SenderSettings.cs" />

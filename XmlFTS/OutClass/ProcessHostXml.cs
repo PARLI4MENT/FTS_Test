@@ -2,39 +2,185 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
+using System.Runtime.ConstrainedExecution;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SQLNs;
 using XmlFTS.OutClass;
 using XMLSigner;
 
 namespace XmlFTS
 {
-    /// <summary> TEST ONLY </summary>
-    public static class ProcessHostXML
+    public class ProcessHostXml
     {
-        public static async Task RunProcess()
+        public static void StartServices()
         {
-            var host = new HostBuilder()
-                   .ConfigureHostConfiguration(hConfig => { })
-                   .ConfigureServices((context, services) =>
-                   {
-                       services.AddHostedService<BasicOperation>();
-                       //services.AddHostedService<ReplyProcessTick>();
-                       //services.AddHostedService<CheckBackup>();
-                   })
-                   .UseConsoleLifetime().Build();
 
-            host.Run();
         }
     }
 
+    public class FileSystemWatcherService : BackgroundService
+    {
+        private readonly string _directoryPath = @"C:\Test\RawFolder";
+
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            using (var watcher = new FileSystemWatcher(_directoryPath))
+            {
+
+                // Postavi željene filtere i događaje
+                watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.DirectoryName | NotifyFilters.FileName;
+                watcher.IncludeSubdirectories = false;
+                watcher.Filter = "*.xml";
+                watcher.InternalBufferSize = 4096;
+
+                //watcher.Created += OnCreated;
+                watcher.Changed += OnChanged;
+
+                watcher.EnableRaisingEvents = true;
+
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    await Task.Delay(1000, stoppingToken);
+                }
+                watcher.EnableRaisingEvents = false;
+            }
+        }
+
+        private void OnChanged(object sender, FileSystemEventArgs e)
+        {
+            Console.WriteLine($"File: {e.FullPath} created.");
+            Doing();
+        }
+
+        private void Doing()
+        {
+            string MchdId = "e7d94ee1-33d4-4b95-a27d-07896fdc00e0";
+            string MchdINN = "250908790897";
+            X509Certificate2 cert = SignXmlGost.FindGostCurrentCertificate("01DA FCE9 BC8E 41B0 0008 7F5E 381D 0002");
+
+            var rawSrcFiles = Directory.GetFiles(StaticPathConfiguration.PathRawFolder, "*.xml");
+            if (rawSrcFiles.Count() != 0)
+            {
+                var countFiles = rawSrcFiles.Length;
+
+                var sw = new Stopwatch();
+                sw.Start();
+
+                Parallel.ForEach
+                    (rawSrcFiles,
+                    new ParallelOptions { MaxDegreeOfParallelism = Config.MaxDegreeOfParallelism },
+                        xmlFile =>
+                        {
+                            if (Config.EnableBackup)
+                                BackupFile.Backup(xmlFile, true);
+                            try
+                            {
+                                using (StringReader stringReader = new StringReader(File.ReadAllText(xmlFile)))
+                                {
+                                    XmlDocument xmlDoc = new XmlDocument();
+                                    xmlDoc.Load(stringReader);
+
+                                    switch (xmlDoc.DocumentElement.GetAttribute("DocumentModeID"))
+                                    {
+                                        /// ПТД ExpressCargoDeclaration
+                                        case "1006275E":
+                                            // Шаблонизация + выбрать серификат Конкретного человека
+                                            TemplatingXml.TemplatingLinear(xmlFile, ref cert, MchdId, MchdINN);
+                                            break;
+
+                                        /// В архив Остальное
+                                        default:
+                                            // Шаблонизация + выбрать серификат (Компании) ///Пока индивидуальный
+                                            TemplatingXml.TemplatingLinear(xmlFile, ref cert, MchdId, MchdINN);
+                                            break;
+                                    }
+
+                                    if (Config.DeleteSourceFiles)
+                                        File.Delete(xmlFile);
+                                }
+                            }
+                            catch (Exception ex) { }
+                        });
+
+                //if (true)
+                //{
+                //    Console.WriteLine();
+                //    Console.WriteLine($"BaseProcess => {rawSrcFiles.Count()} count || {sw.Elapsed.TotalMilliseconds / (double)1000} sec.");
+                //    //Console.WriteLine($"AVG (кол-во файлов / кол-во сек.) => {rawSrcFiles.Count() / (sw.ElapsedMilliseconds / 1000)}.");
+                //}
+                sw.Stop();
+
+                if (Directory.GetFiles(StaticPathConfiguration.PathRawFolder).Length != 0)
+                    Doing();
+
+                Console.WriteLine($"Process main done!\nTime => {sw.Elapsed.TotalMilliseconds}\nFiles => {countFiles}");
+            }
+        }
+        //{
+        ///// DOING
+
+        //    string MchdId = "e7d94ee1-33d4-4b95-a27d-07896fdc00e0";
+        //    string MchdINN = "250908790897";
+        //    X509Certificate2 cert = SignXmlGost.FindGostCurrentCertificate("01DA FCE9 BC8E 41B0 0008 7F5E 381D 0002");
+
+        //    var rawSrcFiles = Directory.GetFiles("C:\\Test\\RawFolder", "*.xml");
+
+        //    if (rawSrcFiles.Count() != 0)
+        //    {
+        //    var sw = new Stopwatch();
+        //    if (true)
+        //        sw.Start();
+
+        //    Console.WriteLine("Start basic process...");
+
+        //    ///// #3 Сортировка
+        //    Parallel.ForEach
+        //        (rawSrcFiles,
+        //        new ParallelOptions { MaxDegreeOfParallelism = Config.MaxDegreeOfParallelism },
+        //            xmlFile =>
+        //            {
+        //                if (Config.EnableBackup)
+        //                    BackupFile.Backup(xmlFile, true);
+
+        //                XmlDocument xmlDoc = new XmlDocument();
+        //                xmlDoc.Load(new StringReader(File.ReadAllText(xmlFile)));
+
+        //                switch (xmlDoc.DocumentElement.GetAttribute("DocumentModeID"))
+        //                {
+        //                    /// ПТД ExpressCargoDeclaration
+        //                    case "1006275E":
+        //                        // Шаблонизация + выбрать серификат Конкретного человека
+        //                        TemplatingXml.TemplatingLinear(xmlFile, ref cert, MchdId, MchdINN);
+        //                        break;
+
+        //                    /// В архив Остальное
+        //                    default:
+        //                        // Шаблонизация + выбрать серификат (Компании) ///Пока индивидуальный
+        //                        TemplatingXml.TemplatingLinear(xmlFile, ref cert, MchdId, MchdINN);
+        //                        break;
+        //                } });
+
+        //    if (true)
+        //    {
+        //        sw.Stop();
+        //        Console.WriteLine();
+        //        Console.WriteLine($"BaseProcess => {rawSrcFiles.Count()} count || {sw.Elapsed.TotalMilliseconds / (double)1000} sec.");
+        //        //Console.WriteLine($"AVG (кол-во файлов / кол-во сек.) => {rawSrcFiles.Count() / (sw.ElapsedMilliseconds / 1000)}.");
+        //    }
+        //    Console.WriteLine("Process main done!");
+        //}
+    }
+
     /// <summary> </summary>
-    internal class BasicOperation : BackgroundService
+    public class BasicOperation : BackgroundService
     {
         public static int baseOperationDelay = 500;
 
@@ -42,32 +188,11 @@ namespace XmlFTS
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                var rawSrcFiles = Directory.GetFiles("C:\\Test\\RawFolder", "*.xml");
 
-                if (rawSrcFiles.Count() != 0)
-                {
-                    var sw = new Stopwatch();
-                    if (true)
-                        sw.Start();
-
-                    Console.WriteLine("Start basic process...");
-
-                    ///// #3 Сортировка
-                    SortXml(rawSrcFiles);
-
-                    if (true)
-                    {
-                        sw.Stop();
-                        Console.WriteLine();
-                        Console.WriteLine($"BaseProcess => {rawSrcFiles.Count()} count || {sw.Elapsed.TotalMilliseconds / (double)1000} sec.");
-                        Console.WriteLine($"AVG (кол-во файлов / кол-во сек.) => {rawSrcFiles.Count() / (sw.ElapsedMilliseconds / 1000)}.");
-                    }
-                    Console.WriteLine("Process main done!");
-                }
                 await Task.Delay(500);
             }
         }
-        public void SortXml(string[] xmlFiles)
+        public async Task SortXml(string[] xmlFiles)
         {
             string MchdId = "e7d94ee1-33d4-4b95-a27d-07896fdc00e0";
             string MchdINN = "250908790897";
@@ -99,6 +224,7 @@ namespace XmlFTS
                                     break;
                             }
                         });
+            return;
         }
     }
 
