@@ -16,22 +16,17 @@ namespace XMLSigner
         public static async System.Threading.Tasks.Task Main(string[] args)
         {
             //new PgSql().PgRetriveData("BD2D10AB-2871-4155-8F0A-2CE896EA880F", "BD2D10AB-2871-4155-8F0A-2CE896EA880F", "Общая ошибка при работе системы");
-            Console.WriteLine();
-
             Config.BaseConfiguration("C:\\Test");
             Config.EnableBackup = false;
             Config.DeleteSourceFiles = true;
             Config.ReadAllSetting();
 
-            //ProcessXML.ProcessStart();
+            await ProcessHostXML.RunProcess();
             //new PgSql().PgRetriveData("BD2D10AB-2871-4155-8F0A-2CE896EA880F", "BD2D10AB-2871-4155-8F0A-2CE896EA880F", "Общая ошибка при работе системы");
 
             //new PgSql().PgSqlCreateDatabase(true);
 
             //TemplatingXml.CreateArchive(MchdId, INN, cert);
-
-            Console.ReadKey();
-
         }
     }
 }
