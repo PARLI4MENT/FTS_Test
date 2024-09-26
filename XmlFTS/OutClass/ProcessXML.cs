@@ -68,7 +68,7 @@ namespace XmlFTS
                         Debug.WriteLine("Start main process...");
 
                         ///// #1 Сортировка
-                        SortXml(Directory.GetFiles(StaticPathConfiguration.PathExtractionFolder, "*.xml"));
+                        SortXml(Directory.GetFiles(StaticPathConfiguration.PathRawFolder, "*.xml"));
                     }
                     if (IsStatistics)
                     {

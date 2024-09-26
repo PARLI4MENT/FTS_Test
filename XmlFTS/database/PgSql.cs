@@ -28,8 +28,8 @@ namespace SQLNs
         private static string _Database = "declarantplus";
         public string SetDatabase(string _database) => _Database = _database;
 
-        private static string connStrWithoutDatabase = $"Server=localhost;Port=5438;Uid=postgres;Pwd=passwd0105;";
-        private static string connStrWithDatabase = $"Server=localhost;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
+        private static string connStrWithoutDatabase = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;";
+        private static string connStrWithDatabase = $"Server=192.168.0.142;Port=5438;Uid=postgres;Pwd=passwd0105;Database=declarantplus;";
 
         public PgSql() { }
 
@@ -68,6 +68,7 @@ namespace SQLNs
             Config.AddUpdateAppSettings(connectionKey, $"Server={_Server};Port={_Port};Uid={_Uid};Pwd={_Password};");
         }
 
+        //// НАПИСАТЬ ЛОГИ СЮДА
         /// <summary> Выполнение запроса в PostgresSQL </summary>
         /// <remarks>
         /// string[0] NameArray, string[1] EnvelopeID, string[2] DocumentID, string[3] PrDocumentName
@@ -77,23 +78,27 @@ namespace SQLNs
         /// <param name="Company_key_id">Уникальный ID компании</param>
         public void ExecuteToDB(string[] args, int Company_key_id)
         {
-            //using (var sqlConn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings[connectionKey].ConnectionString))
-            using (var sqlConn = new NpgsqlConnection(connStrWithDatabase))
+            try
             {
-                sqlConn.Open();
-                using (var sqlComm = new NpgsqlCommand())
+                //using (var sqlConn = new NpgsqlConnection(ConfigurationManager.ConnectionStrings[connectionKey].ConnectionString))
+                using (var sqlConn = new NpgsqlConnection(connStrWithDatabase))
                 {
-                    sqlComm.CommandText = $@"INSERT INTO ""public"".""ExchED""
+                    sqlConn.Open();
+                    using (var sqlComm = new NpgsqlCommand())
+                    {
+                        sqlComm.CommandText = $@"INSERT INTO ""public"".""ExchED""
                                 (""InnerID"", ""MessageType"", ""EnvelopeID"", ""CompanySet_key_id"",
                                 ""DocumentID"", ""DocName"", ""DocNum"", ""DocCode"", ""ArchFileName"")
                                 VALUES ('{args[0]}', 'CMN.00202', '{args[1]}', {Company_key_id}, '{args[2]}',
                                 '{args[3]}', '{args[4]}', '{args[5]}', '{Path.GetFileName(args[6])}');";
-                    sqlComm.Connection = sqlConn;
-                    sqlComm.ExecuteNonQuery();
-                    // ArchivePathDoc ???
+                        sqlComm.Connection = sqlConn;
+                        sqlComm.ExecuteNonQuery();
+                        // ArchivePathDoc ???
+                    }
+                    sqlConn.Close();
                 }
-                sqlConn.Close();
             }
+            catch (NpgsqlException npgEx) { Console.WriteLine(npgEx.ErrorCode + " " + npgEx.Message); }
         }
 
         /// <summary> Выполнение запроса в PostgresSQL </summary>

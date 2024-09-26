@@ -40,9 +40,6 @@ namespace XmlFTS.OutClass
         /// <summary> Путь к папке с "сырыми" файлами (RawFolder) </summary>
         public static string PathRawFolder { get; set; }
 
-        /// <summary> Путь к папке с извлечёнными файлами (ExtractionFolder) </summary>
-        public static string PathExtractionFolder { get; set; }
-
         /// <summary> Путь к папке с шаблонными файлами (ImplementFolder) </summary>
         public static string PathTemplatedFolder { get; set; }
 

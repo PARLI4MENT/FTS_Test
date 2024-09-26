@@ -24,7 +24,8 @@ namespace XmlFTS
                    .ConfigureServices((context, services) =>
                    {
                        services.AddHostedService<BasicOperation>();
-                       services.AddHostedService<ReplyProcessTick>();
+                       //services.AddHostedService<ReplyProcessTick>();
+                       //services.AddHostedService<CheckBackup>();
                    })
                    .UseConsoleLifetime().Build();
 
@@ -33,7 +34,7 @@ namespace XmlFTS
     }
 
     /// <summary> </summary>
-    public class BasicOperation : BackgroundService
+    internal class BasicOperation : BackgroundService
     {
         public static int baseOperationDelay = 500;
 
@@ -43,65 +44,65 @@ namespace XmlFTS
             {
                 var rawSrcFiles = Directory.GetFiles("C:\\Test\\RawFolder", "*.xml");
 
-                if (rawSrcFiles.Count() == 0)
+                if (rawSrcFiles.Count() != 0)
                 {
-                    await Task.Delay(baseOperationDelay);
-                    return;
+                    var sw = new Stopwatch();
+                    if (true)
+                        sw.Start();
+
+                    Console.WriteLine("Start basic process...");
+
+                    ///// #3 Сортировка
+                    SortXml(rawSrcFiles);
+
+                    if (true)
+                    {
+                        sw.Stop();
+                        Console.WriteLine();
+                        Console.WriteLine($"BaseProcess => {rawSrcFiles.Count()} count || {sw.Elapsed.TotalMilliseconds / (double)1000} sec.");
+                        Console.WriteLine($"AVG (кол-во файлов / кол-во сек.) => {rawSrcFiles.Count() / (sw.ElapsedMilliseconds / 1000)}.");
+                    }
+                    Console.WriteLine("Process main done!");
                 }
-                
-                var sw = new Stopwatch();
-                if (true)
-                    sw.Start();
-
-                Console.WriteLine("Start basic process...");
-
-                ///// #3 Сортировка
-                SortXml(Directory.GetFiles(StaticPathConfiguration.PathExtractionFolder, "*.xml"));
-
-                if (true)
-                {
-                    sw.Stop();
-                    Console.WriteLine();
-                    Console.WriteLine($"BaseProcess => {rawSrcFiles.Count()} count || {sw.Elapsed.TotalMilliseconds / (double)1000} sec.");
-                    Console.WriteLine($"AVG (кол-во файлов / кол-во сек.) => {rawSrcFiles.Count() / (sw.ElapsedMilliseconds / 1000)}.");
-                }
-                Console.WriteLine("Process main done!");
+                await Task.Delay(500);
             }
+        }
+        public void SortXml(string[] xmlFiles)
+        {
+            string MchdId = "e7d94ee1-33d4-4b95-a27d-07896fdc00e0";
+            string MchdINN = "250908790897";
+            X509Certificate2 cert = SignXmlGost.FindGostCurrentCertificate("01DA FCE9 BC8E 41B0 0008 7F5E 381D 0002");
 
-            void SortXml(string[] xmlFiles)
-            {
-                string MchdId = "e7d94ee1-33d4-4b95-a27d-07896fdc00e0";
-                string MchdINN = "250908790897";
-                X509Certificate2 cert = SignXmlGost.FindGostCurrentCertificate("01DA FCE9 BC8E 41B0 0008 7F5E 381D 0002");
+            Parallel.ForEach
+                        (xmlFiles,
+                        new ParallelOptions { MaxDegreeOfParallelism = Config.MaxDegreeOfParallelism },
+                        xmlFile =>
+                        {
+                            if (Config.EnableBackup)
+                                BackupFile.Backup(xmlFile, true);
 
-                Parallel.ForEach
-                            (xmlFiles,
-                            new ParallelOptions { MaxDegreeOfParallelism = Config.MaxDegreeOfParallelism },
-                            xmlFile =>
+                            XmlDocument xmlDoc = new XmlDocument();
+                            xmlDoc.Load(new StringReader(File.ReadAllText(xmlFile)));
+
+                            switch (xmlDoc.DocumentElement.GetAttribute("DocumentModeID"))
                             {
-                                XmlDocument xmlDoc = new XmlDocument();
-                                xmlDoc.Load(new StringReader(File.ReadAllText(xmlFile)));
+                                /// ПТД ExpressCargoDeclaration
+                                case "1006275E":
+                                    // Шаблонизация + выбрать серификат Конкретного человека
+                                    TemplatingXml.TemplatingLinear(xmlFile, ref cert, MchdId, MchdINN);
+                                    break;
 
-                                switch (xmlDoc.DocumentElement.GetAttribute("DocumentModeID"))
-                                {
-                                    /// ПТД ExpressCargoDeclaration
-                                    case "1006275E":
-                                        // Шаблонизация + выбрать серификат Конкретного человека
-                                        TemplatingXml.TemplatingLinear(xmlFile, ref cert, MchdId, MchdINN);
-                                        break;
-
-                                    /// В архив Остальное
-                                    default:
-                                // Шаблонизация + выбрать серификат (Компании) ///Пока индивидуальный
-                                TemplatingXml.TemplatingLinear(xmlFile, ref cert, MchdId, MchdINN);
-                                break;
-                        }
-                    });
-            }
+                                /// В архив Остальное
+                                default:
+                                    // Шаблонизация + выбрать серификат (Компании) ///Пока индивидуальный
+                                    TemplatingXml.TemplatingLinear(xmlFile, ref cert, MchdId, MchdINN);
+                                    break;
+                            }
+                        });
         }
     }
 
-    public class ReplyProcessTick : BackgroundService
+    internal class ReplyProcessTick : BackgroundService
     {
         public static int replyOperationDelay = 500;
 
@@ -114,7 +115,7 @@ namespace XmlFTS
                 if (rawSrcFolders.Count() == 0)
                 {
                     await Task.Delay(replyOperationDelay);
-                    return;
+                    break;
                 }
             }
         }
@@ -137,6 +138,14 @@ namespace XmlFTS
                         File.Copy(xmlFile, Path.Combine("C:\\Test\\BackupReplyFTS", Path.GetFileName(xmlFile)), true);
                     File.Delete(xmlFile);
                 });
+        }
+    }
+
+    internal class CheckBackup : BackgroundService
+    {
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }

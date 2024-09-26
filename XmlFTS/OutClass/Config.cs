@@ -60,12 +60,6 @@ namespace XmlFTS.OutClass
                 Directory.CreateDirectory(StaticPathConfiguration.PathRawFolder);
             AddUpdateAppSettings("PathRawFolder", StaticPathConfiguration.PathRawFolder);
 
-            /// Путь к папке с извлечёнными файлами
-            StaticPathConfiguration.PathExtractionFolder = Path.Combine(basePath, "ExtractionFolder");
-            if (!Directory.Exists(StaticPathConfiguration.PathExtractionFolder))
-                Directory.CreateDirectory(StaticPathConfiguration.PathExtractionFolder);
-            AddUpdateAppSettings("PathExtractionFolder", StaticPathConfiguration.PathExtractionFolder);
-
             /// Путь к папке с шаблонными файлами
             StaticPathConfiguration.PathTemplatedFolder = Path.Combine(basePath, "TemplatedFolder");
             if (!Directory.Exists(StaticPathConfiguration.PathTemplatedFolder))
@@ -102,14 +96,8 @@ namespace XmlFTS.OutClass
             /// Путь к папке с исходными файлами
             if (!Directory.Exists(PathRawFolder))
                 Directory.CreateDirectory(PathRawFolder);
-            StaticPathConfiguration.PathExtractionFolder = PathRawFolder;
+            StaticPathConfiguration.PathRawFolder = PathRawFolder;
             AddUpdateAppSettings("PathRawFolder", StaticPathConfiguration.PathRawFolder);
-
-            /// Путь к папке с извлечёнными файлами
-            if (!Directory.Exists(PathExtractionFolder))
-                Directory.CreateDirectory(PathExtractionFolder);
-            StaticPathConfiguration.PathExtractionFolder = PathExtractionFolder;
-            AddUpdateAppSettings("PathExtractionFolder", StaticPathConfiguration.PathExtractionFolder);
 
             /// Путь к папке с шаблонными файлами
             if (!Directory.Exists(PathTemplatedFolder))
