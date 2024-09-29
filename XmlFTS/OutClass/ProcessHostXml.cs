@@ -54,11 +54,7 @@ namespace XmlFTS
             }
         }
 
-        private void OnChanged(object sender, FileSystemEventArgs e)
-        {
-            Console.WriteLine($"File: {e.FullPath} created.");
-            Doing();
-        }
+        private void OnChanged(object sender, FileSystemEventArgs e) => Doing(); 
 
         private void Doing()
         {
@@ -107,7 +103,8 @@ namespace XmlFTS
                                         File.Delete(xmlFile);
                                 }
                             }
-                            catch (Exception ex) { }
+                            catch (Exception ex) { Debug.WriteLine(ex.Message + " " + ex.Data); }
+                            finally { }
                         });
 
                 //if (true)
@@ -124,59 +121,6 @@ namespace XmlFTS
                 Console.WriteLine($"Process main done!\nTime => {sw.Elapsed.TotalMilliseconds}\nFiles => {countFiles}");
             }
         }
-        //{
-        ///// DOING
-
-        //    string MchdId = "e7d94ee1-33d4-4b95-a27d-07896fdc00e0";
-        //    string MchdINN = "250908790897";
-        //    X509Certificate2 cert = SignXmlGost.FindGostCurrentCertificate("01DA FCE9 BC8E 41B0 0008 7F5E 381D 0002");
-
-        //    var rawSrcFiles = Directory.GetFiles("C:\\Test\\RawFolder", "*.xml");
-
-        //    if (rawSrcFiles.Count() != 0)
-        //    {
-        //    var sw = new Stopwatch();
-        //    if (true)
-        //        sw.Start();
-
-        //    Console.WriteLine("Start basic process...");
-
-        //    ///// #3 Сортировка
-        //    Parallel.ForEach
-        //        (rawSrcFiles,
-        //        new ParallelOptions { MaxDegreeOfParallelism = Config.MaxDegreeOfParallelism },
-        //            xmlFile =>
-        //            {
-        //                if (Config.EnableBackup)
-        //                    BackupFile.Backup(xmlFile, true);
-
-        //                XmlDocument xmlDoc = new XmlDocument();
-        //                xmlDoc.Load(new StringReader(File.ReadAllText(xmlFile)));
-
-        //                switch (xmlDoc.DocumentElement.GetAttribute("DocumentModeID"))
-        //                {
-        //                    /// ПТД ExpressCargoDeclaration
-        //                    case "1006275E":
-        //                        // Шаблонизация + выбрать серификат Конкретного человека
-        //                        TemplatingXml.TemplatingLinear(xmlFile, ref cert, MchdId, MchdINN);
-        //                        break;
-
-        //                    /// В архив Остальное
-        //                    default:
-        //                        // Шаблонизация + выбрать серификат (Компании) ///Пока индивидуальный
-        //                        TemplatingXml.TemplatingLinear(xmlFile, ref cert, MchdId, MchdINN);
-        //                        break;
-        //                } });
-
-        //    if (true)
-        //    {
-        //        sw.Stop();
-        //        Console.WriteLine();
-        //        Console.WriteLine($"BaseProcess => {rawSrcFiles.Count()} count || {sw.Elapsed.TotalMilliseconds / (double)1000} sec.");
-        //        //Console.WriteLine($"AVG (кол-во файлов / кол-во сек.) => {rawSrcFiles.Count() / (sw.ElapsedMilliseconds / 1000)}.");
-        //    }
-        //    Console.WriteLine("Process main done!");
-        //}
     }
 
     /// <summary> </summary>
@@ -228,7 +172,7 @@ namespace XmlFTS
         }
     }
 
-    internal class ReplyProcessTick : BackgroundService
+    public class ReplyProcessTick : BackgroundService
     {
         public static int replyOperationDelay = 500;
 

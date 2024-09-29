@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C971939F-56E8-492A-8CE3-E70CCF873A04}</ProjectGuid>
+    <ProjectGuid>{E243D019-7849-4EB0-BBCA-7AEA4BD29D12}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>XMLSigner_WPF</RootNamespace>
-    <AssemblyName>XMLSigner_WPF</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <RootNamespace>FTS_XML_UI_Netframework</RootNamespace>
+    <AssemblyName>FTS_XML_UI_Netframework</AssemblyName>
+    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -99,6 +99,14 @@
       <Project>{6b5456b4-eef0-4872-9740-e5ea5a3a9a35}</Project>
       <Name>XmlFTS</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data\" />
+    <Folder Include="Infrastructure\" />
+    <Folder Include="Models\" />
+    <Folder Include="Services\" />
+    <Folder Include="ViewModels\" />
+    <Folder Include="Views\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

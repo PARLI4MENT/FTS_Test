@@ -192,7 +192,6 @@ namespace XMLSigner.OutClass
         /// <param name="xmlOrig"></param>
         public static void FindElementsForArchive(XmlElement xmlEdit, XmlElement xmlOrig, ref X509Certificate2 cert)
         {
-
             /// KeyInfo hash
             Normalization(xmlEdit.GetElementsByTagName("KeyInfo", "*")[0]);
             var swapBodyKey = SwapAttributes(((XmlElement)xmlEdit.GetElementsByTagName("KeyInfo", "*")[0]).OuterXml);

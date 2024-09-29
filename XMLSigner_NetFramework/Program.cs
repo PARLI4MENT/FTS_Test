@@ -25,6 +25,7 @@ namespace XMLSigner
             //new PgSql().PgRetriveData("BD2D10AB-2871-4155-8F0A-2CE896EA880F", "BD2D10AB-2871-4155-8F0A-2CE896EA880F", "Общая ошибка при работе системы");
             //new PgSql().PgRetriveData("BD2D10AB-2871-4155-8F0A-2CE896EA880F", "BD2D10AB-2871-4155-8F0A-2CE896EA880F", "Общая ошибка при работе системы");
             //new PgSql().PgSqlCreateDatabase(true);
+
             Config.BaseConfiguration("C:\\Test");
             Config.DeleteSourceFiles = true;
             Config.EnableBackup = true;
@@ -32,17 +33,24 @@ namespace XMLSigner
 
             //await ProcessHostXML.CreateHostBuilder(args).RunConsoleAsync();
 
+            //var host = new HostBuilder()
+            //       .ConfigureHostConfiguration(hConfig => { })
+            //       .ConfigureServices((context, services) =>
+            //       {
+            //           services.AddHostedService<FileSystemWatcherService>();
+            //           services.AddHostedService<ReplyProcessTick>();
+            //       })
+            //       .UseConsoleLifetime()
+            //       .Build();
 
-            var host = new HostBuilder()
-                   .ConfigureHostConfiguration(hConfig => { })
-                   .ConfigureServices((context, services) =>
-                   {
-                       services.AddHostedService<FileSystemWatcherService>();
-                   })
-                   .UseConsoleLifetime()
-                   .Build();
+            //await host.RunAsync();
 
-            await host.RunAsync();
+            string MchdId = "719f90af-f777-4c70-9a33-053958eacc65";
+            string MchdINN = "2536287574";
+            X509Certificate2 cert = SignXmlGost.FindGostCurrentCertificate("01DA FCE9 BC8E 41B0 0008 7F5E 381D 0002");
+
+            TemplatingXml.CreateArchive(MchdId, MchdINN, cert, "NewArch_1");
+            Console.WriteLine("");
 
         }
     }

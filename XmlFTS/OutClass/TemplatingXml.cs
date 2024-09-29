@@ -202,7 +202,7 @@ namespace XmlFTS
             doc_to_arch.GetElementsByTagName("X509Certificate")[0].InnerText = Convert.ToBase64String(cert.RawData);
 
             doc_to_arch.GetElementsByTagName("ct:DocumentID")[0].InnerText = Guid.NewGuid().ToString().ToUpper();
-            doc_to_arch.GetElementsByTagName("ct:ArchDeclID")[0].InnerText = "ArchDeclID_TEMP";
+            doc_to_arch.GetElementsByTagName("ct:ArchDeclID")[0].InnerText = "102773904741735";
             doc_to_arch.GetElementsByTagName("ct:ArchID")[0].InnerText = "ArchID_TEMP";
             doc_to_arch.GetElementsByTagName("DocumentID", "*")[1].InnerText = DocumentID;
             doc_to_arch.GetElementsByTagName("DocCode", "*")[0].InnerText = DocCode;
@@ -259,6 +259,7 @@ namespace XmlFTS
         {
             string pathToTemplate = "C:\\Test\\create_arch.xml";
             string newArchivePath = Path.Combine("C:\\Test\\CreateArchive", Path.GetFileName(pathToTemplate));
+
             File.Copy(pathToTemplate, newArchivePath, true);
 
             /// XML
@@ -297,6 +298,8 @@ namespace XmlFTS
 
             xmlDoc.Save(newArchivePath);
             NormalizationXmlSign.NormalizationXmlForArchive(newArchivePath, ref cert);
+            if (Config.DeleteSourceFiles)
+                File.Delete(newArchivePath);
             Console.WriteLine();
         }
     }
