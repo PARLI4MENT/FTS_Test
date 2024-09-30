@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GostCryptographyLegacy", "G
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GostCryptographyNet", "GostCryptographyNet\GostCryptographyNet.csproj", "{DD75F69A-26EE-42D4-96A0-855A8728115C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XMLSigner_NetFramework", "XMLSigner_NetFramework\XMLSigner_NetFramework.csproj", "{55DEF16F-1F1C-4E1A-92EA-32C564E652F6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTS_XML_CLR_Netframework", "XMLSigner_NetFramework\FTS_XML_CLR_Netframework.csproj", "{55DEF16F-1F1C-4E1A-92EA-32C564E652F6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GostSignerService", "GostSignerService\GostSignerService.csproj", "{ADB85631-FE5E-4891-B1B1-FA5B0D4058B7}"
 EndProject

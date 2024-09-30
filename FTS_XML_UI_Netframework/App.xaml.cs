@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Hosting;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -13,5 +14,24 @@ namespace FTS_XML_UI_Netframework
     /// </summary>
     public partial class App : Application
     {
+        private IHost _host;
+
+        public App()
+        {
+            _host = new HostBuilder().Build();
+        }
+
+        private async void Application_Startup(object sender, StartupEventArgs e)
+        {
+           await _host.StartAsync();
+        }
+
+        private async void Application_Exit(object sender, ExitEventArgs e)
+        {
+            using (_host)
+            {
+                await _host.StopAsync(TimeSpan.FromSeconds(5));
+            }
+        }
     }
 }

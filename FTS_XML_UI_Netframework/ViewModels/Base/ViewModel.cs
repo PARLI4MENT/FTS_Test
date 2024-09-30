@@ -45,8 +45,6 @@ namespace FTS_XML_UI_Netframework.ViewModels.Base
             if (!Disposing || _Disposed)
                 return;
             _Disposed = true;
-
-            ///
         }
     }
 }

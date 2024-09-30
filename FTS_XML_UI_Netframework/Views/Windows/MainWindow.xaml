@@ -5,9 +5,27 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:FTS_XML_UI_Netframework"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="MainWindow"
-    Width="800"
-    Height="450"
+    xmlns:vm="clr-namespace:FTS_XML_UI_Netframework.ViewModels"
+    Title="{Binding Path=Title}"
+    Width="800" Height="450"
     mc:Ignorable="d">
-    <Grid />
+    <Window.DataContext>
+        <vm:MainWindowViewModel />
+    </Window.DataContext>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top" Height="20">
+            <MenuItem Header="File">
+                <MenuItem Header="Close"/>
+            </MenuItem>
+            <MenuItem Header="Help"></MenuItem>
+        </Menu>
+        
+        <StatusBar DockPanel.Dock="Bottom" Height="20"></StatusBar>
+        
+        <TabControl>
+            <TabItem Header="Main" MinHeight="20"/>
+            <TabItem Header="Logs" MinHeight="20"/>
+            <TabItem Header="Settings" MinHeight="20"/>
+        </TabControl>
+    </DockPanel>
 </Window>
