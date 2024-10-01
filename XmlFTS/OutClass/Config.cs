@@ -138,22 +138,16 @@ namespace XmlFTS.OutClass
             {
                 var appSettings = ConfigurationManager.AppSettings;
                 if (appSettings == null)
-                    Console.WriteLine("Настройки приложения пусты. Необходимо инициализировать базовые настройки.");
+                    Debug.WriteLine("Настройки приложения пусты. Необходимо инициализировать базовые настройки.");
                 else
                 {
-                    Console.WriteLine("Setting:\n{");
+                    Debug.WriteLine("Setting:\n{");
                     foreach (var key in appSettings.AllKeys)
-                        Console.WriteLine($"   {key} => {appSettings[key]}");
-                    Console.WriteLine("}");
+                        Debug.WriteLine($"   {key} => {appSettings[key]}");
+                    Debug.WriteLine("}");
                 }
             }
-            catch (ConfigurationErrorsException ex)
-            {
-#if DEBUG
-                Console.WriteLine(ex.Message);
-#endif
-                return;
-            }
+            catch (ConfigurationErrorsException ex) { Debug.WriteLine(ex.Message);  return; }
         }
 
         /// <summary>Чтение и возвращение значения </summary>

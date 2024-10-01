@@ -8,24 +8,116 @@
     xmlns:vm="clr-namespace:FTS_XML_UI_Netframework.ViewModels"
     Title="{Binding Path=Title}"
     Width="800" Height="450"
-    mc:Ignorable="d">
+    mc:Ignorable="d" Loaded="Window_Loaded">
     <Window.DataContext>
         <vm:MainWindowViewModel />
     </Window.DataContext>
     <DockPanel>
+
         <Menu DockPanel.Dock="Top" Height="20">
+            <!--Файл-->
             <MenuItem Header="File">
-                <MenuItem Header="Close"/>
+                <MenuItem Header="Exit"/>
             </MenuItem>
-            <MenuItem Header="Help"></MenuItem>
+
+            <!--Операции-->
+            <MenuItem Header="Operation">
+                <MenuItem Header="Создать запрос на содание архива" x:Name="menu_Operation_CreateArchive" Click="menu_Operation_CreateArchive_Click"/>
+            </MenuItem>
         </Menu>
-        
-        <StatusBar DockPanel.Dock="Bottom" Height="20"></StatusBar>
-        
+
+        <StatusBar DockPanel.Dock="Bottom" Height="40">
+            <!--Последняя обработка-->
+            <StatusBarItem x:Name="sbItem_LastIncomeProcessing" Content="" />
+
+            <!--Последнее кол-во обработок-->
+            <StatusBarItem x:Name="sbItem_LastIncomeCountProcessing" Content=""/>
+
+            <!--Среднее значение обработок-->
+            <StatusBarItem x:Name="sbItem_AvgProcessing" Content=""/>
+
+            <!--Принято XML-файлов (От улитки)-->
+            <StatusBarItem x:Name="sbItem_IncomeXMLFiles" Content=""/>
+
+            <!--Принято => Успешно-->
+            <StatusBarItem x:Name="sbItem_incomeDone" Content=""/>
+
+            <!--Принято => С ошибкой-->
+            <StatusBarItem x:Name="sbItem_incomeWithError" Content=""/>
+
+            <!--Start/Stop-->
+            <Button x:Name="btn_StartStopProcess" Content="Start/Stop" Width="70" Height="24"
+                    Click="btn_StartStopProcess_Click" Margin="3 3"/>
+
+            <Button x:Name="btn_StopProcess" Content="Stop" Width="70" Height="24"
+                    Click="btn_StopProcess_Click" Margin="3 3"/>
+
+            <Button x:Name="btn_TEST" Content="TEST" Width="70"
+                    Click="btn_TEST_Click"/>
+
+        </StatusBar>
+
         <TabControl>
-            <TabItem Header="Main" MinHeight="20"/>
-            <TabItem Header="Logs" MinHeight="20"/>
-            <TabItem Header="Settings" MinHeight="20"/>
+            <!--Логи-->
+            <TabItem Header="Logs" MinHeight="20">
+                <RichTextBox x:Name="rtb_Logs" Margin="1 1 1 1" IsReadOnly="True" IsReadOnlyCaretVisible="True" VerticalScrollBarVisibility="Auto"
+                             TextChanged="rtb_Logs_TextChanged"/>
+            </TabItem>
+
+            <!--Окно настроек-->
+            <TabItem Header="Settings" MinHeight="20">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <!--MAIN SETTINGS-->
+                    <StackPanel Grid.Column="0">
+
+                    </StackPanel>
+                    <!--PgSettings-->
+                    <StackPanel Grid.Column="1">
+                        <!--SERVER-->
+                        <StackPanel>
+                            <Label Content="Postgres Server"/>
+                            <TextBox x:Name="txtBox_PgServer" />
+                        </StackPanel>
+
+                        <!--PORT-->
+                        <StackPanel>
+                            <Label Content="Postgres Port"/>
+                            <TextBox x:Name="txtBox_PgPort" />
+                        </StackPanel>
+
+                        <!--Uid-->
+                        <StackPanel>
+                            <Label Content="Postgres Uid"/>
+                            <TextBox x:Name="txtBox_PgUid" />
+                        </StackPanel>
+
+                        <!--Password-->
+                        <StackPanel>
+                            <Label Content="Postgres Password"/>
+                            <TextBox x:Name="txtBox_PgPassword" />
+                        </StackPanel>
+
+                        <!--Database-->
+                        <StackPanel>
+                            <Label Content="Postgres Database"/>
+                            <TextBox x:Name="txtBox_PgDatabase" />
+                        </StackPanel>
+
+                        <!--CHECK BUTTONS-->
+                        <StackPanel Orientation="Horizontal" Margin="2 2 2 2">
+                            <Button x:Name="btn_PgCheckConnection" Content="CheckConnection"/>
+                            <Button x:Name="btn_PgCheckFullDatabase" Content="Check Full Database"/>
+                        </StackPanel>
+
+                    </StackPanel>
+                </Grid>
+            </TabItem>
         </TabControl>
+
     </DockPanel>
 </Window>

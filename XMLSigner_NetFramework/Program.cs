@@ -47,11 +47,10 @@ namespace XMLSigner
 
             string MchdId = "719f90af-f777-4c70-9a33-053958eacc65";
             string MchdINN = "2536287574";
-            X509Certificate2 cert = SignXmlGost.FindGostCurrentCertificate("01DA FCE9 BC8E 41B0 0008 7F5E 381D 0002");
+            X509Certificate2 cert = SignXmlGost.FindGostCurrentCertificate("01DAFCE9BC8E41B000087F5E381D0002");
 
-            TemplatingXml.CreateArchive(MchdId, MchdINN, cert, "NewArch_1");
+            TemplatingXml.CreateArchive(MchdId, MchdINN, cert, "NewArch_12");
             Console.WriteLine("");
-
         }
     }
 }

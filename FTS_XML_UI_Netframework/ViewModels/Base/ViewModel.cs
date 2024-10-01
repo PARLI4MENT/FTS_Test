@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FTS_XML_UI_Netframework.ViewModels.Base
 {
@@ -21,23 +17,17 @@ namespace FTS_XML_UI_Netframework.ViewModels.Base
         {
             if (Equals(field, value))
                 return false;
-            
+
             field = value;
-            
+
             OnPropertyChanged(PropertyName);
 
             return true;
         }
 
-        ~ViewModel()
-        {
-            Dispose(false);
-        }
+        ~ViewModel() { Dispose(false); }
 
-        public void Dispose()
-        {
-            Dispose(true);
-        }
+        public void Dispose() { Dispose(true); }
 
         private bool _Disposed;
         protected virtual void Dispose(bool Disposing)

@@ -9,10 +9,10 @@ namespace ExecuteRenameXML
 {
     internal class Program
     {
-        static string inputPath = "C:\\Dekl\\SEND DATA";
-        static string PathExtractionFolder = "C:\\_2\\ExtractionFolder";
+        static string inputPath = "C:\\TEST\\RawFolder";
+        static string PathExtractionFolder = "C:\\TEST\\ExtractionFolder";
 
-        static void Main(string[] args) {
+        private static void Main(string[] args) {
             var rawSrcFolders = Directory.GetDirectories(inputPath);
 
             var sw = Stopwatch.StartNew();

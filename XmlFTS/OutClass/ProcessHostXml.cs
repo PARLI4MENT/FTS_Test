@@ -32,7 +32,7 @@ namespace XmlFTS
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            using (var watcher = new FileSystemWatcher(_directoryPath))
+            using (var watcher = new FileSystemWatcher(StaticPathConfiguration.PathRawFolder))
             {
 
                 // Postavi željene filtere i događaje
@@ -172,7 +172,7 @@ namespace XmlFTS
         }
     }
 
-    public class ReplyProcessTick : BackgroundService
+    public class ReplyProcess : BackgroundService
     {
         public static int replyOperationDelay = 500;
 
@@ -180,7 +180,7 @@ namespace XmlFTS
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                var rawSrcFolders = Directory.GetDirectories("C:\\_2\\ReplyFTS");
+                var rawSrcFolders = Directory.GetDirectories(StaticPathConfiguration.PathReplyFTS);
 
                 if (rawSrcFolders.Count() == 0)
                 {

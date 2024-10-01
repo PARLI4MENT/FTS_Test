@@ -240,7 +240,7 @@ namespace XmlFTS
             //File.AppendAllText("C:\\_test\\Arch_docs.log", "New TEST;START;END CASE;PREP XML;SING XML;INSERT;");
 
             // Query to PostgresSql DB
-            new PgSql().ExecuteToDB(new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName });
+            // new PgSql().ExecuteToDB(new string[7] { NameArray, EnvelopeID, DocumentID, PrDocumentName, PrDocumentNumber, DocCode, NewDocToArchName });
             
             /// Нормализация и подписание
             NormalizationXmlSign.NormalizationXml(NewDocToArchName, ref cert);
