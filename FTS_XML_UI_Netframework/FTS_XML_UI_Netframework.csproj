@@ -181,6 +181,8 @@
     <Compile Include="TextBoxValidator.cs" />
     <Compile Include="ViewModels\Base\ViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="Views\Windows\Localization.Designer.cs" />
+    <Compile Include="Views\Windows\LocalizationManager.cs" />
     <Compile Include="Views\Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -204,6 +206,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\Windows\Localization.resx" />
+    <EmbeddedResource Include="Views\Windows\Localization.ru-RU.resx" />
+    <EmbeddedResource Include="Views\Windows\Localization.uz-Latn.resx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
