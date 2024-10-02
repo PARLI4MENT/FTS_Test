@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using XmlFTS;
 using XmlFTS.OutClass;
 using XMLSigner;
+using Extensions;
 
 namespace FTS_XML_UI_Netframework
 {
@@ -51,15 +52,6 @@ namespace FTS_XML_UI_Netframework
             await host.StopAsync();
         }
 
-        private async void menu_Operation_CreateArchive_Click(object sender, RoutedEventArgs e)
-        {
-            string MchdId = "719f90af-f777-4c70-9a33-053958eacc65";
-            string MchdINN = "2536287574";
-            X509Certificate2 cert = SignXmlGost.FindGostCurrentCertificate("01DAFCE9BC8E41B000087F5E381D0002");
-
-            await Task.Run(() => TemplatingXml.CreateArchive(MchdId, MchdINN, cert, "NewArch_12"));
-        }
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             /// 
@@ -71,6 +63,15 @@ namespace FTS_XML_UI_Netframework
                        services.AddHostedService<ReplyProcess>();
                    })
                    .Build();
+        }
+
+        private async void menu_Operation_CreateArchive_Click(object sender, RoutedEventArgs e)
+        {
+            string MchdId = "719f90af-f777-4c70-9a33-053958eacc65";
+            string MchdINN = "2536287574";
+            X509Certificate2 cert = SignXmlGost.FindGostCurrentCertificate("01DAFCE9BC8E41B000087F5E381D0002");
+
+            await Task.Run(() => TemplatingXml.CreateArchive(MchdId, MchdINN, cert, "NewArch_12"));
         }
 
         private void rtb_Logs_TextChanged(object sender, TextChangedEventArgs e)
@@ -98,5 +99,46 @@ namespace FTS_XML_UI_Netframework
         //    richTextBox.SelectionStart = richTextBox.Text.Length;
         //}
         #endregion
+
+
+        private void btn_SaveSettings_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btn_PgCheckConnection_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btn_PgCheckFullDatabase_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void txtBox_PgServer_LostFocus(object sender, RoutedEventArgs e)
+        {
+            /// Сюда валидацию
+            //MessageBox.Show(((TextBox)sender).GetType().ToString());
+            MessageBox.Show(sender.GetType().ToString());
+        }
+        private void txtBox_PgPort_LostFocus(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            //// Standart 0-1023 / Registarated 1024-49151 / Dynamic 49152-65635 PORTS
+            if (txtBox_PgPort.Text.ValidPgPort())
+            {
+
+            }
+        }
+
+        private void txtBox_PgUid_LostFocus(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void txtBox_PgPassword_LostFocus(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

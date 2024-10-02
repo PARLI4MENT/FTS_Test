@@ -10,7 +10,7 @@ namespace FTS_XML_UI_Netframework.ViewModels
     internal class MainWindowViewModel : ViewModel
     {
         #region Title => GET/SET
-        private string _Title = "Title";
+        private string _Title = "Ulitka:)";
         
         /// <summary> Заголовок окна </summary>
         public string Title

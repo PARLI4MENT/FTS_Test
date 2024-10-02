@@ -175,6 +175,7 @@
     <Compile Include="Database\ISql.cs" />
     <Compile Include="Database\MsSql.cs" />
     <Compile Include="Database\PgSql.cs" />
+    <Compile Include="Extensions\ExtensionInt.cs" />
     <Compile Include="OutClass\BackupFile.cs" />
     <Compile Include="OutClass\ChangeLogger.cs" />
     <Compile Include="OutClass\IHostBackgroundService.cs" />

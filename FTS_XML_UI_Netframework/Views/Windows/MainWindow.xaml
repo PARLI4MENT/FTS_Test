@@ -46,11 +46,12 @@
             <StatusBarItem x:Name="sbItem_incomeWithError" Content=""/>
 
             <!--Start/Stop-->
-            <Button x:Name="btn_StartStopProcess" Content="Start/Stop" Width="70" Height="24"
-                    Click="btn_StartStopProcess_Click" Margin="3 3"/>
-
-            <Button x:Name="btn_StopProcess" Content="Stop" Width="70" Height="24"
-                    Click="btn_StopProcess_Click" Margin="3 3"/>
+            <Button x:Name="btn_StartStopProcess" Content="Start/Stop" Width="70" Height="24" Margin="3 3"
+                    Click="btn_StartStopProcess_Click" />
+            
+            <!--STOP Временно-->
+            <Button x:Name="btn_StopProcess" Content="Stop" Width="70" Height="24" Margin="3 3"
+                    Click="btn_StopProcess_Click"/>
 
             <Button x:Name="btn_TEST" Content="TEST" Width="70"
                     Click="btn_TEST_Click"/>
@@ -60,61 +61,81 @@
         <TabControl>
             <!--Логи-->
             <TabItem Header="Logs" MinHeight="20">
-                <RichTextBox x:Name="rtb_Logs" Margin="1 1 1 1" IsReadOnly="True" IsReadOnlyCaretVisible="True" VerticalScrollBarVisibility="Auto"
+                <RichTextBox x:Name="rtb_Logs" Margin="1 1 1 1" IsReadOnly="True" 
+                             IsReadOnlyCaretVisible="True" VerticalScrollBarVisibility="Auto"
                              TextChanged="rtb_Logs_TextChanged"/>
             </TabItem>
 
             <!--Окно настроек-->
             <TabItem Header="Settings" MinHeight="20">
                 <Grid>
+
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+
                     <!--MAIN SETTINGS-->
-                    <StackPanel Grid.Column="0">
+                    <StackPanel Grid.Column="0" Grid.Row="0">
 
                     </StackPanel>
-                    <!--PgSettings-->
-                    <StackPanel Grid.Column="1">
+
+                    <!--PostgresSQL_Settings-->
+                    <StackPanel Grid.Column="1" Grid.Row="0">
                         <!--SERVER-->
                         <StackPanel>
                             <Label Content="Postgres Server"/>
-                            <TextBox x:Name="txtBox_PgServer" />
+                            <TextBox x:Name="txtBox_PgServer" ToolTip="PostgresSQL сервер"
+                                     LostFocus="txtBox_PgServer_LostFocus"/>
                         </StackPanel>
 
                         <!--PORT-->
                         <StackPanel>
                             <Label Content="Postgres Port"/>
-                            <TextBox x:Name="txtBox_PgPort" />
+                            <TextBox x:Name="txtBox_PgPort" ToolTip="PostgresSQL порт"/>
                         </StackPanel>
 
                         <!--Uid-->
                         <StackPanel>
                             <Label Content="Postgres Uid"/>
-                            <TextBox x:Name="txtBox_PgUid" />
+                            <TextBox x:Name="txtBox_PgUid" ToolTip="PostgresSQL имя пользователя"
+                                     LostFocus="txtBox_PgUid_LostFocus"/>
                         </StackPanel>
 
                         <!--Password-->
                         <StackPanel>
                             <Label Content="Postgres Password"/>
-                            <TextBox x:Name="txtBox_PgPassword" />
+                            <TextBox x:Name="txtBox_PgPassword" ToolTip="PostgresSQL пароль" 
+                                     LostFocus="txtBox_PgPassword_LostFocus"/>
                         </StackPanel>
 
                         <!--Database-->
                         <StackPanel>
                             <Label Content="Postgres Database"/>
-                            <TextBox x:Name="txtBox_PgDatabase" />
+                            <TextBox x:Name="txtBox_PgDatabase" ToolTip="PostgresSQL database"/>
                         </StackPanel>
 
                         <!--CHECK BUTTONS-->
                         <StackPanel Orientation="Horizontal" Margin="2 2 2 2">
-                            <Button x:Name="btn_PgCheckConnection" Content="CheckConnection"/>
-                            <Button x:Name="btn_PgCheckFullDatabase" Content="Check Full Database"/>
+                            <Button x:Name="btn_PgCheckConnection" Content="CheckConnection" ToolTip="Проверка соединения"
+                                    Click="btn_PgCheckConnection_Click"/>
+                            <Button x:Name="btn_PgCheckFullDatabase" Content="Check Full Database" ToolTip="Полная проверка БД"
+                                    Click="btn_PgCheckFullDatabase_Click"/>
                         </StackPanel>
 
                     </StackPanel>
+
+                    <StackPanel Grid.Row="1" >
+                        <Button x:Name="btn_SaveSettings" Content="Save settings" Width="100" Height="25" ToolTip="Сохранить настройки"
+                                VerticalAlignment="Center" HorizontalAlignment="Center"
+                                Click="btb_SaveSettings_Click"/>
+                    </StackPanel>
+
                 </Grid>
             </TabItem>
         </TabControl>

@@ -1,0 +1,3 @@
+https://stackoverflow.com/questions/5095183/how-would-i-run-an-async-taskt-method-synchronously
+
+https://stackoverflow.com/questions/46067029/wpf-textbox-set-cursor-position-to-last-character-received-on-property-changed
